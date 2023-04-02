@@ -2,25 +2,22 @@
   "name": "first-class-type",
   "version": "0.0.0",
   "description": "",
-  "main": "index.js",
-  "scripts": {
-    "format": "run-p format:*",
-    "format:prettier": "prettier --write \"src/**/*.{ts}\"",
-    "format:package-json": "sort-package-json",
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "homepage": "https://github.com/ootidea/first-class-type#readme",
+  "bugs": {
+    "url": "https://github.com/ootidea/first-class-type/issues"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ootidea/first-class-type.git"
   },
-  "author": "ootidea",
   "license": "CC0-1.0",
-  "bugs": {
-    "url": "https://github.com/ootidea/first-class-type/issues"
-  },
-  "homepage": "https://github.com/ootidea/first-class-type#readme",
-  "volta": {
-    "node": "18.14.2"
+  "author": "ootidea",
+  "main": "index.js",
+  "scripts": {
+    "format": "run-p format:*",
+    "format:prettier": "prettier --write \"src/**/*.ts\"",
+    "format:package-json": "sort-package-json",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "devDependencies": {
     "npm-run-all": "^4.1.5",
@@ -29,5 +26,8 @@
     "typescript": "^5.0.3",
     "vite": "^4.2.1",
     "vitest": "^0.29.8"
+  },
+  "volta": {
+    "node": "18.14.2"
   }
 }
