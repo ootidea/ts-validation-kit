@@ -18,5 +18,10 @@
   "homepage": "https://github.com/ootidea/first-class-type#readme",
   "volta": {
     "node": "18.14.2"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.3",
+    "vite": "^4.2.1",
+    "vitest": "^0.29.8"
   }
 }
