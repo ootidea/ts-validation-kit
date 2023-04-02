@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/ootidea/first-class-type/issues"
   },
-  "homepage": "https://github.com/ootidea/first-class-type#readme"
+  "homepage": "https://github.com/ootidea/first-class-type#readme",
+  "volta": {
+    "node": "18.14.2"
+  }
 }
