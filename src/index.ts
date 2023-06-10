@@ -1,3 +1,12 @@
+function object<T extends object>(required: T): { type: 'object'; required: T; optional: {} }
+function object<T extends object, U extends object>(
+  required: T,
+  optional: U
+): { type: 'object'; required: T; optional: U }
+function object<T extends object, U extends object>(required: T, optional?: U) {
+  return { type: 'object', required, optional: optional ?? {} } as const
+}
+
 const fct = {
   unknown: { type: 'unknown' } as const,
   any: { type: 'any' } as const,
@@ -17,9 +26,7 @@ const fct = {
   array<const T>(value: T) {
     return { type: 'array', value } as const
   },
-  object<const T extends object>(value: T) {
-    return { type: 'object', value } as const
-  },
+  object,
   union<const T extends readonly any[]>(...parts: T) {
     return { type: 'union', parts } as const
   },
@@ -65,8 +72,8 @@ namespace fct {
     ? L
     : T extends ReturnType<typeof fct.array<infer U>>
     ? Infer<U, Z>[]
-    : T extends ReturnType<typeof fct.object<infer O extends object>>
-    ? InferObjectType<O, Z>
+    : T extends ReturnType<typeof fct.object<infer R extends object, infer O extends object>>
+    ? InferObjectType<R, O, Z>
     : T extends ReturnType<typeof fct.union<infer A extends readonly any[]>>
     ? InferUnionType<A, Z>
     : T extends ReturnType<typeof fct.intersection<infer A extends readonly any[]>>
@@ -77,8 +84,10 @@ namespace fct {
     ? { [key in K]: Infer<Z> }
     : never
 
-  type InferObjectType<T, Z> = {
+  type InferObjectType<T, U, Z> = {
     [K in keyof T]: Infer<T[K], Z>
+  } & {
+    [K in keyof U]?: Infer<U[K], Z>
   }
   type InferUnionType<T extends readonly any[], Z> = T extends readonly [infer H, ...infer L]
     ? Infer<H, Z> | InferUnionType<L, Z>

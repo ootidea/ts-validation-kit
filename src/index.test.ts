@@ -27,6 +27,10 @@ test('Infer', () => {
 
   expectTypeOf(infer(fct.array(fct.boolean))).toEqualTypeOf<boolean[]>()
   expectTypeOf(infer(fct.object({ name: fct.string }))).toEqualTypeOf<{ name: string }>()
+  expectTypeOf(infer(fct.object({ name: fct.string }, { age: fct.number }))).toEqualTypeOf<{
+    name: string
+    age?: number
+  }>()
 
   expectTypeOf(infer(fct.union(fct.number, fct.undefined))).toEqualTypeOf<number | undefined>()
   expectTypeOf(infer(fct.union(fct.literal('abc'), fct.literal(123)))).toEqualTypeOf<'abc' | 123>()
