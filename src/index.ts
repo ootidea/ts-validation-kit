@@ -75,11 +75,11 @@ namespace fct {
   type InferObjectType<T, Z> = {
     [K in keyof T]: Infer<T[K], Z>
   }
-  type InferUnionType<T extends readonly any[], Z> = T extends readonly [infer H, ...infer R]
-    ? Infer<H, Z> | InferUnionType<R, Z>
+  type InferUnionType<T extends readonly any[], Z> = T extends readonly [infer H, ...infer L]
+    ? Infer<H, Z> | InferUnionType<L, Z>
     : never
-  type InferIntersectionType<T extends readonly any[], Z> = T extends readonly [infer H, ...infer R]
-    ? Infer<H, Z> & InferUnionType<R, Z>
+  type InferIntersectionType<T extends readonly any[], Z> = T extends readonly [infer H, ...infer L]
+    ? Infer<H, Z> & InferUnionType<L, Z>
     : unknown
 }
 export { fct }
