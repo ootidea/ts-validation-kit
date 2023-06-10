@@ -14,10 +14,10 @@ const fct = {
   literal<const T>(value: T) {
     return { type: 'literal', value } as const
   },
-  array<T>(value: T) {
+  array<const T>(value: T) {
     return { type: 'array', value } as const
   },
-  object<T extends object>(value: T) {
+  object<const T extends object>(value: T) {
     return { type: 'object', value } as const
   },
   union<const T extends readonly any[]>(...parts: T) {
@@ -29,7 +29,7 @@ const fct = {
   tuple<const T extends readonly any[]>(...parts: T) {
     return { type: 'tuple', parts } as const
   },
-  recursion<K extends keyof any>(key: K) {
+  recursion<const K extends keyof any>(key: K) {
     return { type: 'recursion', key } as const
   },
 }
