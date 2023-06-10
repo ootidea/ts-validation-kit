@@ -31,4 +31,7 @@ test('Infer', () => {
   expectTypeOf(infer(fct.union(fct.number, fct.undefined))).toEqualTypeOf<number | undefined>()
   expectTypeOf(infer(fct.union(fct.literal('abc'), fct.literal(123)))).toEqualTypeOf<'abc' | 123>()
   expectTypeOf(infer(fct.union())).toEqualTypeOf<never>()
+
+  expectTypeOf(infer(fct.tuple(fct.number, fct.string))).toEqualTypeOf<[number, string]>()
+  expectTypeOf(infer(fct.tuple())).toEqualTypeOf<[]>()
 })

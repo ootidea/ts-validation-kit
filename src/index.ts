@@ -26,6 +26,9 @@ const fct = {
   intersection<const T extends readonly any[]>(...parts: T) {
     return { type: 'intersection', parts } as const
   },
+  tuple<const T extends readonly any[]>(...parts: T) {
+    return { type: 'tuple', parts } as const
+  },
   recursion<K extends keyof any>(key: K) {
     return { type: 'recursion', key } as const
   },
@@ -68,6 +71,8 @@ namespace fct {
     ? InferUnionType<A, Z>
     : T extends ReturnType<typeof fct.intersection<infer A extends readonly any[]>>
     ? InferIntersectionType<A, Z>
+    : T extends ReturnType<typeof fct.tuple<infer A extends readonly any[]>>
+    ? InferTupleType<A, Z>
     : T extends ReturnType<typeof fct.recursion<infer K extends keyof any>>
     ? { [key in K]: Infer<Z> }
     : never
@@ -81,5 +86,8 @@ namespace fct {
   type InferIntersectionType<T extends readonly any[], Z> = T extends readonly [infer H, ...infer L]
     ? Infer<H, Z> & InferUnionType<L, Z>
     : unknown
+  type InferTupleType<T extends readonly any[], Z> = T extends readonly [infer H, ...infer L]
+    ? [Infer<H, Z>, ...InferTupleType<L, Z>]
+    : []
 }
 export { fct }
