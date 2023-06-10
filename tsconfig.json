@@ -1,8 +1,10 @@
 {
   "extends": "@tsconfig/strictest/tsconfig.json",
   "compilerOptions": {
-    "target": "ESNext",
+    "target": "ES2021",
     "module": "ESNext",
+    "moduleResolution": "node",
+    "esModuleInterop": true,
     "types": ["vitest/globals"]
   },
   "include": ["src"]
