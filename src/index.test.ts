@@ -1,4 +1,4 @@
-import { expectTypeOf } from 'vitest'
+import { expect, expectTypeOf } from 'vitest'
 import { fct } from './index'
 
 test('Infer', () => {
@@ -38,4 +38,18 @@ test('Infer', () => {
 
   expectTypeOf(infer(fct.tuple(fct.number, fct.string))).toEqualTypeOf<[number, string]>()
   expectTypeOf(infer(fct.tuple())).toEqualTypeOf<[]>()
+})
+
+test('isValid', () => {
+  expect(fct.isValid(true, fct.boolean)).toBe(true)
+  expect(fct.isValid('true', fct.boolean)).toBe(false)
+
+  expect(fct.isValid(123, fct.number)).toBe(true)
+  expect(fct.isValid('123', fct.number)).toBe(false)
+
+  expect(fct.isValid(123n, fct.bigint)).toBe(true)
+  expect(fct.isValid(123, fct.bigint)).toBe(false)
+
+  expect(fct.isValid('abc', fct.string)).toBe(true)
+  expect(fct.isValid(123, fct.string)).toBe(false)
 })
