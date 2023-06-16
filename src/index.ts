@@ -15,7 +15,7 @@ export type FctSchema = DiscriminatedUnion<{
   symbol: {}
   literal: { value: any }
   array: { value: FctSchema }
-  // TODO: このへんはreadonlyが必要だったりしないか？
+  recursive: { value: FctSchema }
   object: { required: Record<keyof any, FctSchema>; optional: Record<keyof any, FctSchema> }
   union: { parts: readonly FctSchema[] }
   intersection: { parts: readonly FctSchema[] }
@@ -42,6 +42,10 @@ function literal<const T extends string | number | bigint | boolean | null | und
 
 function array<const T extends FctSchema>(value: T) {
   return { type: 'array', value } as const
+}
+
+function recursive<const T extends FctSchema>(value: T) {
+  return { type: 'recursive', value } as const
 }
 
 function object<T extends Record<keyof any, FctSchema>>(
@@ -96,6 +100,8 @@ type LocalInfer<T, Z = T> = T extends typeof unknown
   ? L
   : T extends ReturnType<typeof array<infer U extends FctSchema>>
   ? LocalInfer<U, Z>[]
+  : T extends ReturnType<typeof recursive<infer U extends FctSchema>>
+  ? LocalInfer<U>
   : T extends ReturnType<
       typeof object<infer R extends Record<keyof any, FctSchema>, infer O extends Record<keyof any, FctSchema>>
     >
@@ -165,6 +171,8 @@ function isValid<const T extends FctSchema, const Z extends FctSchema>(
       return value === schema.value
     case 'array':
       return Array.isArray(value) && value.every((v) => isValid(v, schema.value, rootSchema ?? schema))
+    case 'recursive':
+      return isValid(value, schema.value)
     case 'union':
       return schema.parts.some((part) => isValid(value, part, rootSchema ?? schema))
     case 'intersection':
@@ -208,6 +216,7 @@ const fct = {
 
   literal,
   array,
+  recursive,
   object,
   union,
   intersection,

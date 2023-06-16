@@ -52,6 +52,19 @@ test('Infer', () => {
       )
     )
   ).toEqualTypeOf<List>()
+
+  expectTypeOf(
+    infer(
+      fct.array(
+        fct.recursive(
+          fct.union(
+            fct.object({ type: fct.literal('Nil') }),
+            fct.object({ type: fct.literal('Cons'), value: fct.number, next: fct.recursion })
+          )
+        )
+      )
+    )
+  ).toEqualTypeOf<List[]>()
 })
 
 describe('isValid', () => {
@@ -123,10 +136,13 @@ describe('isValid', () => {
   it('intersection', () => {})
   it('tuple', () => {})
   it('recursion', () => {
-    const listSchema = fct.union(
-      fct.object({ type: fct.literal('Nil') }),
-      fct.object({ type: fct.literal('Cons'), value: fct.number, next: fct.recursion })
+    const listSchema = fct.recursive(
+      fct.union(
+        fct.object({ type: fct.literal('Nil') }),
+        fct.object({ type: fct.literal('Cons'), value: fct.number, next: fct.recursion })
+      )
     )
     expect(fct.isValid({ type: 'Cons', value: 1, next: { type: 'Nil' } }, listSchema)).toBe(true)
+    expect(fct.isValid([{ type: 'Nil' }], fct.array(listSchema))).toBe(true)
   })
 })
