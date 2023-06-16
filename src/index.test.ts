@@ -36,6 +36,10 @@ test('Infer', () => {
   expectTypeOf(infer(fct.union(fct.literal('abc'), fct.literal(123)))).toEqualTypeOf<'abc' | 123>()
   expectTypeOf(infer(fct.union())).toEqualTypeOf<never>()
 
+  expectTypeOf(
+    infer(fct.intersection(fct.object({ name: fct.string }), fct.object({ age: fct.number })))
+  ).toEqualTypeOf<{ name: string; age: number }>()
+
   expectTypeOf(infer(fct.tuple(fct.number, fct.string))).toEqualTypeOf<[number, string]>()
   expectTypeOf(infer(fct.tuple())).toEqualTypeOf<[]>()
 
@@ -106,9 +110,15 @@ describe('isValid', () => {
   it('object', () => {
     expect(fct.isValid({ name: 'John' }, fct.object({ name: fct.string }))).toBe(true)
     expect(fct.isValid({ name: 'John' }, fct.object({ name: fct.symbol }))).toBe(false)
+
+    expect(fct.isValid({ name: 'John' }, fct.object({}, { age: fct.number }))).toBe(true)
+    expect(fct.isValid({ name: 'John', age: 42 }, fct.object({}, { age: fct.number }))).toBe(true)
+    expect(fct.isValid({ name: 'John', age: '42' }, fct.object({}, { age: fct.number }))).toBe(false)
   })
   it('union', () => {
     expect(fct.isValid(123, fct.union(fct.boolean, fct.number))).toBe(true)
+    expect(fct.isValid(123, fct.union(fct.literal(123), fct.literal(456)))).toBe(true)
+    expect(fct.isValid(true, fct.union())).toBe(false)
   })
   it('intersection', () => {})
   it('tuple', () => {})
