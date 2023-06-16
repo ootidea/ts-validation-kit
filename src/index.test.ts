@@ -1,3 +1,4 @@
+import { NonEmptyArray } from 'base-up'
 import { describe, expect, expectTypeOf } from 'vitest'
 import { fct } from './index'
 
@@ -26,6 +27,8 @@ test('Infer', () => {
   expectTypeOf(infer(fct.literal(123))).toEqualTypeOf<123>()
 
   expectTypeOf(infer(fct.array(fct.boolean))).toEqualTypeOf<boolean[]>()
+  expectTypeOf(infer(fct.nonEmptyArray(fct.any))).toEqualTypeOf<NonEmptyArray<any>>()
+
   expectTypeOf(infer(fct.object({ name: fct.string }))).toEqualTypeOf<{ name: string }>()
   expectTypeOf(infer(fct.object({ name: fct.string }, { age: fct.number }))).toEqualTypeOf<{
     name: string
@@ -120,6 +123,12 @@ describe('isValid', () => {
     expect(fct.isValid({ 0: false, 1: true }, fct.array(fct.boolean))).toBe(false)
     expect(fct.isValid([123], fct.array(fct.boolean))).toBe(false)
   })
+  it('nonEmptyArray', () => {
+    expect(fct.isValid([false, true], fct.nonEmptyArray(fct.boolean))).toBe(true)
+    expect(fct.isValid([], fct.nonEmptyArray(fct.number))).toBe(false)
+    expect(fct.isValid({ 0: false, 1: true }, fct.nonEmptyArray(fct.boolean))).toBe(false)
+    expect(fct.isValid([123], fct.nonEmptyArray(fct.boolean))).toBe(false)
+  })
   it('object', () => {
     expect(fct.isValid({ name: 'John' }, fct.object({ name: fct.string }))).toBe(true)
     expect(fct.isValid({ name: 'John' }, fct.object({ name: fct.symbol }))).toBe(false)
@@ -134,7 +143,13 @@ describe('isValid', () => {
     expect(fct.isValid(true, fct.union())).toBe(false)
   })
   it('intersection', () => {})
-  it('tuple', () => {})
+  it('tuple', () => {
+    expect(fct.isValid([true, 123], fct.tuple(fct.boolean, fct.number))).toBe(true)
+    expect(fct.isValid([true, 123], fct.tuple(fct.boolean, fct.number, fct.string))).toBe(false)
+    expect(fct.isValid([true, 123], fct.tuple(fct.boolean))).toBe(false)
+    expect(fct.isValid([true, 123], fct.tuple(fct.string, fct.bigint))).toBe(false)
+    expect(fct.isValid([], fct.tuple())).toBe(true)
+  })
   it('recursion', () => {
     const listSchema = fct.recursive(
       fct.union(

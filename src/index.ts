@@ -1,4 +1,4 @@
-import type { DiscriminatedUnion, Simplify } from 'base-up'
+import type { DiscriminatedUnion, NonEmptyArray, Simplify } from 'base-up'
 import { assertNeverType, entriesOf } from 'base-up'
 
 export type FctSchema = DiscriminatedUnion<{
@@ -15,6 +15,7 @@ export type FctSchema = DiscriminatedUnion<{
   symbol: {}
   literal: { value: string | number | bigint | boolean | null | undefined }
   array: { value: FctSchema }
+  nonEmptyArray: { value: FctSchema }
   recursive: { value: FctSchema }
   object: { required: Record<keyof any, FctSchema>; optional: Record<keyof any, FctSchema> }
   union: { parts: readonly FctSchema[] }
@@ -42,6 +43,10 @@ function literal<const T extends string | number | bigint | boolean | null | und
 
 function array<const T extends FctSchema>(value: T) {
   return { type: 'array', value } as const
+}
+
+function nonEmptyArray<const T extends FctSchema>(value: T) {
+  return { type: 'nonEmptyArray', value } as const
 }
 
 function recursive<const T extends FctSchema>(value: T) {
@@ -100,6 +105,8 @@ type LocalInfer<T, Z = T> = T extends typeof unknown
   ? L
   : T extends ReturnType<typeof array<infer U extends FctSchema>>
   ? LocalInfer<U, Z>[]
+  : T extends ReturnType<typeof nonEmptyArray<infer U extends FctSchema>>
+  ? NonEmptyArray<LocalInfer<U, Z>>
   : T extends ReturnType<typeof recursive<infer U extends FctSchema>>
   ? LocalInfer<U>
   : T extends ReturnType<
@@ -171,6 +178,10 @@ function isValid<const T extends FctSchema, const Z extends FctSchema>(
       return value === schema.value
     case 'array':
       return Array.isArray(value) && value.every((v) => isValid(v, schema.value, rootSchema ?? schema))
+    case 'nonEmptyArray':
+      return (
+        Array.isArray(value) && value.length > 0 && value.every((v) => isValid(v, schema.value, rootSchema ?? schema))
+      )
     case 'recursive':
       return isValid(value, schema.value)
     case 'union':
@@ -216,6 +227,7 @@ const fct = {
 
   literal,
   array,
+  nonEmptyArray,
   recursive,
   object,
   union,
