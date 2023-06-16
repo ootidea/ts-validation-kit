@@ -131,7 +131,17 @@ type InferTupleType<T extends readonly any[], Z> = T extends readonly [infer H, 
   : []
 
 /** Determine whether the given value satisfies the schema */
-function isValid<const T extends FctSchema>(value: unknown, schema: T): value is LocalInfer<T> {
+function isValid<const T extends FctSchema>(value: unknown, schema: T): value is LocalInfer<T>
+function isValid<const T extends FctSchema, const Z extends FctSchema>(
+  value: unknown,
+  schema: T,
+  rootSchema: Z
+): value is LocalInfer<T>
+function isValid<const T extends FctSchema, const Z extends FctSchema>(
+  value: unknown,
+  schema: T,
+  rootSchema?: Z
+): value is LocalInfer<T> {
   switch (schema.type) {
     case 'unknown':
     case 'any':
@@ -157,28 +167,30 @@ function isValid<const T extends FctSchema>(value: unknown, schema: T): value is
     case 'literal':
       return value === schema.value
     case 'array':
-      return Array.isArray(value) && value.every((v) => isValid(v, schema.value))
+      return Array.isArray(value) && value.every((v) => isValid(v, schema.value, rootSchema ?? schema))
     case 'union':
-      return schema.parts.some((part) => isValid(value, part))
+      return schema.parts.some((part) => isValid(value, part, rootSchema ?? schema))
     case 'intersection':
-      return schema.parts.every((part) => isValid(value, part))
+      return schema.parts.every((part) => isValid(value, part, rootSchema ?? schema))
     case 'tuple':
       return (
         Array.isArray(value) &&
         value.length === schema.parts.length &&
-        value.every((element, i) => isValid(element, schema.parts[i]!))
+        value.every((element, i) => isValid(element, schema.parts[i]!, rootSchema ?? schema))
       )
     case 'object':
       if (typeof value !== 'object' || value === null) return false
 
       return (
         entriesOf(schema.required).every(
-          ([key, subSchema]) => key in value && isValid((value as any)[key], subSchema)
+          ([key, subSchema]) => key in value && isValid((value as any)[key], subSchema, rootSchema ?? schema)
         ) &&
         entriesOf(schema.optional).every(
-          ([key, subSchema]) => !(key in value) || isValid((value as any)[key], subSchema)
+          ([key, subSchema]) => !(key in value) || isValid((value as any)[key], subSchema, rootSchema ?? schema)
         )
       )
+    case 'recursion':
+      return isValid(value, rootSchema ?? schema, rootSchema ?? schema)
     default:
       assertNeverType(schema)
   }
