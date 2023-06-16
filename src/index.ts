@@ -26,6 +26,7 @@ export type FctSchema = DiscriminatedUnion<{
 
 const _null = { type: 'null' } as const
 const undefined = { type: 'undefined' } as const
+const nullish = { type: 'union', parts: [_null, undefined] } as const
 const _void = { type: 'void' } as const
 const unknown = { type: 'unknown' } as const
 const any = { type: 'any' } as const
@@ -219,6 +220,7 @@ const fct = {
   void: _void,
   null: _null,
   undefined,
+  nullish,
   boolean,
   number,
   bigint,

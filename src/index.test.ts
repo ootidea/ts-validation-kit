@@ -18,6 +18,7 @@ test('Infer', () => {
   expectTypeOf(infer(fct.symbol)).toEqualTypeOf<symbol>()
   expectTypeOf(infer(fct.null)).toEqualTypeOf<null>()
   expectTypeOf(infer(fct.undefined)).toEqualTypeOf<undefined>()
+  expectTypeOf(infer(fct.nullish)).toEqualTypeOf<null | undefined>()
   expectTypeOf(infer(fct.void)).toEqualTypeOf<void>()
   expectTypeOf(infer(fct.unknown)).toEqualTypeOf<unknown>()
   expectTypeOf(infer(fct.any)).toEqualTypeOf<any>()
@@ -98,6 +99,11 @@ describe('isValid', () => {
   it('undefined', () => {
     expect(fct.isValid(undefined, fct.undefined)).toBe(true)
     expect(fct.isValid(null, fct.undefined)).toBe(false)
+  })
+  it('nullish', () => {
+    expect(fct.isValid(null, fct.nullish)).toBe(true)
+    expect(fct.isValid(undefined, fct.nullish)).toBe(true)
+    expect(fct.isValid(0, fct.nullish)).toBe(false)
   })
   it('void', () => {
     expect(fct.isValid(undefined, fct.void)).toBe(true)
