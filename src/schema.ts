@@ -23,19 +23,19 @@ export type Schema = DiscriminatedUnion<{
   recursion: {}
 }>
 
-export const _null = { type: 'null' } as const
-export const undefined = { type: 'undefined' } as const
-export const nullish = { type: 'union', parts: [_null, undefined] } as const
-export const _void = { type: 'void' } as const
-export const unknown = { type: 'unknown' } as const
-export const any = { type: 'any' } as const
-export const never = { type: 'never' } as const
-export const boolean = { type: 'boolean' } as const
-export const number = { type: 'number' } as const
-export const bigint = { type: 'bigint' } as const
-export const string = { type: 'string' } as const
-export const symbol = { type: 'symbol' } as const
-export const recursion = { type: 'recursion' } as const
+export const _null = { type: 'null' } as const satisfies Schema
+export const undefined = { type: 'undefined' } as const satisfies Schema
+export const nullish = { type: 'union', parts: [_null, undefined] } as const satisfies Schema
+export const _void = { type: 'void' } as const satisfies Schema
+export const unknown = { type: 'unknown' } as const satisfies Schema
+export const any = { type: 'any' } as const satisfies Schema
+export const never = { type: 'never' } as const satisfies Schema
+export const boolean = { type: 'boolean' } as const satisfies Schema
+export const number = { type: 'number' } as const satisfies Schema
+export const bigint = { type: 'bigint' } as const satisfies Schema
+export const string = { type: 'string' } as const satisfies Schema
+export const symbol = { type: 'symbol' } as const satisfies Schema
+export const recursion = { type: 'recursion' } as const satisfies Schema
 
 export function literal<const T extends string | number | bigint | boolean | null | undefined>(value: T) {
   return { type: 'literal', value } as const
