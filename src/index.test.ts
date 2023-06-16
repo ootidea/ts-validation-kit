@@ -97,4 +97,9 @@ describe('isValid', () => {
     expect(fct.isValid({ name: 'John' }, fct.object({ name: fct.string }))).toBe(true)
     expect(fct.isValid({ name: 'John' }, fct.object({ name: fct.symbol }))).toBe(false)
   })
+  it('union', () => {
+    expect(fct.isValid(123, fct.union(fct.boolean, fct.number))).toBe(true)
+  })
+  it('intersection', () => {})
+  it('tuple', () => {})
 })

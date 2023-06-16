@@ -17,10 +17,10 @@ export type FctSchema = DiscriminatedUnion<{
   array: { value: FctSchema }
   // TODO: このへんはreadonlyが必要だったりしないか？
   object: { required: Record<keyof any, FctSchema>; optional: Record<keyof any, FctSchema> }
-  union: { parts: FctSchema[] }
-  intersection: { parts: FctSchema[] }
-  tuple: { parts: FctSchema[] }
-  recursion: { key: keyof any }
+  union: { parts: readonly FctSchema[] }
+  intersection: { parts: readonly FctSchema[] }
+  tuple: { parts: readonly FctSchema[] }
+  recursion: {}
 }>
 
 const _null = { type: 'null' } as const
