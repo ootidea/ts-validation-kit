@@ -38,6 +38,16 @@ test('Infer', () => {
 
   expectTypeOf(infer(fct.tuple(fct.number, fct.string))).toEqualTypeOf<[number, string]>()
   expectTypeOf(infer(fct.tuple())).toEqualTypeOf<[]>()
+
+  type List = { type: 'Nil' } | { type: 'Cons'; value: number; next: List }
+  expectTypeOf(
+    infer(
+      fct.union(
+        fct.object({ type: fct.literal('Nil') }),
+        fct.object({ type: fct.literal('Cons'), value: fct.number, next: fct.recursion })
+      )
+    )
+  ).toEqualTypeOf<List>()
 })
 
 describe('isValid', () => {
@@ -102,4 +112,11 @@ describe('isValid', () => {
   })
   it('intersection', () => {})
   it('tuple', () => {})
+  it('recursion', () => {
+    const listSchema = fct.union(
+      fct.object({ type: fct.literal('Nil') }),
+      fct.object({ type: fct.literal('Cons'), value: fct.number, next: fct.recursion })
+    )
+    expect(fct.isValid({ type: 'Cons', value: 1, next: { type: 'Nil' } }, listSchema)).toBe(true)
+  })
 })

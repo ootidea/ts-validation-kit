@@ -34,6 +34,7 @@ const number = { type: 'number' } as const
 const bigint = { type: 'bigint' } as const
 const string = { type: 'string' } as const
 const symbol = { type: 'symbol' } as const
+const recursion = { type: 'recursion' } as const
 
 function literal<const T extends string | number | bigint | boolean | null | undefined>(value: T) {
   return { type: 'literal', value } as const
@@ -67,10 +68,6 @@ function intersection<const T extends readonly FctSchema[]>(...parts: T) {
 
 function tuple<const T extends readonly FctSchema[]>(...parts: T) {
   return { type: 'tuple', parts } as const
-}
-
-function recursion<const K extends keyof any>(key: K) {
-  return { type: 'recursion', key } as const
 }
 
 type LocalInfer<T, Z = T> = T extends typeof unknown
@@ -109,8 +106,8 @@ type LocalInfer<T, Z = T> = T extends typeof unknown
   ? InferIntersectionType<A, Z>
   : T extends ReturnType<typeof tuple<infer A extends readonly FctSchema[]>>
   ? InferTupleType<A, Z>
-  : T extends ReturnType<typeof recursion<infer K extends keyof any>>
-  ? { [key in K]: LocalInfer<Z> }
+  : T extends typeof recursion
+  ? LocalInfer<Z, Z>
   : never
 
 type InferObjectType<T, U, Z> = Simplify<
