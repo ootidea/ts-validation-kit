@@ -13,7 +13,7 @@ export type FctSchema = DiscriminatedUnion<{
   bigint: {}
   string: {}
   symbol: {}
-  literal: { value: any }
+  literal: { value: string | number | bigint | boolean | null | undefined }
   array: { value: FctSchema }
   recursive: { value: FctSchema }
   object: { required: Record<keyof any, FctSchema>; optional: Record<keyof any, FctSchema> }
