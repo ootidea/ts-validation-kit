@@ -1,69 +1,70 @@
 import { NonEmptyArray } from 'base-up'
 import { describe, expect, expectTypeOf } from 'vitest'
-import { fct } from './index'
+import { z } from './index'
 
 test('Infer', () => {
   /**
    * Helper function to infer the type of a schema.
    * It is convenient when used in combination with expectTypeOf.
    */
-  function infer<const T>(value: T): fct.Infer<T> {
+  function infer<const T>(value: T): z.Infer<T> {
     return value as any
   }
 
-  expectTypeOf(infer(fct.boolean)).toEqualTypeOf<boolean>()
-  expectTypeOf(infer(fct.number)).toEqualTypeOf<number>()
-  expectTypeOf(infer(fct.bigint)).toEqualTypeOf<bigint>()
-  expectTypeOf(infer(fct.string)).toEqualTypeOf<string>()
-  expectTypeOf(infer(fct.symbol)).toEqualTypeOf<symbol>()
-  expectTypeOf(infer(fct.null)).toEqualTypeOf<null>()
-  expectTypeOf(infer(fct.undefined)).toEqualTypeOf<undefined>()
-  expectTypeOf(infer(fct.nullish)).toEqualTypeOf<null | undefined>()
-  expectTypeOf(infer(fct.void)).toEqualTypeOf<void>()
-  expectTypeOf(infer(fct.unknown)).toEqualTypeOf<unknown>()
-  expectTypeOf(infer(fct.any)).toEqualTypeOf<any>()
-  expectTypeOf(infer(fct.never)).toEqualTypeOf<never>()
+  expectTypeOf(infer(z.boolean)).toEqualTypeOf<boolean>()
+  expectTypeOf(infer(z.number)).toEqualTypeOf<number>()
+  expectTypeOf(infer(z.bigint)).toEqualTypeOf<bigint>()
+  expectTypeOf(infer(z.string)).toEqualTypeOf<string>()
+  expectTypeOf(infer(z.symbol)).toEqualTypeOf<symbol>()
+  expectTypeOf(infer(z.null)).toEqualTypeOf<null>()
+  expectTypeOf(infer(z.undefined)).toEqualTypeOf<undefined>()
+  expectTypeOf(infer(z.nullish)).toEqualTypeOf<null | undefined>()
+  expectTypeOf(infer(z.void)).toEqualTypeOf<void>()
+  expectTypeOf(infer(z.unknown)).toEqualTypeOf<unknown>()
+  expectTypeOf(infer(z.any)).toEqualTypeOf<any>()
+  expectTypeOf(infer(z.never)).toEqualTypeOf<never>()
 
-  expectTypeOf(infer(fct.literal('abc'))).toMatchTypeOf<'abc'>()
-  expectTypeOf(infer(fct.literal(123))).toEqualTypeOf<123>()
+  expectTypeOf(infer(z.literal('abc'))).toMatchTypeOf<'abc'>()
+  expectTypeOf(infer(z.literal(123))).toEqualTypeOf<123>()
 
-  expectTypeOf(infer(fct.array(fct.boolean))).toEqualTypeOf<boolean[]>()
-  expectTypeOf(infer(fct.nonEmptyArray(fct.any))).toEqualTypeOf<NonEmptyArray<any>>()
+  expectTypeOf(infer(z.array(z.boolean))).toEqualTypeOf<boolean[]>()
+  expectTypeOf(infer(z.nonEmptyArray(z.any))).toEqualTypeOf<NonEmptyArray<any>>()
 
-  expectTypeOf(infer(fct.object({ name: fct.string }))).toEqualTypeOf<{ name: string }>()
-  expectTypeOf(infer(fct.object({ name: fct.string }, { age: fct.number }))).toEqualTypeOf<{
+  expectTypeOf(infer(z.object({ name: z.string }))).toEqualTypeOf<{ name: string }>()
+  expectTypeOf(infer(z.object({ name: z.string }, { age: z.number }))).toEqualTypeOf<{
     name: string
     age?: number
   }>()
 
-  expectTypeOf(infer(fct.union(fct.number, fct.undefined))).toEqualTypeOf<number | undefined>()
-  expectTypeOf(infer(fct.union(fct.literal('abc'), fct.literal(123)))).toEqualTypeOf<'abc' | 123>()
-  expectTypeOf(infer(fct.union())).toEqualTypeOf<never>()
+  expectTypeOf(infer(z.union(z.number, z.undefined))).toEqualTypeOf<number | undefined>()
+  expectTypeOf(infer(z.union(z.literal('abc'), z.literal(123)))).toEqualTypeOf<'abc' | 123>()
+  expectTypeOf(infer(z.union())).toEqualTypeOf<never>()
 
-  expectTypeOf(
-    infer(fct.intersection(fct.object({ name: fct.string }), fct.object({ age: fct.number })))
-  ).toEqualTypeOf<{ name: string; age: number }>()
+  expectTypeOf(infer(z.intersection(z.object({ name: z.string }), z.object({ age: z.number })))).toEqualTypeOf<{
+    name: string
+    age: number
+  }>()
 
-  expectTypeOf(infer(fct.tuple(fct.number, fct.string))).toEqualTypeOf<[number, string]>()
-  expectTypeOf(infer(fct.tuple())).toEqualTypeOf<[]>()
+  expectTypeOf(infer(z.tuple(z.number, z.string))).toEqualTypeOf<[number, string]>()
+  expectTypeOf(infer(z.tuple())).toEqualTypeOf<[]>()
 
   type List = { type: 'Nil' } | { type: 'Cons'; value: number; next: List }
   expectTypeOf(
     infer(
-      fct.union(
-        fct.object({ type: fct.literal('Nil') }),
-        fct.object({ type: fct.literal('Cons'), value: fct.number, next: fct.recursion })
+      z.union(
+        z.object({ type: z.literal('Nil') }),
+        z.object({ type: z.literal('Cons'), value: z.number, next: z.recursion })
       )
     )
   ).toEqualTypeOf<List>()
 
   expectTypeOf(
     infer(
-      fct.array(
-        fct.recursive(
-          fct.union(
-            fct.object({ type: fct.literal('Nil') }),
-            fct.object({ type: fct.literal('Cons'), value: fct.number, next: fct.recursion })
+      z.array(
+        z.recursive(
+          z.union(
+            z.object({ type: z.literal('Nil') }),
+            z.object({ type: z.literal('Cons'), value: z.number, next: z.recursion })
           )
         )
       )
@@ -73,97 +74,97 @@ test('Infer', () => {
 
 describe('isValid', () => {
   it('boolean', () => {
-    expect(fct.isValid(true, fct.boolean)).toBe(true)
-    expect(fct.isValid('true', fct.boolean)).toBe(false)
+    expect(z.isValid(true, z.boolean)).toBe(true)
+    expect(z.isValid('true', z.boolean)).toBe(false)
   })
   it('number', () => {
-    expect(fct.isValid(123, fct.number)).toBe(true)
-    expect(fct.isValid('123', fct.number)).toBe(false)
+    expect(z.isValid(123, z.number)).toBe(true)
+    expect(z.isValid('123', z.number)).toBe(false)
   })
   it('bigint', () => {
-    expect(fct.isValid(123n, fct.bigint)).toBe(true)
-    expect(fct.isValid(123, fct.bigint)).toBe(false)
+    expect(z.isValid(123n, z.bigint)).toBe(true)
+    expect(z.isValid(123, z.bigint)).toBe(false)
   })
   it('string', () => {
-    expect(fct.isValid('abc', fct.string)).toBe(true)
-    expect(fct.isValid(123, fct.string)).toBe(false)
+    expect(z.isValid('abc', z.string)).toBe(true)
+    expect(z.isValid(123, z.string)).toBe(false)
   })
   it('symbol', () => {
-    expect(fct.isValid(Symbol(), fct.symbol)).toBe(true)
-    expect(fct.isValid('abc', fct.symbol)).toBe(false)
+    expect(z.isValid(Symbol(), z.symbol)).toBe(true)
+    expect(z.isValid('abc', z.symbol)).toBe(false)
   })
   it('null', () => {
-    expect(fct.isValid(null, fct.null)).toBe(true)
-    expect(fct.isValid(undefined, fct.null)).toBe(false)
+    expect(z.isValid(null, z.null)).toBe(true)
+    expect(z.isValid(undefined, z.null)).toBe(false)
   })
   it('undefined', () => {
-    expect(fct.isValid(undefined, fct.undefined)).toBe(true)
-    expect(fct.isValid(null, fct.undefined)).toBe(false)
+    expect(z.isValid(undefined, z.undefined)).toBe(true)
+    expect(z.isValid(null, z.undefined)).toBe(false)
   })
   it('nullish', () => {
-    expect(fct.isValid(null, fct.nullish)).toBe(true)
-    expect(fct.isValid(undefined, fct.nullish)).toBe(true)
-    expect(fct.isValid(0, fct.nullish)).toBe(false)
+    expect(z.isValid(null, z.nullish)).toBe(true)
+    expect(z.isValid(undefined, z.nullish)).toBe(true)
+    expect(z.isValid(0, z.nullish)).toBe(false)
   })
   it('void', () => {
-    expect(fct.isValid(undefined, fct.void)).toBe(true)
-    expect(fct.isValid(null, fct.void)).toBe(false)
+    expect(z.isValid(undefined, z.void)).toBe(true)
+    expect(z.isValid(null, z.void)).toBe(false)
   })
   it('unknown', () => {
-    expect(fct.isValid(123, fct.unknown)).toBe(true)
+    expect(z.isValid(123, z.unknown)).toBe(true)
   })
   it('any', () => {
-    expect(fct.isValid(123, fct.any)).toBe(true)
+    expect(z.isValid(123, z.any)).toBe(true)
   })
   it('never', () => {
-    expect(fct.isValid(123, fct.never)).toBe(false)
+    expect(z.isValid(123, z.never)).toBe(false)
   })
   it('literal', () => {
-    expect(fct.isValid('abc', fct.literal('abc'))).toBe(true)
-    expect(fct.isValid('xyz', fct.literal('abc'))).toBe(false)
-    expect(fct.isValid(123, fct.literal('abc'))).toBe(false)
+    expect(z.isValid('abc', z.literal('abc'))).toBe(true)
+    expect(z.isValid('xyz', z.literal('abc'))).toBe(false)
+    expect(z.isValid(123, z.literal('abc'))).toBe(false)
   })
   it('array', () => {
-    expect(fct.isValid([false, true], fct.array(fct.boolean))).toBe(true)
-    expect(fct.isValid([], fct.array(fct.number))).toBe(true)
-    expect(fct.isValid({ 0: false, 1: true }, fct.array(fct.boolean))).toBe(false)
-    expect(fct.isValid([123], fct.array(fct.boolean))).toBe(false)
+    expect(z.isValid([false, true], z.array(z.boolean))).toBe(true)
+    expect(z.isValid([], z.array(z.number))).toBe(true)
+    expect(z.isValid({ 0: false, 1: true }, z.array(z.boolean))).toBe(false)
+    expect(z.isValid([123], z.array(z.boolean))).toBe(false)
   })
   it('nonEmptyArray', () => {
-    expect(fct.isValid([false, true], fct.nonEmptyArray(fct.boolean))).toBe(true)
-    expect(fct.isValid([], fct.nonEmptyArray(fct.number))).toBe(false)
-    expect(fct.isValid({ 0: false, 1: true }, fct.nonEmptyArray(fct.boolean))).toBe(false)
-    expect(fct.isValid([123], fct.nonEmptyArray(fct.boolean))).toBe(false)
+    expect(z.isValid([false, true], z.nonEmptyArray(z.boolean))).toBe(true)
+    expect(z.isValid([], z.nonEmptyArray(z.number))).toBe(false)
+    expect(z.isValid({ 0: false, 1: true }, z.nonEmptyArray(z.boolean))).toBe(false)
+    expect(z.isValid([123], z.nonEmptyArray(z.boolean))).toBe(false)
   })
   it('object', () => {
-    expect(fct.isValid({ name: 'John' }, fct.object({ name: fct.string }))).toBe(true)
-    expect(fct.isValid({ name: 'John' }, fct.object({ name: fct.symbol }))).toBe(false)
+    expect(z.isValid({ name: 'John' }, z.object({ name: z.string }))).toBe(true)
+    expect(z.isValid({ name: 'John' }, z.object({ name: z.symbol }))).toBe(false)
 
-    expect(fct.isValid({ name: 'John' }, fct.object({}, { age: fct.number }))).toBe(true)
-    expect(fct.isValid({ name: 'John', age: 42 }, fct.object({}, { age: fct.number }))).toBe(true)
-    expect(fct.isValid({ name: 'John', age: '42' }, fct.object({}, { age: fct.number }))).toBe(false)
+    expect(z.isValid({ name: 'John' }, z.object({}, { age: z.number }))).toBe(true)
+    expect(z.isValid({ name: 'John', age: 42 }, z.object({}, { age: z.number }))).toBe(true)
+    expect(z.isValid({ name: 'John', age: '42' }, z.object({}, { age: z.number }))).toBe(false)
   })
   it('union', () => {
-    expect(fct.isValid(123, fct.union(fct.boolean, fct.number))).toBe(true)
-    expect(fct.isValid(123, fct.union(fct.literal(123), fct.literal(456)))).toBe(true)
-    expect(fct.isValid(true, fct.union())).toBe(false)
+    expect(z.isValid(123, z.union(z.boolean, z.number))).toBe(true)
+    expect(z.isValid(123, z.union(z.literal(123), z.literal(456)))).toBe(true)
+    expect(z.isValid(true, z.union())).toBe(false)
   })
   it('intersection', () => {})
   it('tuple', () => {
-    expect(fct.isValid([true, 123], fct.tuple(fct.boolean, fct.number))).toBe(true)
-    expect(fct.isValid([true, 123], fct.tuple(fct.boolean, fct.number, fct.string))).toBe(false)
-    expect(fct.isValid([true, 123], fct.tuple(fct.boolean))).toBe(false)
-    expect(fct.isValid([true, 123], fct.tuple(fct.string, fct.bigint))).toBe(false)
-    expect(fct.isValid([], fct.tuple())).toBe(true)
+    expect(z.isValid([true, 123], z.tuple(z.boolean, z.number))).toBe(true)
+    expect(z.isValid([true, 123], z.tuple(z.boolean, z.number, z.string))).toBe(false)
+    expect(z.isValid([true, 123], z.tuple(z.boolean))).toBe(false)
+    expect(z.isValid([true, 123], z.tuple(z.string, z.bigint))).toBe(false)
+    expect(z.isValid([], z.tuple())).toBe(true)
   })
   it('recursion', () => {
-    const listSchema = fct.recursive(
-      fct.union(
-        fct.object({ type: fct.literal('Nil') }),
-        fct.object({ type: fct.literal('Cons'), value: fct.number, next: fct.recursion })
+    const listSchema = z.recursive(
+      z.union(
+        z.object({ type: z.literal('Nil') }),
+        z.object({ type: z.literal('Cons'), value: z.number, next: z.recursion })
       )
     )
-    expect(fct.isValid({ type: 'Cons', value: 1, next: { type: 'Nil' } }, listSchema)).toBe(true)
-    expect(fct.isValid([{ type: 'Nil' }], fct.array(listSchema))).toBe(true)
+    expect(z.isValid({ type: 'Cons', value: 1, next: { type: 'Nil' } }, listSchema)).toBe(true)
+    expect(z.isValid([{ type: 'Nil' }], z.array(listSchema))).toBe(true)
   })
 })

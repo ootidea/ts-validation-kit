@@ -1,7 +1,7 @@
 import type { DiscriminatedUnion, NonEmptyArray, Simplify } from 'base-up'
 import { assertNeverType, entriesOf } from 'base-up'
 
-export type FctSchema = DiscriminatedUnion<{
+export type Schema = DiscriminatedUnion<{
   null: {}
   undefined: {}
   void: {}
@@ -14,13 +14,13 @@ export type FctSchema = DiscriminatedUnion<{
   string: {}
   symbol: {}
   literal: { value: string | number | bigint | boolean | null | undefined }
-  array: { value: FctSchema }
-  nonEmptyArray: { value: FctSchema }
-  recursive: { value: FctSchema }
-  object: { required: Record<keyof any, FctSchema>; optional: Record<keyof any, FctSchema> }
-  union: { parts: readonly FctSchema[] }
-  intersection: { parts: readonly FctSchema[] }
-  tuple: { parts: readonly FctSchema[] }
+  array: { value: Schema }
+  nonEmptyArray: { value: Schema }
+  recursive: { value: Schema }
+  object: { required: Record<keyof any, Schema>; optional: Record<keyof any, Schema> }
+  union: { parts: readonly Schema[] }
+  intersection: { parts: readonly Schema[] }
+  tuple: { parts: readonly Schema[] }
   recursion: {}
 }>
 
@@ -42,41 +42,38 @@ function literal<const T extends string | number | bigint | boolean | null | und
   return { type: 'literal', value } as const
 }
 
-function array<const T extends FctSchema>(value: T) {
+function array<const T extends Schema>(value: T) {
   return { type: 'array', value } as const
 }
 
-function nonEmptyArray<const T extends FctSchema>(value: T) {
+function nonEmptyArray<const T extends Schema>(value: T) {
   return { type: 'nonEmptyArray', value } as const
 }
 
-function recursive<const T extends FctSchema>(value: T) {
+function recursive<const T extends Schema>(value: T) {
   return { type: 'recursive', value } as const
 }
 
-function object<T extends Record<keyof any, FctSchema>>(
+function object<T extends Record<keyof any, Schema>>(
   required: T
-): { type: 'object'; required: T; optional: Record<never, FctSchema> }
-function object<T extends Record<keyof any, FctSchema>, U extends Record<keyof any, FctSchema>>(
+): { type: 'object'; required: T; optional: Record<never, Schema> }
+function object<T extends Record<keyof any, Schema>, U extends Record<keyof any, Schema>>(
   required: T,
   optional: U
 ): { type: 'object'; required: T; optional: U }
-function object<T extends Record<keyof any, FctSchema>, U extends Record<keyof any, FctSchema>>(
-  required: T,
-  optional?: U
-) {
+function object<T extends Record<keyof any, Schema>, U extends Record<keyof any, Schema>>(required: T, optional?: U) {
   return { type: 'object', required, optional: optional ?? {} } as const
 }
 
-function union<const T extends readonly FctSchema[]>(...parts: T) {
+function union<const T extends readonly Schema[]>(...parts: T) {
   return { type: 'union', parts } as const
 }
 
-function intersection<const T extends readonly FctSchema[]>(...parts: T) {
+function intersection<const T extends readonly Schema[]>(...parts: T) {
   return { type: 'intersection', parts } as const
 }
 
-function tuple<const T extends readonly FctSchema[]>(...parts: T) {
+function tuple<const T extends readonly Schema[]>(...parts: T) {
   return { type: 'tuple', parts } as const
 }
 
@@ -104,21 +101,21 @@ type LocalInfer<T, Z = T> = T extends typeof unknown
   ? symbol
   : T extends ReturnType<typeof literal<infer L extends string | number | bigint | boolean | null | undefined>>
   ? L
-  : T extends ReturnType<typeof array<infer U extends FctSchema>>
+  : T extends ReturnType<typeof array<infer U extends Schema>>
   ? LocalInfer<U, Z>[]
-  : T extends ReturnType<typeof nonEmptyArray<infer U extends FctSchema>>
+  : T extends ReturnType<typeof nonEmptyArray<infer U extends Schema>>
   ? NonEmptyArray<LocalInfer<U, Z>>
-  : T extends ReturnType<typeof recursive<infer U extends FctSchema>>
+  : T extends ReturnType<typeof recursive<infer U extends Schema>>
   ? LocalInfer<U>
   : T extends ReturnType<
-      typeof object<infer R extends Record<keyof any, FctSchema>, infer O extends Record<keyof any, FctSchema>>
+      typeof object<infer R extends Record<keyof any, Schema>, infer O extends Record<keyof any, Schema>>
     >
   ? InferObjectType<R, O, Z>
-  : T extends ReturnType<typeof union<infer A extends readonly FctSchema[]>>
+  : T extends ReturnType<typeof union<infer A extends readonly Schema[]>>
   ? InferUnionType<A, Z>
-  : T extends ReturnType<typeof intersection<infer A extends readonly FctSchema[]>>
+  : T extends ReturnType<typeof intersection<infer A extends readonly Schema[]>>
   ? InferIntersectionType<A, Z>
-  : T extends ReturnType<typeof tuple<infer A extends readonly FctSchema[]>>
+  : T extends ReturnType<typeof tuple<infer A extends readonly Schema[]>>
   ? InferTupleType<A, Z>
   : T extends typeof recursion
   ? LocalInfer<Z, Z>
@@ -142,13 +139,13 @@ type InferTupleType<T extends readonly any[], Z> = T extends readonly [infer H, 
   : []
 
 /** Determine whether the given value satisfies the schema */
-function isValid<const T extends FctSchema>(value: unknown, schema: T): value is LocalInfer<T>
-function isValid<const T extends FctSchema, const Z extends FctSchema>(
+function isValid<const T extends Schema>(value: unknown, schema: T): value is LocalInfer<T>
+function isValid<const T extends Schema, const Z extends Schema>(
   value: unknown,
   schema: T,
   rootSchema: Z
 ): value is LocalInfer<T>
-function isValid<const T extends FctSchema, const Z extends FctSchema>(
+function isValid<const T extends Schema, const Z extends Schema>(
   value: unknown,
   schema: T,
   rootSchema?: Z
@@ -213,7 +210,7 @@ function isValid<const T extends FctSchema, const Z extends FctSchema>(
   }
 }
 
-const fct = {
+const z = {
   unknown,
   any,
   never,
@@ -240,12 +237,12 @@ const fct = {
   isValid,
 }
 
-namespace fct {
+namespace z {
   /**
    * @example
-   * fct.Infer<typeof fct.number> is equivalent to number
-   * fct.Infer<typeof fct.object({ age: fct.number })> is equivalent to { age: number }
+   * z.Infer<typeof z.number> is equivalent to number
+   * z.Infer<typeof z.object({ age: z.number })> is equivalent to { age: number }
    */
   export type Infer<T> = LocalInfer<T, T>
 }
-export { fct }
+export { z }
