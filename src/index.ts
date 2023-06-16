@@ -1,5 +1,5 @@
-import type { DiscriminatedUnion } from 'base-up'
-import { entriesOf } from 'base-up'
+import type { DiscriminatedUnion, Simplify } from 'base-up'
+import { assertNeverType, entriesOf } from 'base-up'
 
 export type FctSchema = DiscriminatedUnion<{
   null: {}
@@ -35,11 +35,11 @@ const bigint = { type: 'bigint' } as const
 const string = { type: 'string' } as const
 const symbol = { type: 'symbol' } as const
 
-function literal<const T>(value: T) {
+function literal<const T extends string | number | bigint | boolean | null | undefined>(value: T) {
   return { type: 'literal', value } as const
 }
 
-function array<const T>(value: T) {
+function array<const T extends FctSchema>(value: T) {
   return { type: 'array', value } as const
 }
 
@@ -95,9 +95,9 @@ type LocalInfer<T, Z = T> = T extends typeof unknown
   ? string
   : T extends typeof symbol
   ? symbol
-  : T extends ReturnType<typeof literal<infer L>>
+  : T extends ReturnType<typeof literal<infer L extends string | number | bigint | boolean | null | undefined>>
   ? L
-  : T extends ReturnType<typeof array<infer U>>
+  : T extends ReturnType<typeof array<infer U extends FctSchema>>
   ? LocalInfer<U, Z>[]
   : T extends ReturnType<
       typeof object<infer R extends Record<keyof any, FctSchema>, infer O extends Record<keyof any, FctSchema>>
@@ -113,11 +113,13 @@ type LocalInfer<T, Z = T> = T extends typeof unknown
   ? { [key in K]: LocalInfer<Z> }
   : never
 
-type InferObjectType<T, U, Z> = {
-  [K in keyof T]: LocalInfer<T[K], Z>
-} & {
-  [K in keyof U]?: LocalInfer<U[K], Z>
-}
+type InferObjectType<T, U, Z> = Simplify<
+  {
+    [K in keyof T]: LocalInfer<T[K], Z>
+  } & {
+    [K in keyof U]?: LocalInfer<U[K], Z>
+  }
+>
 type InferUnionType<T extends readonly any[], Z> = T extends readonly [infer H, ...infer L]
   ? LocalInfer<H, Z> | InferUnionType<L, Z>
   : never
@@ -178,7 +180,7 @@ function isValid<const T extends FctSchema>(value: unknown, schema: T): value is
         )
       )
     default:
-      return false
+      assertNeverType(schema)
   }
 }
 
