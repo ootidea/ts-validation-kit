@@ -18,7 +18,8 @@
     "format": "run-p format:*",
     "format:prettier": "prettier --write \"src/**/*.ts\"",
     "format:package-json": "sort-package-json",
-    "test": "vitest --silent=false"
+    "test": "vitest --silent=false",
+    "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
     "@tsconfig/strictest": "^2.0.1",
