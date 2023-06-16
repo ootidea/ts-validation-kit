@@ -1,4 +1,4 @@
-import { expect, expectTypeOf } from 'vitest'
+import { describe, expect, expectTypeOf } from 'vitest'
 import { fct } from './index'
 
 test('Infer', () => {
@@ -40,16 +40,61 @@ test('Infer', () => {
   expectTypeOf(infer(fct.tuple())).toEqualTypeOf<[]>()
 })
 
-test('isValid', () => {
-  expect(fct.isValid(true, fct.boolean)).toBe(true)
-  expect(fct.isValid('true', fct.boolean)).toBe(false)
-
-  expect(fct.isValid(123, fct.number)).toBe(true)
-  expect(fct.isValid('123', fct.number)).toBe(false)
-
-  expect(fct.isValid(123n, fct.bigint)).toBe(true)
-  expect(fct.isValid(123, fct.bigint)).toBe(false)
-
-  expect(fct.isValid('abc', fct.string)).toBe(true)
-  expect(fct.isValid(123, fct.string)).toBe(false)
+describe('isValid', () => {
+  it('boolean', () => {
+    expect(fct.isValid(true, fct.boolean)).toBe(true)
+    expect(fct.isValid('true', fct.boolean)).toBe(false)
+  })
+  it('number', () => {
+    expect(fct.isValid(123, fct.number)).toBe(true)
+    expect(fct.isValid('123', fct.number)).toBe(false)
+  })
+  it('bigint', () => {
+    expect(fct.isValid(123n, fct.bigint)).toBe(true)
+    expect(fct.isValid(123, fct.bigint)).toBe(false)
+  })
+  it('string', () => {
+    expect(fct.isValid('abc', fct.string)).toBe(true)
+    expect(fct.isValid(123, fct.string)).toBe(false)
+  })
+  it('symbol', () => {
+    expect(fct.isValid(Symbol(), fct.symbol)).toBe(true)
+    expect(fct.isValid('abc', fct.symbol)).toBe(false)
+  })
+  it('null', () => {
+    expect(fct.isValid(null, fct.null)).toBe(true)
+    expect(fct.isValid(undefined, fct.null)).toBe(false)
+  })
+  it('undefined', () => {
+    expect(fct.isValid(undefined, fct.undefined)).toBe(true)
+    expect(fct.isValid(null, fct.undefined)).toBe(false)
+  })
+  it('void', () => {
+    expect(fct.isValid(undefined, fct.void)).toBe(true)
+    expect(fct.isValid(null, fct.void)).toBe(false)
+  })
+  it('unknown', () => {
+    expect(fct.isValid(123, fct.unknown)).toBe(true)
+  })
+  it('any', () => {
+    expect(fct.isValid(123, fct.any)).toBe(true)
+  })
+  it('never', () => {
+    expect(fct.isValid(123, fct.never)).toBe(false)
+  })
+  it('literal', () => {
+    expect(fct.isValid('abc', fct.literal('abc'))).toBe(true)
+    expect(fct.isValid('xyz', fct.literal('abc'))).toBe(false)
+    expect(fct.isValid(123, fct.literal('abc'))).toBe(false)
+  })
+  it('array', () => {
+    expect(fct.isValid([false, true], fct.array(fct.boolean))).toBe(true)
+    expect(fct.isValid([], fct.array(fct.number))).toBe(true)
+    expect(fct.isValid({ 0: false, 1: true }, fct.array(fct.boolean))).toBe(false)
+    expect(fct.isValid([123], fct.array(fct.boolean))).toBe(false)
+  })
+  it('object', () => {
+    expect(fct.isValid({ name: 'John' }, fct.object({ name: fct.string }))).toBe(true)
+    expect(fct.isValid({ name: 'John' }, fct.object({ name: fct.symbol }))).toBe(false)
+  })
 })

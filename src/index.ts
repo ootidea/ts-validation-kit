@@ -1,3 +1,28 @@
+import type { DiscriminatedUnion } from 'base-up'
+import { entriesOf } from 'base-up'
+
+export type FctSchema = DiscriminatedUnion<{
+  null: {}
+  undefined: {}
+  void: {}
+  unknown: {}
+  any: {}
+  never: {}
+  boolean: {}
+  number: {}
+  bigint: {}
+  string: {}
+  symbol: {}
+  literal: { value: any }
+  array: { value: FctSchema }
+  // TODO: このへんはreadonlyが必要だったりしないか？
+  object: { required: Record<keyof any, FctSchema>; optional: Record<keyof any, FctSchema> }
+  union: { parts: FctSchema[] }
+  intersection: { parts: FctSchema[] }
+  tuple: { parts: FctSchema[] }
+  recursion: { key: keyof any }
+}>
+
 const _null = { type: 'null' } as const
 const undefined = { type: 'undefined' } as const
 const _void = { type: 'void' } as const
@@ -18,50 +43,35 @@ function array<const T>(value: T) {
   return { type: 'array', value } as const
 }
 
-function object<T extends object>(required: T): { type: 'object'; required: T; optional: {} }
-function object<T extends object, U extends object>(
+function object<T extends Record<keyof any, FctSchema>>(
+  required: T
+): { type: 'object'; required: T; optional: Record<never, FctSchema> }
+function object<T extends Record<keyof any, FctSchema>, U extends Record<keyof any, FctSchema>>(
   required: T,
   optional: U
 ): { type: 'object'; required: T; optional: U }
-function object<T extends object, U extends object>(required: T, optional?: U) {
+function object<T extends Record<keyof any, FctSchema>, U extends Record<keyof any, FctSchema>>(
+  required: T,
+  optional?: U
+) {
   return { type: 'object', required, optional: optional ?? {} } as const
 }
 
-function union<const T extends readonly any[]>(...parts: T) {
+function union<const T extends readonly FctSchema[]>(...parts: T) {
   return { type: 'union', parts } as const
 }
 
-function intersection<const T extends readonly any[]>(...parts: T) {
+function intersection<const T extends readonly FctSchema[]>(...parts: T) {
   return { type: 'intersection', parts } as const
 }
 
-function tuple<const T extends readonly any[]>(...parts: T) {
+function tuple<const T extends readonly FctSchema[]>(...parts: T) {
   return { type: 'tuple', parts } as const
 }
 
 function recursion<const K extends keyof any>(key: K) {
   return { type: 'recursion', key } as const
 }
-
-type LocalSchema =
-  | typeof _null
-  | typeof undefined
-  | typeof _void
-  | typeof unknown
-  | typeof any
-  | typeof never
-  | typeof boolean
-  | typeof number
-  | typeof bigint
-  | typeof string
-  | typeof symbol
-  | ReturnType<typeof literal>
-  | ReturnType<typeof array>
-  | ReturnType<typeof object>
-  | ReturnType<typeof union>
-  | ReturnType<typeof intersection>
-  | ReturnType<typeof tuple>
-  | ReturnType<typeof recursion>
 
 type LocalInfer<T, Z = T> = T extends typeof unknown
   ? unknown
@@ -89,13 +99,15 @@ type LocalInfer<T, Z = T> = T extends typeof unknown
   ? L
   : T extends ReturnType<typeof array<infer U>>
   ? LocalInfer<U, Z>[]
-  : T extends ReturnType<typeof object<infer R extends object, infer O extends object>>
+  : T extends ReturnType<
+      typeof object<infer R extends Record<keyof any, FctSchema>, infer O extends Record<keyof any, FctSchema>>
+    >
   ? InferObjectType<R, O, Z>
-  : T extends ReturnType<typeof union<infer A extends readonly any[]>>
+  : T extends ReturnType<typeof union<infer A extends readonly FctSchema[]>>
   ? InferUnionType<A, Z>
-  : T extends ReturnType<typeof intersection<infer A extends readonly any[]>>
+  : T extends ReturnType<typeof intersection<infer A extends readonly FctSchema[]>>
   ? InferIntersectionType<A, Z>
-  : T extends ReturnType<typeof tuple<infer A extends readonly any[]>>
+  : T extends ReturnType<typeof tuple<infer A extends readonly FctSchema[]>>
   ? InferTupleType<A, Z>
   : T extends ReturnType<typeof recursion<infer K extends keyof any>>
   ? { [key in K]: LocalInfer<Z> }
@@ -117,7 +129,7 @@ type InferTupleType<T extends readonly any[], Z> = T extends readonly [infer H, 
   : []
 
 /** Determine whether the given value satisfies the schema */
-function isValid<T extends LocalSchema>(value: unknown, schema: T): value is LocalInfer<T> {
+function isValid<const T extends FctSchema>(value: unknown, schema: T): value is LocalInfer<T> {
   switch (schema.type) {
     case 'unknown':
     case 'any':
@@ -125,11 +137,11 @@ function isValid<T extends LocalSchema>(value: unknown, schema: T): value is Loc
     case 'never':
       return false
     case 'void':
-      return value === undefined
+      return value === void 0
     case 'null':
       return value === null
     case 'undefined':
-      return value === undefined
+      return value === void 0
     case 'boolean':
       return typeof value === 'boolean'
     case 'number':
@@ -142,6 +154,29 @@ function isValid<T extends LocalSchema>(value: unknown, schema: T): value is Loc
       return typeof value === 'symbol'
     case 'literal':
       return value === schema.value
+    case 'array':
+      return Array.isArray(value) && value.every((v) => isValid(v, schema.value))
+    case 'union':
+      return schema.parts.some((part) => isValid(value, part))
+    case 'intersection':
+      return schema.parts.every((part) => isValid(value, part))
+    case 'tuple':
+      return (
+        Array.isArray(value) &&
+        value.length === schema.parts.length &&
+        value.every((element, i) => isValid(element, schema.parts[i]!))
+      )
+    case 'object':
+      if (typeof value !== 'object' || value === null) return false
+
+      return (
+        entriesOf(schema.required).every(
+          ([key, subSchema]) => key in value && isValid((value as any)[key], subSchema)
+        ) &&
+        entriesOf(schema.optional).every(
+          ([key, subSchema]) => !(key in value) || isValid((value as any)[key], subSchema)
+        )
+      )
     default:
       return false
   }
