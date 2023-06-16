@@ -1,19 +1,19 @@
 import { assertNeverType, entriesOf } from 'base-up'
-import { LocalInfer } from './inference'
+import { Infer } from './inference'
 import { Schema } from './schema'
 
 /** Determine whether the given value satisfies the schema */
-export function isValid<const T extends Schema>(value: unknown, schema: T): value is LocalInfer<T>
+export function isValid<const T extends Schema>(value: unknown, schema: T): value is Infer<T>
 export function isValid<const T extends Schema, const Z extends Schema>(
   value: unknown,
   schema: T,
   rootSchema: Z
-): value is LocalInfer<T>
+): value is Infer<T>
 export function isValid<const T extends Schema, const Z extends Schema>(
   value: unknown,
   schema: T,
   rootSchema?: Z
-): value is LocalInfer<T> {
+): value is Infer<T> {
   switch (schema.type) {
     case 'unknown':
     case 'any':

@@ -1,4 +1,4 @@
-import { LocalInfer } from './inference'
+import { Infer as _Infer } from './inference'
 import {
   _null,
   _void,
@@ -57,6 +57,6 @@ namespace z {
    * z.Infer<typeof z.number> is equivalent to number
    * z.Infer<typeof z.object({ age: z.number })> is equivalent to { age: number }
    */
-  export type Infer<T> = LocalInfer<T, T>
+  export type Infer<T> = _Infer<T, T>
 }
 export { z }
