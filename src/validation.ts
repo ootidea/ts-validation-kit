@@ -38,9 +38,9 @@ export function isValid<const T extends Schema, const Z extends Schema>(
       return typeof value === 'symbol'
     case 'literal':
       return value === schema.value
-    case 'array':
+    case 'Array':
       return Array.isArray(value) && value.every((v) => isValid(v, schema.value, rootSchema ?? schema))
-    case 'nonEmptyArray':
+    case 'NonEmptyArray':
       return (
         Array.isArray(value) && value.length > 0 && value.every((v) => isValid(v, schema.value, rootSchema ?? schema))
       )
@@ -67,7 +67,7 @@ export function isValid<const T extends Schema, const Z extends Schema>(
           ([key, subSchema]) => !(key in value) || isValid((value as any)[key], subSchema, rootSchema ?? schema)
         )
       )
-    case 'record':
+    case 'Record':
       if (typeof value !== 'object' || value === null) return false
 
       const isKeyValid = Object.keys(value).every((stringKey) => {

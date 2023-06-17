@@ -1,18 +1,18 @@
-import { NonEmptyArray, Simplify } from 'base-up'
+import { type NonEmptyArray as NonEmptyArrayType, Simplify } from 'base-up'
 import {
   _null,
   _void,
   any,
-  array,
+  Array,
   bigint,
   boolean,
   intersection,
   literal,
   never,
-  nonEmptyArray,
+  NonEmptyArray,
   number,
   object,
-  record,
+  Record,
   recursion,
   recursive,
   Schema,
@@ -48,10 +48,10 @@ export type Infer<T, Z = T> = T extends typeof unknown
   ? symbol
   : T extends ReturnType<typeof literal<infer L extends string | number | bigint | boolean | null | undefined>>
   ? L
-  : T extends ReturnType<typeof array<infer U extends Schema>>
+  : T extends ReturnType<typeof Array<infer U extends Schema>>
   ? Infer<U, Z>[]
-  : T extends ReturnType<typeof nonEmptyArray<infer U extends Schema>>
-  ? NonEmptyArray<Infer<U, Z>>
+  : T extends ReturnType<typeof NonEmptyArray<infer U extends Schema>>
+  ? NonEmptyArrayType<Infer<U, Z>>
   : T extends ReturnType<typeof recursive<infer U extends Schema>>
   ? Infer<U>
   : T extends ReturnType<
@@ -64,7 +64,7 @@ export type Infer<T, Z = T> = T extends typeof unknown
   ? InferIntersectionType<A, Z>
   : T extends ReturnType<typeof tuple<infer A extends readonly Schema[]>>
   ? InferTupleType<A, Z>
-  : T extends ReturnType<typeof record<infer Key extends Schema, infer Value extends Schema>>
+  : T extends ReturnType<typeof Record<infer Key extends Schema, infer Value extends Schema>>
   ? Infer<Key, Z> extends infer K extends keyof any
     ? Record<K, Infer<Value, Z>>
     : never

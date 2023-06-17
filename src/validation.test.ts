@@ -53,17 +53,17 @@ describe('isValid', () => {
     expect(z.isValid('xyz', z.literal('abc'))).toBe(false)
     expect(z.isValid(123, z.literal('abc'))).toBe(false)
   })
-  it('array', () => {
-    expect(z.isValid([false, true], z.array(z.boolean))).toBe(true)
-    expect(z.isValid([], z.array(z.number))).toBe(true)
-    expect(z.isValid({ 0: false, 1: true }, z.array(z.boolean))).toBe(false)
-    expect(z.isValid([123], z.array(z.boolean))).toBe(false)
+  it('Array', () => {
+    expect(z.isValid([false, true], z.Array(z.boolean))).toBe(true)
+    expect(z.isValid([], z.Array(z.number))).toBe(true)
+    expect(z.isValid({ 0: false, 1: true }, z.Array(z.boolean))).toBe(false)
+    expect(z.isValid([123], z.Array(z.boolean))).toBe(false)
   })
-  it('nonEmptyArray', () => {
-    expect(z.isValid([false, true], z.nonEmptyArray(z.boolean))).toBe(true)
-    expect(z.isValid([], z.nonEmptyArray(z.number))).toBe(false)
-    expect(z.isValid({ 0: false, 1: true }, z.nonEmptyArray(z.boolean))).toBe(false)
-    expect(z.isValid([123], z.nonEmptyArray(z.boolean))).toBe(false)
+  it('NonEmptyArray', () => {
+    expect(z.isValid([false, true], z.NonEmptyArray(z.boolean))).toBe(true)
+    expect(z.isValid([], z.NonEmptyArray(z.number))).toBe(false)
+    expect(z.isValid({ 0: false, 1: true }, z.NonEmptyArray(z.boolean))).toBe(false)
+    expect(z.isValid([123], z.NonEmptyArray(z.boolean))).toBe(false)
   })
   it('object', () => {
     expect(z.isValid({ name: 'John' }, z.object({ name: z.string }))).toBe(true)
@@ -86,15 +86,15 @@ describe('isValid', () => {
     expect(z.isValid([true, 123], z.tuple(z.string, z.bigint))).toBe(false)
     expect(z.isValid([], z.tuple())).toBe(true)
   })
-  it('record', () => {
-    expect(z.isValid({ a: 1, b: 2 }, z.record(z.string, z.number))).toBe(true)
-    expect(z.isValid({ a: 1, b: 2 }, z.record(z.number, z.number))).toBe(false)
+  it('Record', () => {
+    expect(z.isValid({ a: 1, b: 2 }, z.Record(z.string, z.number))).toBe(true)
+    expect(z.isValid({ a: 1, b: 2 }, z.Record(z.number, z.number))).toBe(false)
 
-    expect(z.isValid({ name: 'Bob', age: 5 }, z.record(z.any, z.union(z.string, z.number)))).toBe(true)
+    expect(z.isValid({ name: 'Bob', age: 5 }, z.Record(z.any, z.union(z.string, z.number)))).toBe(true)
 
-    expect(z.isValid({ a: true, 0: 'first' }, z.record(z.literalUnion('a', 0), z.any))).toBe(true)
-    expect(z.isValid({ a: true, 0: 'first' }, z.record(z.string, z.any))).toBe(true)
-    expect(z.isValid({ a: true, 0: 'first' }, z.record(z.number, z.any))).toBe(false)
+    expect(z.isValid({ a: true, 0: 'first' }, z.Record(z.literalUnion('a', 0), z.any))).toBe(true)
+    expect(z.isValid({ a: true, 0: 'first' }, z.Record(z.string, z.any))).toBe(true)
+    expect(z.isValid({ a: true, 0: 'first' }, z.Record(z.number, z.any))).toBe(false)
   })
   it('recursion', () => {
     const listSchema = z.recursive(
@@ -104,6 +104,6 @@ describe('isValid', () => {
       )
     )
     expect(z.isValid({ type: 'Cons', value: 1, next: { type: 'Nil' } }, listSchema)).toBe(true)
-    expect(z.isValid([{ type: 'Nil' }], z.array(listSchema))).toBe(true)
+    expect(z.isValid([{ type: 'Nil' }], z.Array(listSchema))).toBe(true)
   })
 })

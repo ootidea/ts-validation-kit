@@ -27,8 +27,8 @@ test('Infer', () => {
   expectTypeOf(infer(z.literal('abc'))).toMatchTypeOf<'abc'>()
   expectTypeOf(infer(z.literal(123))).toEqualTypeOf<123>()
 
-  expectTypeOf(infer(z.array(z.boolean))).toEqualTypeOf<boolean[]>()
-  expectTypeOf(infer(z.nonEmptyArray(z.any))).toEqualTypeOf<NonEmptyArray<any>>()
+  expectTypeOf(infer(z.Array(z.boolean))).toEqualTypeOf<boolean[]>()
+  expectTypeOf(infer(z.NonEmptyArray(z.any))).toEqualTypeOf<NonEmptyArray<any>>()
 
   expectTypeOf(infer(z.object({ name: z.string }))).toEqualTypeOf<{ name: string }>()
   expectTypeOf(infer(z.object({ name: z.string }, { age: z.number }))).toEqualTypeOf<{
@@ -52,13 +52,13 @@ test('Infer', () => {
   expectTypeOf(infer(z.literalUnion('abc'))).toEqualTypeOf<'abc'>()
   expectTypeOf(infer(z.literalUnion())).toEqualTypeOf<never>()
 
-  expectTypeOf(infer(z.record(z.string, z.number))).toEqualTypeOf<Record<string, number>>()
-  expectTypeOf(infer(z.record(z.literal('a'), z.number))).toEqualTypeOf<{ a: number }>()
-  expectTypeOf(infer(z.record(z.number, z.number))).toEqualTypeOf<Record<number, number>>()
-  expectTypeOf(infer(z.record(z.literal(0), z.boolean))).toEqualTypeOf<{ 0: boolean }>()
-  expectTypeOf(infer(z.record(z.symbol, z.any))).toEqualTypeOf<Record<symbol, any>>()
-  expectTypeOf(infer(z.record(z.never, z.any))).toEqualTypeOf<Record<never, any>>()
-  expectTypeOf(infer(z.record(z.boolean, z.any))).toEqualTypeOf<never>()
+  expectTypeOf(infer(z.Record(z.string, z.number))).toEqualTypeOf<Record<string, number>>()
+  expectTypeOf(infer(z.Record(z.literal('a'), z.number))).toEqualTypeOf<{ a: number }>()
+  expectTypeOf(infer(z.Record(z.number, z.number))).toEqualTypeOf<Record<number, number>>()
+  expectTypeOf(infer(z.Record(z.literal(0), z.boolean))).toEqualTypeOf<{ 0: boolean }>()
+  expectTypeOf(infer(z.Record(z.symbol, z.any))).toEqualTypeOf<Record<symbol, any>>()
+  expectTypeOf(infer(z.Record(z.never, z.any))).toEqualTypeOf<Record<never, any>>()
+  expectTypeOf(infer(z.Record(z.boolean, z.any))).toEqualTypeOf<never>()
 
   type List = { type: 'Nil' } | { type: 'Cons'; value: number; next: List }
   expectTypeOf(
@@ -72,7 +72,7 @@ test('Infer', () => {
 
   expectTypeOf(
     infer(
-      z.array(
+      z.Array(
         z.recursive(
           z.union(
             z.object({ type: z.literal('Nil') }),

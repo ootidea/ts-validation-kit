@@ -15,14 +15,14 @@ export type Schema = DiscriminatedUnion<{
   string: {}
   symbol: {}
   literal: { value: LiteralBase }
-  array: { value: Schema }
-  nonEmptyArray: { value: Schema }
+  Array: { value: Schema }
+  NonEmptyArray: { value: Schema }
   recursive: { value: Schema }
   object: { required: Record<keyof any, Schema>; optional: Record<keyof any, Schema> }
   union: { parts: readonly Schema[] }
   intersection: { parts: readonly Schema[] }
   tuple: { parts: readonly Schema[] }
-  record: { key: Schema; value: Schema }
+  Record: { key: Schema; value: Schema }
   recursion: {}
 }>
 
@@ -44,12 +44,12 @@ export function literal<const T extends LiteralBase>(value: T) {
   return { type: 'literal', value } as const
 }
 
-export function array<const T extends Schema>(value: T) {
-  return { type: 'array', value } as const
+export function Array<const T extends Schema>(value: T) {
+  return { type: 'Array', value } as const
 }
 
-export function nonEmptyArray<const T extends Schema>(value: T) {
-  return { type: 'nonEmptyArray', value } as const
+export function NonEmptyArray<const T extends Schema>(value: T) {
+  return { type: 'NonEmptyArray', value } as const
 }
 
 export function recursive<const T extends Schema>(value: T) {
@@ -91,6 +91,6 @@ export function literalUnion<const T extends readonly LiteralBase[]>(
   return { type: 'union', parts: literals.map((value) => ({ type: 'literal', value })) } as any
 }
 
-export function record<const Key extends Schema, const Value extends Schema>(key: Key, value: Value) {
-  return { type: 'record', key, value } as const
+export function Record<const Key extends Schema, const Value extends Schema>(key: Key, value: Value) {
+  return { type: 'Record', key, value } as const
 }
