@@ -46,7 +46,7 @@ export type Infer<T, Z = T> = T extends typeof unknown
   ? string
   : T extends typeof symbol
   ? symbol
-  : T extends ReturnType<typeof literal<infer L extends string | number | bigint | boolean | null | undefined>>
+  : T extends ReturnType<typeof literal<infer L>>
   ? L
   : T extends ReturnType<typeof Array<infer U extends Schema>>
   ? Infer<U, Z>[]

@@ -26,6 +26,10 @@ test('Infer', () => {
 
   expectTypeOf(infer(z.literal('abc'))).toMatchTypeOf<'abc'>()
   expectTypeOf(infer(z.literal(123))).toEqualTypeOf<123>()
+  expectTypeOf(infer(z.literal([]))).toEqualTypeOf<readonly []>()
+  expectTypeOf(infer(z.literal([1, 2, 3]))).toEqualTypeOf<readonly [1, 2, 3]>()
+  expectTypeOf(infer(z.literal({}))).toEqualTypeOf<{}>()
+  expectTypeOf(infer(z.literal({ name: 'Bob' }))).toEqualTypeOf<{ readonly name: 'Bob' }>()
 
   expectTypeOf(infer(z.Array(z.boolean))).toEqualTypeOf<boolean[]>()
   expectTypeOf(infer(z.NonEmptyArray(z.any))).toEqualTypeOf<NonEmptyArray<any>>()
