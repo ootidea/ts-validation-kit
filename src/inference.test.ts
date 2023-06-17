@@ -32,6 +32,7 @@ test('Infer', () => {
   expectTypeOf(infer(z.literal({ name: 'Bob' }))).toEqualTypeOf<{ readonly name: 'Bob' }>()
 
   expectTypeOf(infer(z.Array(z.boolean))).toEqualTypeOf<boolean[]>()
+  expectTypeOf(infer(z.Array(z.union(z.number, z.string)))).toEqualTypeOf<(number | string)[]>()
   expectTypeOf(infer(z.NonEmptyArray(z.any))).toEqualTypeOf<NonEmptyArray<any>>()
 
   expectTypeOf(infer(z.object({ name: z.string }))).toEqualTypeOf<{ name: string }>()
@@ -39,15 +40,20 @@ test('Infer', () => {
     name: string
     age?: number
   }>()
+  expectTypeOf(infer(z.object({}))).toEqualTypeOf<{}>()
 
   expectTypeOf(infer(z.union(z.number, z.undefined))).toEqualTypeOf<number | undefined>()
   expectTypeOf(infer(z.union(z.literal('abc'), z.literal(123)))).toEqualTypeOf<'abc' | 123>()
   expectTypeOf(infer(z.union())).toEqualTypeOf<never>()
 
-  expectTypeOf(infer(z.intersection(z.object({ name: z.string }), z.object({ age: z.number })))).toEqualTypeOf<{
-    name: string
-    age: number
-  }>()
+  expectTypeOf(infer(z.intersection(z.string, z.object({})))).toEqualTypeOf<string & {}>()
+  expectTypeOf(infer(z.intersection(z.object({ name: z.string }), z.object({ age: z.number })))).toEqualTypeOf<
+    {
+      name: string
+    } & {
+      age: number
+    }
+  >()
 
   expectTypeOf(infer(z.tuple(z.number, z.string))).toEqualTypeOf<[number, string]>()
   expectTypeOf(infer(z.tuple())).toEqualTypeOf<[]>()
