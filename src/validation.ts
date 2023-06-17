@@ -67,6 +67,17 @@ export function isValid<const T extends Schema, const Z extends Schema>(
           ([key, subSchema]) => !(key in value) || isValid((value as any)[key], subSchema, rootSchema ?? schema)
         )
       )
+    case 'record':
+      if (typeof value !== 'object' || value === null) return false
+
+      const isKeyValid = Object.keys(value).every((stringKey) => {
+        const numberKey = Number(stringKey)
+        if (!Number.isNaN(numberKey) && isValid(numberKey, schema.key, rootSchema ?? schema)) {
+          return true
+        }
+        return isValid(stringKey, schema.key, rootSchema ?? schema)
+      })
+      return isKeyValid && Object.values(value).every((v) => isValid(v, schema.value, rootSchema ?? schema))
     case 'recursion':
       return isValid(value, rootSchema ?? schema, rootSchema ?? schema)
     default:

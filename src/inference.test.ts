@@ -48,6 +48,14 @@ test('Infer', () => {
   expectTypeOf(infer(z.tuple(z.number, z.string))).toEqualTypeOf<[number, string]>()
   expectTypeOf(infer(z.tuple())).toEqualTypeOf<[]>()
 
+  expectTypeOf(infer(z.record(z.string, z.number))).toEqualTypeOf<Record<string, number>>()
+  expectTypeOf(infer(z.record(z.literal('a'), z.number))).toEqualTypeOf<{ a: number }>()
+  expectTypeOf(infer(z.record(z.number, z.number))).toEqualTypeOf<Record<number, number>>()
+  expectTypeOf(infer(z.record(z.literal(0), z.boolean))).toEqualTypeOf<{ 0: boolean }>()
+  expectTypeOf(infer(z.record(z.symbol, z.any))).toEqualTypeOf<Record<symbol, any>>()
+  expectTypeOf(infer(z.record(z.never, z.any))).toEqualTypeOf<Record<never, any>>()
+  expectTypeOf(infer(z.record(z.boolean, z.any))).toEqualTypeOf<never>()
+
   type List = { type: 'Nil' } | { type: 'Cons'; value: number; next: List }
   expectTypeOf(
     infer(

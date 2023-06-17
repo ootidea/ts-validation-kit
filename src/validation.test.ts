@@ -86,6 +86,16 @@ describe('isValid', () => {
     expect(z.isValid([true, 123], z.tuple(z.string, z.bigint))).toBe(false)
     expect(z.isValid([], z.tuple())).toBe(true)
   })
+  it('record', () => {
+    expect(z.isValid({ a: 1, b: 2 }, z.record(z.string, z.number))).toBe(true)
+    expect(z.isValid({ a: 1, b: 2 }, z.record(z.number, z.number))).toBe(false)
+
+    expect(z.isValid({ name: 'Bob', age: 5 }, z.record(z.any, z.union(z.string, z.number)))).toBe(true)
+
+    expect(z.isValid({ a: true, 0: 'first' }, z.record(z.union(z.literal('a'), z.literal(0)), z.any))).toBe(true)
+    expect(z.isValid({ a: true, 0: 'first' }, z.record(z.string, z.any))).toBe(true)
+    expect(z.isValid({ a: true, 0: 'first' }, z.record(z.number, z.any))).toBe(false)
+  })
   it('recursion', () => {
     const listSchema = z.recursive(
       z.union(

@@ -12,6 +12,7 @@ import {
   nonEmptyArray,
   number,
   object,
+  record,
   recursion,
   recursive,
   Schema,
@@ -63,6 +64,10 @@ export type Infer<T, Z = T> = T extends typeof unknown
   ? InferIntersectionType<A, Z>
   : T extends ReturnType<typeof tuple<infer A extends readonly Schema[]>>
   ? InferTupleType<A, Z>
+  : T extends ReturnType<typeof record<infer Key extends Schema, infer Value extends Schema>>
+  ? Infer<Key, Z> extends infer K extends keyof any
+    ? Record<K, Infer<Value, Z>>
+    : never
   : T extends typeof recursion
   ? Infer<Z, Z>
   : never

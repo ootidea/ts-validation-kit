@@ -20,6 +20,7 @@ export type Schema = DiscriminatedUnion<{
   union: { parts: readonly Schema[] }
   intersection: { parts: readonly Schema[] }
   tuple: { parts: readonly Schema[] }
+  record: { key: Schema; value: Schema }
   recursion: {}
 }>
 
@@ -77,4 +78,8 @@ export function intersection<const T extends readonly Schema[]>(...parts: T) {
 
 export function tuple<const T extends readonly Schema[]>(...parts: T) {
   return { type: 'tuple', parts } as const
+}
+
+export function record<const Key extends Schema, const Value extends Schema>(key: Key, value: Value) {
+  return { type: 'record', key, value } as const
 }

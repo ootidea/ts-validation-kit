@@ -13,6 +13,7 @@ import {
   nullish,
   number,
   object,
+  record,
   recursion,
   recursive,
   string,
@@ -46,6 +47,7 @@ const z = {
   union,
   intersection,
   tuple,
+  record,
   recursion,
 
   isValid,
