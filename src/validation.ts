@@ -2,7 +2,7 @@ import { assertNeverType, entriesOf } from 'base-up'
 import { Infer } from './inference'
 import { Schema } from './schema'
 
-/** Determine whether the given value satisfies the schema */
+/** @see z.isValid */
 export function isValid<const T extends Schema>(value: unknown, schema: T): value is Infer<T>
 export function isValid<const T extends Schema, const Z extends Schema>(
   value: unknown,

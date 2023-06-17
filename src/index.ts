@@ -52,6 +52,12 @@ const z = {
   Record,
   recursion,
 
+  /**
+   * Determine whether the given value satisfies the schema.
+   * @example
+   * z.isValid(123, z.number) // true
+   * z.isValid('a', z.number) // false
+   */
   isValid,
 }
 
