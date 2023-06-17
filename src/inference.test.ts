@@ -48,6 +48,10 @@ test('Infer', () => {
   expectTypeOf(infer(z.tuple(z.number, z.string))).toEqualTypeOf<[number, string]>()
   expectTypeOf(infer(z.tuple())).toEqualTypeOf<[]>()
 
+  expectTypeOf(infer(z.literalUnion('abc', 123))).toEqualTypeOf<'abc' | 123>()
+  expectTypeOf(infer(z.literalUnion('abc'))).toEqualTypeOf<'abc'>()
+  expectTypeOf(infer(z.literalUnion())).toEqualTypeOf<never>()
+
   expectTypeOf(infer(z.record(z.string, z.number))).toEqualTypeOf<Record<string, number>>()
   expectTypeOf(infer(z.record(z.literal('a'), z.number))).toEqualTypeOf<{ a: number }>()
   expectTypeOf(infer(z.record(z.number, z.number))).toEqualTypeOf<Record<number, number>>()

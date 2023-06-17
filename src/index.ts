@@ -8,6 +8,7 @@ import {
   boolean,
   intersection,
   literal,
+  literalUnion,
   never,
   nonEmptyArray,
   nullish,
@@ -47,6 +48,7 @@ const z = {
   union,
   intersection,
   tuple,
+  literalUnion,
   record,
   recursion,
 

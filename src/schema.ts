@@ -1,4 +1,6 @@
-import { DiscriminatedUnion } from 'base-up'
+import { DiscriminatedUnion, Tuple } from 'base-up'
+
+type LiteralBase = string | number | bigint | boolean | null | undefined
 
 export type Schema = DiscriminatedUnion<{
   null: {}
@@ -12,7 +14,7 @@ export type Schema = DiscriminatedUnion<{
   bigint: {}
   string: {}
   symbol: {}
-  literal: { value: string | number | bigint | boolean | null | undefined }
+  literal: { value: LiteralBase }
   array: { value: Schema }
   nonEmptyArray: { value: Schema }
   recursive: { value: Schema }
@@ -38,7 +40,7 @@ export const string = { type: 'string' } as const satisfies Schema
 export const symbol = { type: 'symbol' } as const satisfies Schema
 export const recursion = { type: 'recursion' } as const satisfies Schema
 
-export function literal<const T extends string | number | bigint | boolean | null | undefined>(value: T) {
+export function literal<const T extends LiteralBase>(value: T) {
   return { type: 'literal', value } as const
 }
 
@@ -78,6 +80,15 @@ export function intersection<const T extends readonly Schema[]>(...parts: T) {
 
 export function tuple<const T extends readonly Schema[]>(...parts: T) {
   return { type: 'tuple', parts } as const
+}
+
+type ConvertLiteralUnion<T extends Tuple> = T extends readonly [infer H extends LiteralBase, ...infer L]
+  ? [{ type: 'literal'; value: H }, ...ConvertLiteralUnion<L>]
+  : []
+export function literalUnion<const T extends readonly LiteralBase[]>(
+  ...literals: T
+): { type: 'union'; parts: ConvertLiteralUnion<T> } {
+  return { type: 'union', parts: literals.map((value) => ({ type: 'literal', value })) } as any
 }
 
 export function record<const Key extends Schema, const Value extends Schema>(key: Key, value: Value) {
