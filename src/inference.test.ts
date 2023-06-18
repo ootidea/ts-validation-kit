@@ -1,13 +1,14 @@
 import { NonEmptyArray } from 'base-up'
 import { describe, expectTypeOf, test } from 'vitest'
 import { z } from './index'
+import { Schema } from './schema'
 
 describe('Infer', () => {
   /**
    * Helper function to infer the type from the schema.
    * It is convenient when used in combination with expectTypeOf.
    */
-  function infer<const T>(value: T): z.Infer<T> {
+  function infer<const T extends Schema>(value: T): z.Infer<T> {
     return value as any
   }
 
@@ -96,6 +97,19 @@ describe('Infer', () => {
             z.union(
               z.object({ type: z.literal('Nil') }),
               z.object({ type: z.literal('Cons'), value: z.number, next: z.recursion })
+            )
+          )
+        )
+      )
+    ).toEqualTypeOf<List[]>()
+    expectTypeOf(
+      infer(
+        z.Array(
+          z.recursive(
+            'List',
+            z.union(
+              z.object({ type: z.literal('Nil') }),
+              z.object({ type: z.literal('Cons'), value: z.number, next: z.recursion('List') })
             )
           )
         )

@@ -17,6 +17,7 @@ import {
   Record,
   recursion,
   recursive,
+  Schema,
   string,
   symbol,
   tuple,
@@ -67,6 +68,6 @@ namespace z {
    * z.Infer<typeof z.number> is equivalent to number
    * z.Infer<typeof z.object({ age: z.number })> is equivalent to { age: number }
    */
-  export type Infer<T> = _Infer<T, T>
+  export type Infer<T extends Schema> = _Infer<T>
 }
 export { z }

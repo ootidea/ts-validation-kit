@@ -2,6 +2,7 @@ import { type NonEmptyArray as NonEmptyArrayType, Simplify } from 'base-up'
 import {
   _null,
   _void,
+  ANONYMOUS,
   any,
   Array,
   bigint,
@@ -24,7 +25,9 @@ import {
   unknown,
 } from './schema'
 
-export type Infer<T, Z = T> = T extends typeof unknown
+type RecursionMap = Record<keyof any, Schema>
+
+export type Infer<T extends Schema, Z extends RecursionMap = { [ANONYMOUS]: T }> = T extends typeof unknown
   ? unknown
   : T extends typeof any
   ? any
@@ -52,8 +55,8 @@ export type Infer<T, Z = T> = T extends typeof unknown
   ? Infer<U, Z>[]
   : T extends ReturnType<typeof NonEmptyArray<infer U extends Schema>>
   ? NonEmptyArrayType<Infer<U, Z>>
-  : T extends ReturnType<typeof recursive<infer U extends Schema>>
-  ? Infer<U>
+  : T extends ReturnType<typeof recursive<infer U extends Schema, infer RecursionKey extends keyof any>>
+  ? Infer<U, Omit<Z, RecursionKey> & Record<RecursionKey, U>>
   : T extends ReturnType<
       typeof object<infer R extends Record<keyof any, Schema>, infer O extends Record<keyof any, Schema>>
     >
@@ -68,11 +71,15 @@ export type Infer<T, Z = T> = T extends typeof unknown
   ? Infer<Key, Z> extends infer K extends keyof any
     ? Record<K, Infer<Value, Z>>
     : never
-  : T extends typeof recursion
-  ? Infer<Z, Z>
+  : T extends ReturnType<typeof recursion<infer RecursionKey extends keyof any>>
+  ? Infer<Z[RecursionKey], Z>
   : never
 
-type InferObjectType<T, U, Z> = Simplify<
+type InferObjectType<
+  T extends Record<keyof any, Schema>,
+  U extends Record<keyof any, Schema>,
+  Z extends RecursionMap
+> = Simplify<
   {
     [K in keyof T]: Infer<T[K], Z>
   } & {
@@ -80,14 +87,23 @@ type InferObjectType<T, U, Z> = Simplify<
   }
 >
 
-type InferUnionType<T extends readonly any[], Z> = T extends readonly [infer H, ...infer L]
+type InferUnionType<T extends readonly any[], Z extends RecursionMap> = T extends readonly [
+  infer H extends Schema,
+  ...infer L
+]
   ? Infer<H, Z> | InferUnionType<L, Z>
   : never
 
-type InferIntersectionType<T extends readonly any[], Z> = T extends readonly [infer H, ...infer L]
+type InferIntersectionType<T extends readonly any[], Z extends RecursionMap> = T extends readonly [
+  infer H extends Schema,
+  ...infer L
+]
   ? Infer<H, Z> & InferUnionType<L, Z>
   : unknown
 
-type InferTupleType<T extends readonly any[], Z> = T extends readonly [infer H, ...infer L]
+type InferTupleType<T extends readonly any[], Z extends RecursionMap> = T extends readonly [
+  infer H extends Schema,
+  ...infer L
+]
   ? [Infer<H, Z>, ...InferTupleType<L, Z>]
   : []
