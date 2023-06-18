@@ -104,6 +104,8 @@ describe('isValid', () => {
       )
     )
     expect(z.isValid({ type: 'Cons', value: 1, next: { type: 'Nil' } }, listSchema)).toBe(true)
-    expect(z.isValid([{ type: 'Nil' }], z.Array(listSchema))).toBe(true)
+    expect(z.isValid([{ type: 'Nil' }, { type: 'Nil' }], z.Array(listSchema))).toBe(true)
+
+    expect(z.isValid({ type: 'Node', value: 2 }, listSchema)).toBe(false)
   })
 })
