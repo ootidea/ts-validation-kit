@@ -9,6 +9,20 @@ export function isValid<const T extends Schema>(
   re: Record<keyof any, Schema> = { [ANONYMOUS]: schema }
 ): value is Infer<T> {
   switch (schema.type) {
+    case 'string':
+      return typeof value === 'string'
+    case 'number':
+      return typeof value === 'number'
+    case 'boolean':
+      return typeof value === 'boolean'
+    case 'bigint':
+      return typeof value === 'bigint'
+    case 'symbol':
+      return typeof value === 'symbol'
+    case 'null':
+      return value === null
+    case 'undefined':
+      return value === void 0
     case 'unknown':
     case 'any':
       return true
@@ -16,34 +30,12 @@ export function isValid<const T extends Schema>(
       return false
     case 'void':
       return value === void 0
-    case 'null':
-      return value === null
-    case 'undefined':
-      return value === void 0
-    case 'boolean':
-      return typeof value === 'boolean'
-    case 'number':
-      return typeof value === 'number'
-    case 'bigint':
-      return typeof value === 'bigint'
-    case 'string':
-      return typeof value === 'string'
-    case 'symbol':
-      return typeof value === 'symbol'
     case 'literal':
       return value === schema.value
-    case 'class':
-      return value instanceof schema.constructor
     case 'Array':
       return Array.isArray(value) && value.every((v) => isValid(v, schema.value, re))
     case 'NonEmptyArray':
       return Array.isArray(value) && value.length > 0 && value.every((v) => isValid(v, schema.value, re))
-    case 'recursive':
-      return isValid(value, schema.value, { ...re, [schema.key]: schema.value })
-    case 'union':
-      return schema.parts.some((part) => isValid(value, part, re))
-    case 'intersection':
-      return schema.parts.every((part) => isValid(value, part, re))
     case 'tuple':
       return (
         Array.isArray(value) &&
@@ -72,6 +64,14 @@ export function isValid<const T extends Schema>(
         return isValid(stringKey, schema.key, re)
       })
       return isKeyValid && Object.values(value).every((v) => isValid(v, schema.value, re))
+    case 'union':
+      return schema.parts.some((part) => isValid(value, part, re))
+    case 'intersection':
+      return schema.parts.every((part) => isValid(value, part, re))
+    case 'class':
+      return value instanceof schema.constructor
+    case 'recursive':
+      return isValid(value, schema.value, { ...re, [schema.key]: schema.value })
     case 'recursion':
       const recursionSchema = re[schema.key]
       assert(recursionSchema, isNotUndefined)
