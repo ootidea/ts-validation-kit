@@ -1,14 +1,14 @@
 {
-  "name": "first-class-type",
+  "name": "ts-data-schema",
   "version": "0.0.0",
   "description": "",
-  "homepage": "https://github.com/ootidea/first-class-type#readme",
+  "homepage": "https://github.com/ootidea/ts-data-schema#readme",
   "bugs": {
-    "url": "https://github.com/ootidea/first-class-type/issues"
+    "url": "https://github.com/ootidea/ts-data-schema/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ootidea/first-class-type.git"
+    "url": "git+https://github.com/ootidea/ts-data-schema.git"
   },
   "license": "CC0-1.0",
   "author": "ootidea",
