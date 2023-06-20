@@ -53,6 +53,12 @@ describe('isValid', () => {
     expect(z.isValid('xyz', z.literal('abc'))).toBe(false)
     expect(z.isValid(123, z.literal('abc'))).toBe(false)
   })
+  test('class', () => {
+    expect(z.isValid(new Blob(), z.class(Blob))).toBe(true)
+    expect(z.isValid(new Date(), z.class(URL))).toBe(false)
+    expect(z.isValid({}, z.class(Blob))).toBe(false)
+    expect(z.isValid(null, z.class(Date))).toBe(false)
+  })
   test('Array', () => {
     expect(z.isValid([false, true], z.Array(z.boolean))).toBe(true)
     expect(z.isValid([], z.Array(z.number))).toBe(true)

@@ -1,5 +1,6 @@
 import { type NonEmptyArray as NonEmptyArrayType, Simplify } from 'base-up'
 import {
+  _class,
   _null,
   _void,
   ANONYMOUS,
@@ -51,6 +52,8 @@ export type Infer<T extends Schema, Z extends RecursionMap = { [ANONYMOUS]: T }>
   ? symbol
   : T extends ReturnType<typeof literal<infer L>>
   ? L
+  : T extends ReturnType<typeof _class<infer C>>
+  ? C
   : T extends ReturnType<typeof Array<infer U extends Schema>>
   ? Infer<U, Z>[]
   : T extends ReturnType<typeof NonEmptyArray<infer U extends Schema>>

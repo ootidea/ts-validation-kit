@@ -34,6 +34,20 @@ describe('Infer', () => {
     expectTypeOf(infer(z.literal({}))).toEqualTypeOf<{}>()
     expectTypeOf(infer(z.literal({ name: 'Bob' }))).toEqualTypeOf<{ readonly name: 'Bob' }>()
   })
+  test('class types', () => {
+    expectTypeOf(infer(z.class(Blob))).toEqualTypeOf<Blob>()
+    expectTypeOf(infer(z.class(URL))).toEqualTypeOf<URL>()
+    expectTypeOf(infer(z.class(Date))).toEqualTypeOf<Date>()
+    expectTypeOf(infer(z.class(RegExp))).toEqualTypeOf<RegExp>()
+    expectTypeOf(infer(z.class(Error))).toEqualTypeOf<Error>()
+    expectTypeOf(infer(z.class(Set))).toEqualTypeOf<Set<unknown>>()
+    expectTypeOf(infer(z.class(Promise))).toEqualTypeOf<Promise<unknown>>()
+
+    class MyClass {}
+    expectTypeOf(infer(z.class(MyClass))).toEqualTypeOf<MyClass>()
+    abstract class MyAbstractClass {}
+    expectTypeOf(infer(z.class(MyAbstractClass))).toEqualTypeOf<MyAbstractClass>()
+  })
   test('Array types', () => {
     expectTypeOf(infer(z.Array(z.boolean))).toEqualTypeOf<boolean[]>()
     expectTypeOf(infer(z.Array(z.union(z.number, z.string)))).toEqualTypeOf<(number | string)[]>()

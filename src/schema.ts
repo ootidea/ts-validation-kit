@@ -13,6 +13,7 @@ export type Schema = DiscriminatedUnion<{
   string: {}
   symbol: {}
   literal: { value: unknown }
+  class: { constructor: abstract new (..._: any) => any }
   Array: { value: Schema }
   NonEmptyArray: { value: Schema }
   recursive: { value: Schema; key: keyof any }
@@ -42,6 +43,10 @@ export const symbol = { type: 'symbol' } as const satisfies Schema
 
 export function literal<const T>(value: T) {
   return { type: 'literal', value } as const
+}
+
+export function _class<const T>(constructor: abstract new (..._: any) => T) {
+  return { type: 'class', constructor } as const
 }
 
 export function Array<const T extends Schema>(value: T) {

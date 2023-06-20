@@ -1,5 +1,6 @@
 import { Infer as _Infer } from './inference'
 import {
+  _class,
   _null,
   _void,
   any,
@@ -42,6 +43,7 @@ const z = {
   symbol,
 
   literal,
+  class: _class,
   Array,
   NonEmptyArray,
   recursive,

@@ -32,6 +32,8 @@ export function isValid<const T extends Schema>(
       return typeof value === 'symbol'
     case 'literal':
       return value === schema.value
+    case 'class':
+      return value instanceof schema.constructor
     case 'Array':
       return Array.isArray(value) && value.every((v) => isValid(v, schema.value, re))
     case 'NonEmptyArray':
