@@ -70,6 +70,8 @@ export type Infer<T extends Schema, Z extends RecursionMap = { [ANONYMOUS]: T }>
   ? InferUnionType<A, Z>
   : T extends ReturnType<typeof intersection<infer A extends readonly Schema[]>>
   ? InferIntersectionType<A, Z>
+  : T extends { readonly type: 'refine'; readonly base: any; readonly predicate: (value: any) => value is infer R }
+  ? R
   : T extends ReturnType<typeof _class<infer C>>
   ? C
   : T extends ReturnType<typeof recursive<infer U extends Schema, infer RecursionKey extends keyof any>>

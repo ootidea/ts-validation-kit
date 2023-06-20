@@ -68,6 +68,9 @@ export function isValid<const T extends Schema>(
       return schema.parts.some((part) => isValid(value, part, re))
     case 'intersection':
       return schema.parts.every((part) => isValid(value, part, re))
+    case 'refine':
+      // @ts-ignore
+      return isValid(value, schema.base, re) && schema.predicate(value)
     case 'class':
       return value instanceof schema.constructor
     case 'recursive':

@@ -81,6 +81,15 @@ describe('Infer', () => {
       }
     >()
   })
+  test('refine', () => {
+    expectTypeOf(infer(z.refine(z.number, (value) => value > 0))).toEqualTypeOf<number>()
+
+    const isEmpty = (value: string): value is '' => value === ''
+    expectTypeOf(infer(z.refine(z.string, isEmpty))).toEqualTypeOf<''>()
+
+    const isUnder3 = (value: number): value is 0 | 1 | 2 => Number.isInteger(value) && 0 <= value && value <= 2
+    expectTypeOf(infer(z.refine(z.number, isUnder3))).toEqualTypeOf<0 | 1 | 2>()
+  })
   test('class types', () => {
     expectTypeOf(infer(z.class(Blob))).toEqualTypeOf<Blob>()
     expectTypeOf(infer(z.class(URL))).toEqualTypeOf<URL>()

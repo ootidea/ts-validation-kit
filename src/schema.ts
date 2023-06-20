@@ -1,4 +1,5 @@
 import { DiscriminatedUnion, Tuple } from 'base-up'
+import { Infer } from './inference'
 
 export type Schema = DiscriminatedUnion<{
   string: {}
@@ -20,6 +21,7 @@ export type Schema = DiscriminatedUnion<{
   Record: { key: Schema; value: Schema }
   union: { parts: readonly Schema[] }
   intersection: { parts: readonly Schema[] }
+  refine: { base: Schema; predicate: (value: any) => value is any }
   class: { constructor: abstract new (..._: any) => any }
   recursive: { value: Schema; key: keyof any }
   recursion: { key: keyof any }
@@ -88,6 +90,21 @@ export function literalUnion<const T extends Tuple>(...literals: T): { type: 'un
 
 export function intersection<const T extends readonly Schema[]>(...parts: T) {
   return { type: 'intersection', parts } as const
+}
+
+export function refine<const T extends Schema, const U extends (value: Infer<T>) => value is any>(
+  base: T,
+  predicate: U
+): { type: 'refine'; base: T; predicate: U }
+export function refine<const T extends Schema, const U extends (value: Infer<T>) => value is any>(
+  base: T,
+  predicate: (value: Infer<T>) => boolean
+): { type: 'refine'; base: T; predicate: (value: Infer<T>) => value is Infer<T> }
+export function refine<const T extends Schema, const U extends (value: Infer<T>) => value is any>(
+  base: T,
+  predicate: U
+) {
+  return { type: 'refine', base, predicate } as const
 }
 
 export function _class<const T>(constructor: abstract new (..._: any) => T) {
