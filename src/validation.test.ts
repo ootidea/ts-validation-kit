@@ -1,5 +1,6 @@
 import { describe, expect } from 'vitest'
 import { z } from './index'
+import { Schema } from './schema'
 
 describe('isValid', () => {
   test('boolean', () => {
@@ -103,15 +104,25 @@ describe('isValid', () => {
     expect(z.isValid({ a: true, 0: 'first' }, z.Record(z.number, z.any))).toBe(false)
   })
   test('recursion', () => {
-    const listSchema = z.recursive(
+    const fileOrFolderSchema = z.recursive(
       z.union(
-        z.object({ type: z.literal('Nil') }),
-        z.object({ type: z.literal('Cons'), value: z.number, next: z.recursion })
+        z.object({ type: z.literal('File'), content: z.class(Blob) }),
+        z.object({ type: z.literal('Folder'), items: z.Array(z.recursion) })
       )
     )
-    expect(z.isValid({ type: 'Cons', value: 1, next: { type: 'Nil' } }, listSchema)).toBe(true)
-    expect(z.isValid([{ type: 'Nil' }, { type: 'Nil' }], z.Array(listSchema))).toBe(true)
+    expect(z.isValid({ type: 'File', content: new Blob() }, fileOrFolderSchema)).toBe(true)
+    expect(z.isValid({ type: 'Folder', items: [{ type: 'File', content: new Blob() }] }, fileOrFolderSchema)).toBe(true)
+    expect(z.isValid({ type: 'Dir' }, fileOrFolderSchema)).toBe(false)
 
-    expect(z.isValid({ type: 'Node', value: 2 }, listSchema)).toBe(false)
+    function listSchema<const T extends Schema>(schema: T) {
+      return z.recursive(
+        z.union(
+          z.object({ type: z.literal('Nil') }),
+          z.object({ type: z.literal('Cons'), value: schema, next: z.recursion })
+        )
+      )
+    }
+    expect(z.isValid({ type: 'Cons', value: 1, next: { type: 'Nil' } }, listSchema(z.number))).toBe(true)
+    expect(z.isValid([{ type: 'Nil' }, { type: 'Nil' }], z.Array(listSchema(z.unknown)))).toBe(true)
   })
 })

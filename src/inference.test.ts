@@ -94,31 +94,35 @@ describe('Infer', () => {
     expectTypeOf(infer(z.Record(z.never, z.any))).toEqualTypeOf<Record<never, any>>()
     expectTypeOf(infer(z.Record(z.boolean, z.any))).toEqualTypeOf<never>()
   })
-  test('recursive types', () => {
-    type List = { type: 'Nil' } | { type: 'Cons'; value: number; next: List }
-    expectTypeOf(
-      infer(
-        z.union(
-          z.object({ type: z.literal('Nil') }),
-          z.object({ type: z.literal('Cons'), value: z.number, next: z.recursion })
+  describe('recursive types', () => {
+    type List<T> = { type: 'Nil' } | { type: 'Cons'; value: T; next: List<T> }
+    test('without z.recursive', () => {
+      expectTypeOf(
+        infer(
+          z.union(
+            z.object({ type: z.literal('Nil') }),
+            z.object({ type: z.literal('Cons'), value: z.number, next: z.recursion })
+          )
         )
-      )
-    ).toEqualTypeOf<List>()
-    expectTypeOf(
-      infer(
-        z.Array(
-          z.recursive(
-            z.union(
-              z.object({ type: z.literal('Nil') }),
-              z.object({ type: z.literal('Cons'), value: z.number, next: z.recursion })
+      ).toEqualTypeOf<List<number>>()
+    })
+    test('with z.recursive', () => {
+      expectTypeOf(
+        infer(
+          z.Array(
+            z.recursive(
+              z.union(
+                z.object({ type: z.literal('Nil') }),
+                z.object({ type: z.literal('Cons'), value: z.number, next: z.recursion })
+              )
             )
           )
         )
-      )
-    ).toEqualTypeOf<List[]>()
-    expectTypeOf(
-      infer(
-        z.Array(
+      ).toEqualTypeOf<List<number>[]>()
+    })
+    test('keyed recursion', () => {
+      expectTypeOf(
+        infer(
           z.recursive(
             'List',
             z.union(
@@ -127,7 +131,7 @@ describe('Infer', () => {
             )
           )
         )
-      )
-    ).toEqualTypeOf<List[]>()
+      ).toEqualTypeOf<List<number>>()
+    })
   })
 })
