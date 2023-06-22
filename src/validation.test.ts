@@ -96,6 +96,10 @@ describe('isValid', () => {
     expect(z.isValid(123, z.union(z.literal(123), z.literal(456)))).toBe(true)
     expect(z.isValid(true, z.union())).toBe(false)
   })
+  test('or method', () => {
+    expect(z.isValid(123, z.boolean.or(z.number))).toBe(true)
+    expect(z.isValid(123, z.literal(123).or(z.literal(456)))).toBe(true)
+  })
   test('intersection', () => {})
   test('refine', () => {
     expect(

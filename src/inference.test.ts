@@ -66,6 +66,11 @@ describe('Infer', () => {
     expectTypeOf(infer(z.union(z.literal('abc'), z.literal(123)))).toEqualTypeOf<'abc' | 123>()
     expectTypeOf(infer(z.union())).toEqualTypeOf<never>()
   })
+  test('or method', () => {
+    expectTypeOf(infer(z.number.or(z.undefined))).toEqualTypeOf<number | undefined>()
+    expectTypeOf(infer(z.literal('abc').or(z.literal(123)))).toEqualTypeOf<'abc' | 123>()
+    expectTypeOf(infer(z.number.or(z.undefined).or(z.null))).toEqualTypeOf<number | undefined | null>()
+  })
   test('literalUnion shorthand', () => {
     expectTypeOf(infer(z.literalUnion('abc', 123))).toEqualTypeOf<'abc' | 123>()
     expectTypeOf(infer(z.literalUnion('abc'))).toEqualTypeOf<'abc'>()
