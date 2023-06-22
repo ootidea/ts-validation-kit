@@ -152,6 +152,10 @@ describe('isValid', () => {
     expect(z.isValid(1, z.number.refine(isUnder3))).toBe(true)
     expect(z.isValid('1', z.number.refine(isUnder3))).toBe(false)
   })
+  test('string min method', () => {
+    expect(z.isValid('a', z.string.min(1))).toBe(true)
+    expect(z.isValid('', z.string.min(1))).toBe(false)
+  })
   test('class function', () => {
     expect(z.isValid(new Blob(), z.class(Blob))).toBe(true)
     expect(z.isValid(new Date(), z.class(URL))).toBe(false)

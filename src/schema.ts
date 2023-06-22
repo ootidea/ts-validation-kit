@@ -18,38 +18,54 @@ type CommonPrototype = {
   ) => CommonPrototype & { type: 'union'; parts: readonly [T, U] }
   refine: typeof refineMethod
 }
+const stringPrototype = {
+  ...commonPrototype,
+  min: function <const T extends Schema, const N extends number>(this: T, bound: N) {
+    return {
+      ...stringPrototype,
+      type: 'refine',
+      base: this,
+      predicate: (value: string): value is string => value.length >= bound,
+    } as const
+  },
+} as const
+type StringPrototype = CommonPrototype & {
+  min: <const T extends Schema, const N extends number>(
+    this: T,
+    bound: N
+  ) => StringPrototype & { type: 'refine'; base: T; predicate: (value: string) => value is string }
+}
 
-export type Schema = CommonPrototype &
-  DiscriminatedUnion<{
-    string: {}
-    number: {}
-    boolean: {}
-    bigint: {}
-    symbol: {}
-    undefined: {}
-    null: {}
-    unknown: {}
-    any: {}
-    never: {}
-    void: {}
-    literal: { value: unknown }
-    Array: { value: Schema }
-    NonEmptyArray: { value: Schema }
-    tuple: { parts: readonly Schema[] }
-    object: { required: Record<keyof any, Schema>; optional: Record<keyof any, Schema> }
-    Record: { key: Schema; value: Schema }
-    union: { parts: readonly Schema[] }
-    intersection: { parts: readonly Schema[] }
-    refine: { base: Schema; predicate: (value: any) => value is any }
-    class: { constructor: abstract new (..._: any) => any }
-    recursive: { value: Schema; key: keyof any }
-    recursion: { key: keyof any }
-  }>
+export type Schema = DiscriminatedUnion<{
+  string: StringPrototype
+  number: CommonPrototype
+  boolean: CommonPrototype
+  bigint: CommonPrototype
+  symbol: CommonPrototype
+  undefined: CommonPrototype
+  null: CommonPrototype
+  unknown: CommonPrototype
+  any: CommonPrototype
+  never: CommonPrototype
+  void: CommonPrototype
+  literal: CommonPrototype & { value: unknown }
+  Array: CommonPrototype & { value: Schema }
+  NonEmptyArray: CommonPrototype & { value: Schema }
+  tuple: CommonPrototype & { parts: readonly Schema[] }
+  object: CommonPrototype & { required: Record<keyof any, Schema>; optional: Record<keyof any, Schema> }
+  Record: CommonPrototype & { key: Schema; value: Schema }
+  union: CommonPrototype & { parts: readonly Schema[] }
+  intersection: CommonPrototype & { parts: readonly Schema[] }
+  refine: CommonPrototype & { base: Schema; predicate: (value: any) => value is any }
+  class: CommonPrototype & { constructor: abstract new (..._: any) => any }
+  recursive: CommonPrototype & { value: Schema; key: keyof any }
+  recursion: CommonPrototype & { key: keyof any }
+}>
 
 /** The default value when the key is omitted in {@link z.recursion} or {@link z.recursive}. */
 export const ANONYMOUS = Symbol()
 
-export const string = { ...commonPrototype, type: 'string' } as const satisfies Schema
+export const string = { ...stringPrototype, type: 'string' } as const satisfies Schema
 export const number = { ...commonPrototype, type: 'number' } as const satisfies Schema
 export const boolean = { ...commonPrototype, type: 'boolean' } as const satisfies Schema
 export const bigint = { ...commonPrototype, type: 'bigint' } as const satisfies Schema
