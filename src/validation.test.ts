@@ -100,7 +100,14 @@ describe('isValid', () => {
     expect(z.isValid(123, z.boolean.or(z.number))).toBe(true)
     expect(z.isValid(123, z.literal(123).or(z.literal(456)))).toBe(true)
   })
-  test('intersection function', () => {})
+  test('intersection function', () => {
+    expect(
+      z.isValid({ name: 'John', age: 42 }, z.intersection(z.object({ name: z.string }), z.object({ age: z.number })))
+    ).toBe(true)
+    expect(
+      z.isValid({ name: 'John', age: 42 }, z.intersection(z.object({ name: z.number }), z.object({ age: z.string })))
+    ).toBe(false)
+  })
   test('refine function', () => {
     expect(
       z.isValid(
