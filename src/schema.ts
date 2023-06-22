@@ -6,6 +6,9 @@ const commonPrototype = {
     return { ...commonPrototype, type: 'union', parts: [this, schema] } as const
   },
   refine: refineMethod,
+  get prototype() {
+    return commonPrototype
+  },
 } as const
 /**
  * I'm not entirely sure why, but defining it as shown below results in an error.
@@ -17,6 +20,7 @@ type CommonPrototype = {
     schema: U
   ) => CommonPrototype & { type: 'union'; parts: readonly [T, U] }
   refine: typeof refineMethod
+  readonly prototype: CommonPrototype
 }
 const stringPrototype = {
   ...commonPrototype,
@@ -28,12 +32,16 @@ const stringPrototype = {
       predicate: (value: string): value is string => value.length >= bound,
     } as const
   },
+  get prototype(): StringPrototype {
+    return stringPrototype
+  },
 } as const
 type StringPrototype = CommonPrototype & {
   min: <const T extends Schema, const N extends number>(
     this: T,
     bound: N
   ) => StringPrototype & { type: 'refine'; base: T; predicate: (value: string) => value is string }
+  readonly prototype: StringPrototype
 }
 
 export type Schema = DiscriminatedUnion<{
@@ -136,31 +144,31 @@ export function intersection<const T extends readonly Schema[]>(...parts: T) {
 export function refine<const T extends Schema, const U extends (value: Infer<T>) => value is any>(
   base: T,
   predicate: U
-): CommonPrototype & { type: 'refine'; base: T; predicate: U }
+): T['prototype'] & { type: 'refine'; base: T; predicate: U }
 export function refine<const T extends Schema, const U extends (value: Infer<T>) => value is any>(
   base: T,
   predicate: (value: Infer<T>) => boolean
-): CommonPrototype & { type: 'refine'; base: T; predicate: (value: Infer<T>) => value is Infer<T> }
+): T['prototype'] & { type: 'refine'; base: T; predicate: (value: Infer<T>) => value is Infer<T> }
 export function refine<const T extends Schema, const U extends (value: Infer<T>) => value is any>(
   base: T,
   predicate: U
 ) {
-  return { ...commonPrototype, type: 'refine', base, predicate } as const
+  return { ...base.prototype, type: 'refine', base, predicate } as const
 }
 
 export function refineMethod<const T extends Schema, const U extends (value: Infer<T>) => value is any>(
   this: T,
   predicate: U
-): CommonPrototype & { type: 'refine'; base: T; predicate: U }
+): T['prototype'] & { type: 'refine'; base: T; predicate: U }
 export function refineMethod<const T extends Schema, const U extends (value: Infer<T>) => value is any>(
   this: T,
   predicate: (value: Infer<T>) => boolean
-): CommonPrototype & { type: 'refine'; base: T; predicate: (value: Infer<T>) => value is Infer<T> }
+): T['prototype'] & { type: 'refine'; base: T; predicate: (value: Infer<T>) => value is Infer<T> }
 export function refineMethod<const T extends Schema, const U extends (value: Infer<T>) => value is any>(
   this: T,
   predicate: U
 ) {
-  return { ...commonPrototype, type: 'refine', base: this, predicate } as const
+  return { ...this.prototype, type: 'refine', base: this, predicate } as const
 }
 
 export function _class<const T>(constructor: abstract new (..._: any) => T) {
