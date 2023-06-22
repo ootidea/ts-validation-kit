@@ -49,31 +49,31 @@ describe('isValid', () => {
     expect(z.isValid(undefined, z.void)).toBe(true)
     expect(z.isValid(null, z.void)).toBe(false)
   })
-  test('literal', () => {
+  test('literal function', () => {
     expect(z.isValid('abc', z.literal('abc'))).toBe(true)
     expect(z.isValid('xyz', z.literal('abc'))).toBe(false)
     expect(z.isValid(123, z.literal('abc'))).toBe(false)
   })
-  test('Array', () => {
+  test('Array function', () => {
     expect(z.isValid([false, true], z.Array(z.boolean))).toBe(true)
     expect(z.isValid([], z.Array(z.number))).toBe(true)
     expect(z.isValid({ 0: false, 1: true }, z.Array(z.boolean))).toBe(false)
     expect(z.isValid([123], z.Array(z.boolean))).toBe(false)
   })
-  test('NonEmptyArray', () => {
+  test('NonEmptyArray function', () => {
     expect(z.isValid([false, true], z.NonEmptyArray(z.boolean))).toBe(true)
     expect(z.isValid([], z.NonEmptyArray(z.number))).toBe(false)
     expect(z.isValid({ 0: false, 1: true }, z.NonEmptyArray(z.boolean))).toBe(false)
     expect(z.isValid([123], z.NonEmptyArray(z.boolean))).toBe(false)
   })
-  test('tuple', () => {
+  test('tuple function', () => {
     expect(z.isValid([true, 123], z.tuple(z.boolean, z.number))).toBe(true)
     expect(z.isValid([true, 123], z.tuple(z.boolean, z.number, z.string))).toBe(false)
     expect(z.isValid([true, 123], z.tuple(z.boolean))).toBe(false)
     expect(z.isValid([true, 123], z.tuple(z.string, z.bigint))).toBe(false)
     expect(z.isValid([], z.tuple())).toBe(true)
   })
-  test('object', () => {
+  test('object function', () => {
     expect(z.isValid({ name: 'John' }, z.object({ name: z.string }))).toBe(true)
     expect(z.isValid({ name: 'John' }, z.object({ name: z.symbol }))).toBe(false)
 
@@ -81,7 +81,7 @@ describe('isValid', () => {
     expect(z.isValid({ name: 'John', age: 42 }, z.object({}, { age: z.number }))).toBe(true)
     expect(z.isValid({ name: 'John', age: '42' }, z.object({}, { age: z.number }))).toBe(false)
   })
-  test('Record', () => {
+  test('Record function', () => {
     expect(z.isValid({ a: 1, b: 2 }, z.Record(z.string, z.number))).toBe(true)
     expect(z.isValid({ a: 1, b: 2 }, z.Record(z.number, z.number))).toBe(false)
 
@@ -91,7 +91,7 @@ describe('isValid', () => {
     expect(z.isValid({ a: true, 0: 'first' }, z.Record(z.string, z.any))).toBe(true)
     expect(z.isValid({ a: true, 0: 'first' }, z.Record(z.number, z.any))).toBe(false)
   })
-  test('union', () => {
+  test('union function', () => {
     expect(z.isValid(123, z.union(z.boolean, z.number))).toBe(true)
     expect(z.isValid(123, z.union(z.literal(123), z.literal(456)))).toBe(true)
     expect(z.isValid(true, z.union())).toBe(false)
@@ -100,8 +100,8 @@ describe('isValid', () => {
     expect(z.isValid(123, z.boolean.or(z.number))).toBe(true)
     expect(z.isValid(123, z.literal(123).or(z.literal(456)))).toBe(true)
   })
-  test('intersection', () => {})
-  test('refine', () => {
+  test('intersection function', () => {})
+  test('refine function', () => {
     expect(
       z.isValid(
         123,
@@ -123,7 +123,7 @@ describe('isValid', () => {
     expect(z.isValid(1, z.refine(z.number, isUnder3))).toBe(true)
     expect(z.isValid('1', z.refine(z.number, isUnder3))).toBe(false)
   })
-  test('refine', () => {
+  test('refine method', () => {
     expect(
       z.isValid(
         123,
@@ -145,13 +145,13 @@ describe('isValid', () => {
     expect(z.isValid(1, z.number.refine(isUnder3))).toBe(true)
     expect(z.isValid('1', z.number.refine(isUnder3))).toBe(false)
   })
-  test('class', () => {
+  test('class function', () => {
     expect(z.isValid(new Blob(), z.class(Blob))).toBe(true)
     expect(z.isValid(new Date(), z.class(URL))).toBe(false)
     expect(z.isValid({}, z.class(Blob))).toBe(false)
     expect(z.isValid(null, z.class(Date))).toBe(false)
   })
-  test('recursion', () => {
+  test('recursion function', () => {
     const fileOrFolderSchema = z.recursive(
       z.union(
         z.object({ type: z.literal('File'), content: z.class(Blob) }),

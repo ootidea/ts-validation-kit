@@ -26,7 +26,7 @@ describe('Infer', () => {
     expectTypeOf(infer(z.never)).toEqualTypeOf<never>()
     expectTypeOf(infer(z.void)).toEqualTypeOf<void>()
   })
-  test('literal types', () => {
+  test('literal function', () => {
     expectTypeOf(infer(z.literal('abc'))).toMatchTypeOf<'abc'>()
     expectTypeOf(infer(z.literal(123))).toEqualTypeOf<123>()
     expectTypeOf(infer(z.literal([]))).toEqualTypeOf<readonly []>()
@@ -34,17 +34,17 @@ describe('Infer', () => {
     expectTypeOf(infer(z.literal({}))).toEqualTypeOf<{}>()
     expectTypeOf(infer(z.literal({ name: 'Bob' }))).toEqualTypeOf<{ readonly name: 'Bob' }>()
   })
-  test('Array types', () => {
+  test('Array function', () => {
     expectTypeOf(infer(z.Array(z.boolean))).toEqualTypeOf<boolean[]>()
     expectTypeOf(infer(z.Array(z.union(z.number, z.string)))).toEqualTypeOf<(number | string)[]>()
 
     expectTypeOf(infer(z.NonEmptyArray(z.any))).toEqualTypeOf<NonEmptyArray<any>>()
   })
-  test('tuple types', () => {
+  test('tuple function', () => {
     expectTypeOf(infer(z.tuple(z.number, z.string))).toEqualTypeOf<[number, string]>()
     expectTypeOf(infer(z.tuple())).toEqualTypeOf<[]>()
   })
-  test('object types', () => {
+  test('object function', () => {
     expectTypeOf(infer(z.object({ name: z.string }))).toEqualTypeOf<{ name: string }>()
     expectTypeOf(infer(z.object({ name: z.string }, { age: z.number }))).toEqualTypeOf<{
       name: string
@@ -52,7 +52,7 @@ describe('Infer', () => {
     }>()
     expectTypeOf(infer(z.object({}))).toEqualTypeOf<{}>()
   })
-  test('Record types', () => {
+  test('Record function', () => {
     expectTypeOf(infer(z.Record(z.string, z.number))).toEqualTypeOf<Record<string, number>>()
     expectTypeOf(infer(z.Record(z.literal('a'), z.number))).toEqualTypeOf<{ a: number }>()
     expectTypeOf(infer(z.Record(z.number, z.number))).toEqualTypeOf<Record<number, number>>()
@@ -61,7 +61,7 @@ describe('Infer', () => {
     expectTypeOf(infer(z.Record(z.never, z.any))).toEqualTypeOf<Record<never, any>>()
     expectTypeOf(infer(z.Record(z.boolean, z.any))).toEqualTypeOf<never>()
   })
-  test('union types', () => {
+  test('union function', () => {
     expectTypeOf(infer(z.union(z.number, z.undefined))).toEqualTypeOf<number | undefined>()
     expectTypeOf(infer(z.union(z.literal('abc'), z.literal(123)))).toEqualTypeOf<'abc' | 123>()
     expectTypeOf(infer(z.union())).toEqualTypeOf<never>()
@@ -71,12 +71,12 @@ describe('Infer', () => {
     expectTypeOf(infer(z.literal('abc').or(z.literal(123)))).toEqualTypeOf<'abc' | 123>()
     expectTypeOf(infer(z.number.or(z.undefined).or(z.null))).toEqualTypeOf<number | undefined | null>()
   })
-  test('literalUnion shorthand', () => {
+  test('literalUnion function', () => {
     expectTypeOf(infer(z.literalUnion('abc', 123))).toEqualTypeOf<'abc' | 123>()
     expectTypeOf(infer(z.literalUnion('abc'))).toEqualTypeOf<'abc'>()
     expectTypeOf(infer(z.literalUnion())).toEqualTypeOf<never>()
   })
-  test('intersection types', () => {
+  test('intersection function', () => {
     expectTypeOf(infer(z.intersection(z.string, z.object({})))).toEqualTypeOf<string & {}>()
     expectTypeOf(infer(z.intersection(z.object({ name: z.string }), z.object({ age: z.number })))).toEqualTypeOf<
       {
@@ -104,7 +104,7 @@ describe('Infer', () => {
     const isUnder3 = (value: number): value is 0 | 1 | 2 => Number.isInteger(value) && 0 <= value && value <= 2
     expectTypeOf(infer(z.number.refine(isUnder3))).toEqualTypeOf<0 | 1 | 2>()
   })
-  test('class types', () => {
+  test('class function', () => {
     expectTypeOf(infer(z.class(Blob))).toEqualTypeOf<Blob>()
     expectTypeOf(infer(z.class(URL))).toEqualTypeOf<URL>()
     expectTypeOf(infer(z.class(Date))).toEqualTypeOf<Date>()
@@ -118,7 +118,7 @@ describe('Infer', () => {
     abstract class MyAbstractClass {}
     expectTypeOf(infer(z.class(MyAbstractClass))).toEqualTypeOf<MyAbstractClass>()
   })
-  describe('recursive types', () => {
+  describe('recursion function', () => {
     type List<T> = { type: 'Nil' } | { type: 'Cons'; value: T; next: List<T> }
     test('without z.recursive', () => {
       expectTypeOf(
