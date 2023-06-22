@@ -123,6 +123,28 @@ describe('isValid', () => {
     expect(z.isValid(1, z.refine(z.number, isUnder3))).toBe(true)
     expect(z.isValid('1', z.refine(z.number, isUnder3))).toBe(false)
   })
+  test('refine', () => {
+    expect(
+      z.isValid(
+        123,
+        z.number.refine((value) => value > 0)
+      )
+    ).toBe(true)
+    expect(
+      z.isValid(
+        -123,
+        z.number.refine((value) => value > 0)
+      )
+    ).toBe(false)
+
+    const isEmpty = (value: string): value is '' => value === ''
+    expect(z.isValid('', z.string.refine(isEmpty))).toBe(true)
+    expect(z.isValid('a', z.string.refine(isEmpty))).toBe(false)
+
+    const isUnder3 = (value: number): value is 0 | 1 | 2 => Number.isInteger(value) && 0 <= value && value <= 2
+    expect(z.isValid(1, z.number.refine(isUnder3))).toBe(true)
+    expect(z.isValid('1', z.number.refine(isUnder3))).toBe(false)
+  })
   test('class', () => {
     expect(z.isValid(new Blob(), z.class(Blob))).toBe(true)
     expect(z.isValid(new Date(), z.class(URL))).toBe(false)

@@ -5,6 +5,7 @@ const commonPrototype = {
   or: function <const T extends Schema, const U extends Schema>(this: T, schema: U) {
     return { ...commonPrototype, type: 'union', parts: [this, schema] } as const
   },
+  refine: refineMethod,
 } as const
 /**
  * I'm not entirely sure why, but defining it as shown below results in an error.
@@ -15,6 +16,7 @@ type CommonPrototype = {
     this: T,
     schema: U
   ) => CommonPrototype & { type: 'union'; parts: readonly [T, U] }
+  refine: typeof refineMethod
 }
 
 export type Schema = CommonPrototype &
@@ -128,6 +130,21 @@ export function refine<const T extends Schema, const U extends (value: Infer<T>)
   predicate: U
 ) {
   return { ...commonPrototype, type: 'refine', base, predicate } as const
+}
+
+export function refineMethod<const T extends Schema, const U extends (value: Infer<T>) => value is any>(
+  this: T,
+  predicate: U
+): CommonPrototype & { type: 'refine'; base: T; predicate: U }
+export function refineMethod<const T extends Schema, const U extends (value: Infer<T>) => value is any>(
+  this: T,
+  predicate: (value: Infer<T>) => boolean
+): CommonPrototype & { type: 'refine'; base: T; predicate: (value: Infer<T>) => value is Infer<T> }
+export function refineMethod<const T extends Schema, const U extends (value: Infer<T>) => value is any>(
+  this: T,
+  predicate: U
+) {
+  return { ...commonPrototype, type: 'refine', base: this, predicate } as const
 }
 
 export function _class<const T>(constructor: abstract new (..._: any) => T) {

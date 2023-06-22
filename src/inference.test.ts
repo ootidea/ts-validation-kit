@@ -86,7 +86,7 @@ describe('Infer', () => {
       }
     >()
   })
-  test('refine', () => {
+  test('refine function', () => {
     expectTypeOf(infer(z.refine(z.number, (value) => value > 0))).toEqualTypeOf<number>()
 
     const isEmpty = (value: string): value is '' => value === ''
@@ -94,6 +94,15 @@ describe('Infer', () => {
 
     const isUnder3 = (value: number): value is 0 | 1 | 2 => Number.isInteger(value) && 0 <= value && value <= 2
     expectTypeOf(infer(z.refine(z.number, isUnder3))).toEqualTypeOf<0 | 1 | 2>()
+  })
+  test('refine method', () => {
+    expectTypeOf(infer(z.number.refine((value) => value > 0))).toEqualTypeOf<number>()
+
+    const isEmpty = (value: string): value is '' => value === ''
+    expectTypeOf(infer(z.string.refine(isEmpty))).toEqualTypeOf<''>()
+
+    const isUnder3 = (value: number): value is 0 | 1 | 2 => Number.isInteger(value) && 0 <= value && value <= 2
+    expectTypeOf(infer(z.number.refine(isUnder3))).toEqualTypeOf<0 | 1 | 2>()
   })
   test('class types', () => {
     expectTypeOf(infer(z.class(Blob))).toEqualTypeOf<Blob>()
