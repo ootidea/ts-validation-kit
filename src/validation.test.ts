@@ -88,6 +88,8 @@ describe('isValid', () => {
     expect(z.isValid({ name: 'Bob', age: 5 }, z.Record(z.any, z.union(z.string, z.number)))).toBe(true)
 
     expect(z.isValid({ a: true, 0: 'first' }, z.Record(z.literalUnion('a', 0), z.any))).toBe(true)
+    expect(z.isValid({ 0: false, 1: true }, z.Record(z.number, z.boolean))).toBe(true)
+    expect(z.isValid({ ['-1']: false, ['Infinity']: true }, z.Record(z.number, z.boolean))).toBe(true)
     expect(z.isValid({ a: true, 0: 'first' }, z.Record(z.string, z.any))).toBe(true)
     expect(z.isValid({ a: true, 0: 'first' }, z.Record(z.number, z.any))).toBe(false)
   })
