@@ -50,6 +50,9 @@ const arrayPrototype = {
   minLength: function <const T extends Schema, const N extends number>(this: T, length: N) {
     return { ...arrayPrototype, type: 'minLengthArray', base: this, length } as const
   },
+  maxLength: function <const T extends Schema, const N extends number>(this: T, length: N) {
+    return { ...arrayPrototype, type: 'maxLengthArray', base: this, length } as const
+  },
   get prototype(): ArrayPrototype {
     return arrayPrototype
   },
@@ -59,6 +62,10 @@ type ArrayPrototype = CommonPrototype & {
     this: T,
     length: N
   ) => ArrayPrototype & { type: 'minLengthArray'; base: T; length: N }
+  maxLength: <const T extends Schema, const N extends number>(
+    this: T,
+    length: N
+  ) => ArrayPrototype & { type: 'maxLengthArray'; base: T; length: N }
   readonly prototype: ArrayPrototype
 }
 
@@ -87,6 +94,7 @@ export type Schema = DiscriminatedUnion<{
   recursive: CommonPrototype & { value: Schema; key: keyof any }
   recursion: CommonPrototype & { key: keyof any }
   minLengthArray: ArrayPrototype & { base: Schema; length: number }
+  maxLengthArray: ArrayPrototype & { base: Schema; length: number }
 }>
 
 /** The default value when the key is omitted in {@link z.recursion} or {@link z.recursive}. */

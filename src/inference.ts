@@ -1,4 +1,4 @@
-import { MinLengthArray, type NonEmptyArray as NonEmptyArrayType, Simplify } from 'base-up'
+import { MaxLengthArray, MinLengthArray, type NonEmptyArray as NonEmptyArrayType, Simplify } from 'base-up'
 import {
   _class,
   _null,
@@ -85,6 +85,14 @@ export type Infer<T extends Schema, Z extends RecursionMap = { [ANONYMOUS]: T }>
     }
   ? Infer<U, Z> extends readonly (infer E)[]
     ? MinLengthArray<N, E>
+    : never
+  : T extends {
+      readonly type: 'maxLengthArray'
+      readonly base: infer U extends Schema
+      readonly length: infer N extends number
+    }
+  ? Infer<U, Z> extends readonly (infer E)[]
+    ? MaxLengthArray<N, E>
     : never
   : never
 

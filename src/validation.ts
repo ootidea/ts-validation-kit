@@ -80,7 +80,9 @@ export function isValid<const T extends Schema>(
       assert(recursionSchema, isNotUndefined)
       return isValid(value, recursionSchema, re)
     case 'minLengthArray':
-      return isValid(value, schema.base, re) && Array.isArray(value) && value.length >= schema.length
+      return isValid(value, schema.base, re) && Array.isArray(value) && schema.length <= value.length
+    case 'maxLengthArray':
+      return isValid(value, schema.base, re) && Array.isArray(value) && value.length <= schema.length
     default:
       assertNeverType(schema)
   }

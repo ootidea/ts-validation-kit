@@ -1,4 +1,4 @@
-import { MinLengthArray, NonEmptyArray } from 'base-up'
+import { MaxLengthArray, MinLengthArray, NonEmptyArray } from 'base-up'
 import { describe, expectTypeOf, test } from 'vitest'
 import { z } from './index'
 import { Infer } from './inference'
@@ -51,9 +51,37 @@ describe('Infer', () => {
           z
             .Array(z.string)
             .minLength(1)
-            .refine((x) => true)
+            .refine(() => true)
         )
       ).toEqualTypeOf<MinLengthArray<1, string>>()
+      expectTypeOf(
+        infer(
+          z
+            .Array(z.string)
+            .refine(() => true)
+            .minLength(1)
+        )
+      ).toEqualTypeOf<MinLengthArray<1, string>>()
+    })
+    test('maxLength', () => {
+      expectTypeOf(infer(z.Array(z.string).maxLength(2))).toEqualTypeOf<MaxLengthArray<2, string>>()
+      expectTypeOf(infer(z.Array(z.string).maxLength(0))).toEqualTypeOf<[]>()
+      expectTypeOf(
+        infer(
+          z
+            .Array(z.string)
+            .maxLength(2)
+            .refine(() => true)
+        )
+      ).toEqualTypeOf<MaxLengthArray<2, string>>()
+      expectTypeOf(
+        infer(
+          z
+            .Array(z.string)
+            .refine(() => true)
+            .maxLength(2)
+        )
+      ).toEqualTypeOf<MaxLengthArray<2, string>>()
     })
   })
   test('tuple function', () => {

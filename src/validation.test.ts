@@ -65,6 +65,10 @@ describe('isValid', () => {
       expect(z.isValid(['a', 'b'], z.Array(z.string).minLength(2))).toBe(true)
       expect(z.isValid(['a'], z.Array(z.string).minLength(2))).toBe(false)
     })
+    test('maxLength', () => {
+      expect(z.isValid(['a', 'b'], z.Array(z.string).maxLength(2))).toBe(true)
+      expect(z.isValid(['a', 'b', 'c'], z.Array(z.string).maxLength(2))).toBe(false)
+    })
   })
   test('NonEmptyArray function', () => {
     expect(z.isValid([false, true], z.NonEmptyArray(z.boolean))).toBe(true)
