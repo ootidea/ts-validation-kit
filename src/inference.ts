@@ -1,4 +1,11 @@
-import { MaxLengthArray, MinLengthArray, type NonEmptyArray as NonEmptyArrayType, Simplify } from 'base-up'
+import {
+  FixedLengthArray,
+  IntegerRangeThrough,
+  MaxLengthArray,
+  MinLengthArray,
+  type NonEmptyArray as NonEmptyArrayType,
+  Simplify,
+} from 'base-up'
 import {
   _class,
   _null,
@@ -84,7 +91,9 @@ export type Infer<T extends Schema, Z extends RecursionMap = { [ANONYMOUS]: T }>
       readonly length: infer N extends number
     }
   ? Infer<U, Z> extends readonly (infer E)[]
-    ? MinLengthArray<N, E>
+    ? GetArrayMaxLength<T> extends infer M extends number
+      ? FixedLengthArray<IntegerRangeThrough<N, M>, E>
+      : MinLengthArray<N, E>
     : never
   : T extends {
       readonly type: 'maxLengthArray'
@@ -92,7 +101,9 @@ export type Infer<T extends Schema, Z extends RecursionMap = { [ANONYMOUS]: T }>
       readonly length: infer N extends number
     }
   ? Infer<U, Z> extends readonly (infer E)[]
-    ? MaxLengthArray<N, E>
+    ? GetArrayMinLength<T> extends infer M extends number
+      ? FixedLengthArray<IntegerRangeThrough<M, N>, E>
+      : MaxLengthArray<N, E>
     : never
   : never
 
@@ -128,3 +139,28 @@ type InferIntersectionType<T extends readonly any[], Z extends RecursionMap> = T
 ]
   ? Infer<H, Z> & InferUnionType<L, Z>
   : unknown
+
+/**
+ * Search for the length property of the minLengthArray object.
+ * If not found, return undefined.
+ */
+type GetArrayMinLength<T extends Schema> = T extends {
+  readonly type: 'minLengthArray'
+  readonly length: infer N extends number
+}
+  ? N
+  : T extends { readonly base: infer U extends Schema }
+  ? GetArrayMinLength<U>
+  : undefined
+/**
+ * Search for the length property of the maxLengthArray object.
+ * If not found, return undefined.
+ */
+type GetArrayMaxLength<T extends Schema> = T extends {
+  readonly type: 'maxLengthArray'
+  readonly length: infer N extends number
+}
+  ? N
+  : T extends { readonly base: infer U extends Schema }
+  ? GetArrayMaxLength<U>
+  : undefined

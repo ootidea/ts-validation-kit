@@ -83,6 +83,32 @@ describe('Infer', () => {
         )
       ).toEqualTypeOf<MaxLengthArray<2, string>>()
     })
+    test('minLength and maxLength', () => {
+      expectTypeOf(infer(z.Array(z.any).minLength(1).maxLength(3))).toEqualTypeOf<
+        [any] | [any, any] | [any, any, any]
+      >()
+      expectTypeOf(infer(z.Array(z.any).maxLength(3).minLength(1))).toEqualTypeOf<
+        [any] | [any, any] | [any, any, any]
+      >()
+      expectTypeOf(
+        infer(
+          z
+            .Array(z.any)
+            .minLength(1)
+            .refine(() => true)
+            .maxLength(3)
+        )
+      ).toEqualTypeOf<[any] | [any, any] | [any, any, any]>()
+      expectTypeOf(
+        infer(
+          z
+            .Array(z.any)
+            .maxLength(3)
+            .refine(() => true)
+            .minLength(1)
+        )
+      ).toEqualTypeOf<[any] | [any, any] | [any, any, any]>()
+    })
   })
   test('tuple function', () => {
     expectTypeOf(infer(z.tuple(z.number, z.string))).toEqualTypeOf<[number, string]>()
