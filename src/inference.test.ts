@@ -35,6 +35,11 @@ describe('Infer', () => {
     expectTypeOf(infer(z.literal({}))).toEqualTypeOf<{}>()
     expectTypeOf(infer(z.literal({ name: 'Bob' }))).toEqualTypeOf<{ readonly name: 'Bob' }>()
   })
+  test('string methods', () => {
+    expectTypeOf(infer(z.string.minLength(1))).toEqualTypeOf<string>()
+    expectTypeOf(infer(z.string.maxLength(1))).toEqualTypeOf<string>()
+    expectTypeOf(infer(z.string.minLength(1).maxLength(2))).toEqualTypeOf<string>()
+  })
   describe('Array', () => {
     test('Array function', () => {
       expectTypeOf(infer(z.Array(z.boolean))).toEqualTypeOf<boolean[]>()

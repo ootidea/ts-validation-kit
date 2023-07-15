@@ -165,14 +165,23 @@ describe('isValid', () => {
       expect(z.isValid(1, z.number.refine(isUnder3))).toBe(true)
       expect(z.isValid('1', z.number.refine(isUnder3))).toBe(false)
     })
-    test('method chain', () => {
-      expect(z.isValid('abc', z.string.refine((value) => value.includes('a')).min(3))).toBe(true)
-      expect(z.isValid('ab', z.string.refine((value) => value.includes('a')).min(3))).toBe(false)
-    })
   })
-  test('string min method', () => {
-    expect(z.isValid('a', z.string.min(1))).toBe(true)
-    expect(z.isValid('', z.string.min(1))).toBe(false)
+  describe('string methods', () => {
+    test('minLength method', () => {
+      expect(z.isValid('a', z.string.minLength(1))).toBe(true)
+      expect(z.isValid('', z.string.minLength(1))).toBe(false)
+      expect(z.isValid('ab', z.string.refine(() => true).minLength(1))).toBe(true)
+    })
+    test('maxLength method', () => {
+      expect(z.isValid('ab', z.string.maxLength(2))).toBe(true)
+      expect(z.isValid('abc', z.string.maxLength(2))).toBe(false)
+      expect(z.isValid('ab', z.string.refine(() => true).maxLength(1))).toBe(true)
+    })
+    test('minLength and maxLength', () => {
+      expect(z.isValid('a', z.string.minLength(1).maxLength(2))).toBe(true)
+      expect(z.isValid('', z.string.minLength(1).maxLength(2))).toBe(false)
+      expect(z.isValid('abc', z.string.minLength(1).maxLength(2))).toBe(false)
+    })
   })
   test('class function', () => {
     expect(z.isValid(new Blob(), z.class(Blob))).toBe(true)

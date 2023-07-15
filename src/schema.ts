@@ -25,7 +25,15 @@ type CommonPrototype = {
 
 const stringPrototype = {
   ...commonPrototype,
-  min: function <const T extends Schema, const N extends number>(this: T, bound: N) {
+  minLength: function <const T extends Schema, const N extends number>(this: T, bound: N) {
+    return {
+      ...stringPrototype,
+      type: 'refine',
+      base: this,
+      predicate: (value: string): value is string => value.length >= bound,
+    } as const
+  },
+  maxLength: function <const T extends Schema, const N extends number>(this: T, bound: N) {
     return {
       ...stringPrototype,
       type: 'refine',
@@ -38,7 +46,11 @@ const stringPrototype = {
   },
 } as const
 type StringPrototype = CommonPrototype & {
-  min: <const T extends Schema, const N extends number>(
+  minLength: <const T extends Schema, const N extends number>(
+    this: T,
+    bound: N
+  ) => StringPrototype & { type: 'refine'; base: T; predicate: (value: string) => value is string }
+  maxLength: <const T extends Schema, const N extends number>(
     this: T,
     bound: N
   ) => StringPrototype & { type: 'refine'; base: T; predicate: (value: string) => value is string }
