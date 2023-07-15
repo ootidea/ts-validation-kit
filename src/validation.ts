@@ -34,8 +34,6 @@ export function isValid<const T extends Schema>(
       return value === schema.value
     case 'Array':
       return Array.isArray(value) && value.every((v) => isValid(v, schema.value, re))
-    case 'NonEmptyArray':
-      return Array.isArray(value) && value.length > 0 && value.every((v) => isValid(v, schema.value, re))
     case 'tuple':
       return (
         Array.isArray(value) &&

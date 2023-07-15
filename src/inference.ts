@@ -1,11 +1,4 @@
-import {
-  FixedLengthArray,
-  IntegerRangeThrough,
-  MaxLengthArray,
-  MinLengthArray,
-  type NonEmptyArray as NonEmptyArrayType,
-  Simplify,
-} from 'base-up'
+import { FixedLengthArray, IntegerRangeThrough, MaxLengthArray, MinLengthArray, Simplify } from 'base-up'
 import {
   _class,
   _null,
@@ -18,7 +11,6 @@ import {
   intersection,
   literal,
   never,
-  NonEmptyArray,
   number,
   object,
   Record,
@@ -61,8 +53,6 @@ export type Infer<T extends Schema, Z extends RecursionMap = { [ANONYMOUS]: T }>
   ? L
   : T extends ReturnType<typeof Array<infer U extends Schema>>
   ? Infer<U, Z>[]
-  : T extends ReturnType<typeof NonEmptyArray<infer U extends Schema>>
-  ? NonEmptyArrayType<Infer<U, Z>>
   : T extends ReturnType<typeof tuple<infer A extends readonly Schema[]>>
   ? InferTupleType<A, Z>
   : T extends ReturnType<

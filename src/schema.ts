@@ -83,7 +83,6 @@ export type Schema = DiscriminatedUnion<{
   void: CommonPrototype
   literal: CommonPrototype & { value: unknown }
   Array: ArrayPrototype & { value: Schema }
-  NonEmptyArray: CommonPrototype & { value: Schema }
   tuple: CommonPrototype & { parts: readonly Schema[] }
   object: CommonPrototype & { required: Record<keyof any, Schema>; optional: Record<keyof any, Schema> }
   Record: CommonPrototype & { key: Schema; value: Schema }
@@ -119,10 +118,6 @@ export function literal<const T>(value: T) {
 
 export function Array<const T extends Schema>(value: T) {
   return { ...arrayPrototype, type: 'Array', value } as const
-}
-
-export function NonEmptyArray<const T extends Schema>(value: T) {
-  return { ...commonPrototype, type: 'NonEmptyArray', value } as const
 }
 
 export function tuple<const T extends readonly Schema[]>(...parts: T) {

@@ -75,12 +75,6 @@ describe('isValid', () => {
       expect(z.isValid([], z.Array(z.string).minLength(1).maxLength(2))).toBe(false)
     })
   })
-  test('NonEmptyArray function', () => {
-    expect(z.isValid([false, true], z.NonEmptyArray(z.boolean))).toBe(true)
-    expect(z.isValid([], z.NonEmptyArray(z.number))).toBe(false)
-    expect(z.isValid({ 0: false, 1: true }, z.NonEmptyArray(z.boolean))).toBe(false)
-    expect(z.isValid([123], z.NonEmptyArray(z.boolean))).toBe(false)
-  })
   test('tuple function', () => {
     expect(z.isValid([true, 123], z.tuple(z.boolean, z.number))).toBe(true)
     expect(z.isValid([true, 123], z.tuple(z.boolean, z.number, z.string))).toBe(false)

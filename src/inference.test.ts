@@ -39,8 +39,6 @@ describe('Infer', () => {
     test('Array function', () => {
       expectTypeOf(infer(z.Array(z.boolean))).toEqualTypeOf<boolean[]>()
       expectTypeOf(infer(z.Array(z.union(z.number, z.string)))).toEqualTypeOf<(number | string)[]>()
-
-      expectTypeOf(infer(z.NonEmptyArray(z.any))).toEqualTypeOf<NonEmptyArray<any>>()
     })
     test('minLength', () => {
       expectTypeOf(infer(z.Array(z.string).minLength(2))).toEqualTypeOf<MinLengthArray<2, string>>()

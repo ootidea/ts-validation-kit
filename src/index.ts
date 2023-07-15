@@ -11,7 +11,6 @@ import {
   literal,
   literalUnion,
   never,
-  NonEmptyArray,
   nullish,
   number,
   object,
@@ -45,7 +44,6 @@ const z = {
 
   literal,
   Array,
-  NonEmptyArray,
   tuple,
   object,
   Record,
