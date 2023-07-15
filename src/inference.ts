@@ -1,4 +1,4 @@
-import { type NonEmptyArray as NonEmptyArrayType, Simplify } from 'base-up'
+import { MinLengthArray, type NonEmptyArray as NonEmptyArrayType, Simplify } from 'base-up'
 import {
   _class,
   _null,
@@ -78,6 +78,14 @@ export type Infer<T extends Schema, Z extends RecursionMap = { [ANONYMOUS]: T }>
   ? Infer<U, Omit<Z, RecursionKey> & Record<RecursionKey, U>>
   : T extends ReturnType<typeof recursion<infer RecursionKey extends keyof any>>
   ? Infer<Z[RecursionKey], Z>
+  : T extends {
+      readonly type: 'minLengthArray'
+      readonly base: infer U extends Schema
+      readonly length: infer N extends number
+    }
+  ? Infer<U, Z> extends readonly (infer E)[]
+    ? MinLengthArray<N, E>
+    : never
   : never
 
 type InferTupleType<T extends readonly any[], Z extends RecursionMap> = T extends readonly [

@@ -1,6 +1,7 @@
-import { NonEmptyArray } from 'base-up'
+import { MinLengthArray, NonEmptyArray } from 'base-up'
 import { describe, expectTypeOf, test } from 'vitest'
 import { z } from './index'
+import { Infer } from './inference'
 import { Schema } from './schema'
 
 describe('Infer', () => {
@@ -34,11 +35,26 @@ describe('Infer', () => {
     expectTypeOf(infer(z.literal({}))).toEqualTypeOf<{}>()
     expectTypeOf(infer(z.literal({ name: 'Bob' }))).toEqualTypeOf<{ readonly name: 'Bob' }>()
   })
-  test('Array function', () => {
-    expectTypeOf(infer(z.Array(z.boolean))).toEqualTypeOf<boolean[]>()
-    expectTypeOf(infer(z.Array(z.union(z.number, z.string)))).toEqualTypeOf<(number | string)[]>()
+  describe('Array', () => {
+    test('Array function', () => {
+      expectTypeOf(infer(z.Array(z.boolean))).toEqualTypeOf<boolean[]>()
+      expectTypeOf(infer(z.Array(z.union(z.number, z.string)))).toEqualTypeOf<(number | string)[]>()
 
-    expectTypeOf(infer(z.NonEmptyArray(z.any))).toEqualTypeOf<NonEmptyArray<any>>()
+      expectTypeOf(infer(z.NonEmptyArray(z.any))).toEqualTypeOf<NonEmptyArray<any>>()
+    })
+    test('minLength', () => {
+      expectTypeOf(infer(z.Array(z.string).minLength(2))).toEqualTypeOf<MinLengthArray<2, string>>()
+      expectTypeOf(infer(z.Array(z.string).minLength(1))).toEqualTypeOf<NonEmptyArray<string>>()
+      expectTypeOf(infer(z.Array(z.string).minLength(0))).toEqualTypeOf<string[]>()
+      expectTypeOf(
+        infer(
+          z
+            .Array(z.string)
+            .minLength(1)
+            .refine((x) => true)
+        )
+      ).toEqualTypeOf<MinLengthArray<1, string>>()
+    })
   })
   test('tuple function', () => {
     expectTypeOf(infer(z.tuple(z.number, z.string))).toEqualTypeOf<[number, string]>()

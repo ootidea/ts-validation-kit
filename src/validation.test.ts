@@ -54,11 +54,17 @@ describe('isValid', () => {
     expect(z.isValid('xyz', z.literal('abc'))).toBe(false)
     expect(z.isValid(123, z.literal('abc'))).toBe(false)
   })
-  test('Array function', () => {
-    expect(z.isValid([false, true], z.Array(z.boolean))).toBe(true)
-    expect(z.isValid([], z.Array(z.number))).toBe(true)
-    expect(z.isValid({ 0: false, 1: true }, z.Array(z.boolean))).toBe(false)
-    expect(z.isValid([123], z.Array(z.boolean))).toBe(false)
+  describe('Array', () => {
+    test('Array function', () => {
+      expect(z.isValid([false, true], z.Array(z.boolean))).toBe(true)
+      expect(z.isValid([], z.Array(z.number))).toBe(true)
+      expect(z.isValid({ 0: false, 1: true }, z.Array(z.boolean))).toBe(false)
+      expect(z.isValid([123], z.Array(z.boolean))).toBe(false)
+    })
+    test('minLength', () => {
+      expect(z.isValid(['a', 'b'], z.Array(z.string).minLength(2))).toBe(true)
+      expect(z.isValid(['a'], z.Array(z.string).minLength(2))).toBe(false)
+    })
   })
   test('NonEmptyArray function', () => {
     expect(z.isValid([false, true], z.NonEmptyArray(z.boolean))).toBe(true)

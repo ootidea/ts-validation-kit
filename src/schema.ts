@@ -22,6 +22,7 @@ type CommonPrototype = {
   refine: typeof refineMethod
   readonly prototype: CommonPrototype
 }
+
 const stringPrototype = {
   ...commonPrototype,
   min: function <const T extends Schema, const N extends number>(this: T, bound: N) {
@@ -44,6 +45,23 @@ type StringPrototype = CommonPrototype & {
   readonly prototype: StringPrototype
 }
 
+const arrayPrototype = {
+  ...commonPrototype,
+  minLength: function <const T extends Schema, const N extends number>(this: T, length: N) {
+    return { ...arrayPrototype, type: 'minLengthArray', base: this, length } as const
+  },
+  get prototype(): ArrayPrototype {
+    return arrayPrototype
+  },
+} as const
+type ArrayPrototype = CommonPrototype & {
+  minLength: <const T extends Schema, const N extends number>(
+    this: T,
+    length: N
+  ) => ArrayPrototype & { type: 'minLengthArray'; base: T; length: N }
+  readonly prototype: ArrayPrototype
+}
+
 export type Schema = DiscriminatedUnion<{
   string: StringPrototype
   number: CommonPrototype
@@ -57,7 +75,7 @@ export type Schema = DiscriminatedUnion<{
   never: CommonPrototype
   void: CommonPrototype
   literal: CommonPrototype & { value: unknown }
-  Array: CommonPrototype & { value: Schema }
+  Array: ArrayPrototype & { value: Schema }
   NonEmptyArray: CommonPrototype & { value: Schema }
   tuple: CommonPrototype & { parts: readonly Schema[] }
   object: CommonPrototype & { required: Record<keyof any, Schema>; optional: Record<keyof any, Schema> }
@@ -68,6 +86,7 @@ export type Schema = DiscriminatedUnion<{
   class: CommonPrototype & { constructor: abstract new (..._: any) => any }
   recursive: CommonPrototype & { value: Schema; key: keyof any }
   recursion: CommonPrototype & { key: keyof any }
+  minLengthArray: ArrayPrototype & { base: Schema; length: number }
 }>
 
 /** The default value when the key is omitted in {@link z.recursion} or {@link z.recursive}. */
@@ -91,7 +110,7 @@ export function literal<const T>(value: T) {
 }
 
 export function Array<const T extends Schema>(value: T) {
-  return { ...commonPrototype, type: 'Array', value } as const
+  return { ...arrayPrototype, type: 'Array', value } as const
 }
 
 export function NonEmptyArray<const T extends Schema>(value: T) {
