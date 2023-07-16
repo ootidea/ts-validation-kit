@@ -1,4 +1,4 @@
-import { assert, assertNeverType, entriesOf, isNotUndefined } from 'base-up'
+import { assert, assertNeverType, isNotUndefined } from 'base-up'
 import { Infer } from './inference'
 import { ANONYMOUS, Schema } from './schema'
 
@@ -44,10 +44,10 @@ export function isValid<const T extends Schema>(
       if (typeof value !== 'object' || value === null) return false
 
       return (
-        entriesOf(schema.required).every(
+        globalThis.Object.entries(schema.required).every(
           ([key, subSchema]) => key in value && isValid((value as any)[key], subSchema, re)
         ) &&
-        entriesOf(schema.optional).every(
+        globalThis.Object.entries(schema.optional).every(
           ([key, subSchema]) => !(key in value) || isValid((value as any)[key], subSchema, re)
         )
       )
