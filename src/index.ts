@@ -14,6 +14,7 @@ import {
   nullish,
   number,
   object,
+  optional,
   Record,
   recursion,
   recursive,
@@ -54,6 +55,7 @@ const z = {
   class: _class,
   recursive,
   recursion,
+  optional,
 
   /**
    * Determine whether the given value satisfies the schema.

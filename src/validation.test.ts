@@ -86,9 +86,9 @@ describe('isValid', () => {
     expect(z.isValid({ name: 'John' }, z.object({ name: z.string }))).toBe(true)
     expect(z.isValid({ name: 'John' }, z.object({ name: z.symbol }))).toBe(false)
 
-    expect(z.isValid({ name: 'John' }, z.object({}, { age: z.number }))).toBe(true)
-    expect(z.isValid({ name: 'John', age: 42 }, z.object({}, { age: z.number }))).toBe(true)
-    expect(z.isValid({ name: 'John', age: '42' }, z.object({}, { age: z.number }))).toBe(false)
+    expect(z.isValid({ name: 'John' }, z.object({ age: z.optional(z.number) }))).toBe(true)
+    expect(z.isValid({ name: 'John', age: 42 }, z.object({ age: z.optional(z.number) }))).toBe(true)
+    expect(z.isValid({ name: 'John', age: '42' }, z.object({ age: z.optional(z.number) }))).toBe(false)
   })
   test('Record function', () => {
     expect(z.isValid({ a: 1, b: 2 }, z.Record(z.string, z.number))).toBe(true)

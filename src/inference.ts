@@ -13,6 +13,7 @@ import {
   never,
   number,
   object,
+  OptionalSchema,
   Record,
   recursion,
   recursive,
@@ -55,10 +56,8 @@ export type Infer<T extends Schema, Z extends RecursionMap = { [ANONYMOUS]: T }>
   ? Infer<U, Z>[]
   : T extends ReturnType<typeof tuple<infer A extends readonly Schema[]>>
   ? InferTupleType<A, Z>
-  : T extends ReturnType<
-      typeof object<infer R extends Record<keyof any, Schema>, infer O extends Record<keyof any, Schema>>
-    >
-  ? InferObjectType<R, O, Z>
+  : T extends ReturnType<typeof object<infer R extends Record<keyof any, Schema | OptionalSchema>>>
+  ? InferObjectType<R, Z>
   : T extends ReturnType<typeof Record<infer Key extends Schema, infer Value extends Schema>>
   ? Infer<Key, Z> extends infer K extends keyof any
     ? Record<K, Infer<Value, Z>>
@@ -104,15 +103,16 @@ type InferTupleType<T extends readonly any[], Z extends RecursionMap> = T extend
   ? [Infer<H, Z>, ...InferTupleType<L, Z>]
   : []
 
-type InferObjectType<
-  T extends Record<keyof any, Schema>,
-  U extends Record<keyof any, Schema>,
-  Z extends RecursionMap
-> = Simplify<
+type InferObjectType<T extends Record<keyof any, Schema | OptionalSchema>, Z extends RecursionMap> = Simplify<
   {
-    [K in keyof T]: Infer<T[K], Z>
+    [K in keyof T as T[K] extends Schema ? K : never]: Infer<T[K] extends infer S extends Schema ? S : never, Z>
   } & {
-    [K in keyof U]?: Infer<U[K], Z>
+    [K in keyof T as T[K] extends Schema ? never : K]?: T[K] extends {
+      readonly type: 'optional'
+      readonly base: infer O extends Schema
+    }
+      ? Infer<O, Z>
+      : never
   }
 >
 

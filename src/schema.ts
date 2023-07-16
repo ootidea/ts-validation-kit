@@ -96,7 +96,7 @@ export type Schema = DiscriminatedUnion<{
   literal: CommonPrototype & { value: unknown }
   Array: ArrayPrototype & { value: Schema }
   tuple: CommonPrototype & { parts: readonly Schema[] }
-  object: CommonPrototype & { required: Record<keyof any, Schema>; optional: Record<keyof any, Schema> }
+  object: CommonPrototype & { properties: Record<keyof any, Schema | OptionalSchema> }
   Record: CommonPrototype & { key: Schema; value: Schema }
   union: CommonPrototype & { parts: readonly Schema[] }
   intersection: CommonPrototype & { parts: readonly Schema[] }
@@ -136,18 +136,10 @@ export function tuple<const T extends readonly Schema[]>(...parts: T) {
   return { ...commonPrototype, type: 'tuple', parts } as const
 }
 
-export function object<T extends Record<keyof any, Schema>>(
-  required: T
-): CommonPrototype & { type: 'object'; required: T; optional: Record<never, Schema> }
-export function object<T extends Record<keyof any, Schema>, U extends Record<keyof any, Schema>>(
-  required: T,
-  optional: U
-): CommonPrototype & { type: 'object'; required: T; optional: U }
-export function object<T extends Record<keyof any, Schema>, U extends Record<keyof any, Schema>>(
-  required: T,
-  optional?: U
-) {
-  return { ...commonPrototype, type: 'object', required, optional: optional ?? {} } as const
+export function object<T extends Record<keyof any, Schema | OptionalSchema>>(
+  properties: T
+): CommonPrototype & { type: 'object'; properties: T } {
+  return { ...commonPrototype, type: 'object', properties } as const
 }
 
 export function Record<const Key extends Schema, const Value extends Schema>(key: Key, value: Value) {
@@ -226,6 +218,11 @@ export function recursive<const T extends Schema, const K extends keyof any>(fir
     return { ...commonPrototype, type: 'recursive', value: first, key: ANONYMOUS } as const
   }
   return { ...commonPrototype, type: 'recursive', value: second, key: first } as const
+}
+
+export type OptionalSchema = { readonly type: 'optional'; readonly base: Schema }
+export function optional<const T extends Schema>(base: T) {
+  return { type: 'optional', base } as const
 }
 
 function withPrototype<const T, const P extends object>(target: T, prototype: P): T & P {

@@ -43,14 +43,13 @@ export function isValid<const T extends Schema>(
     case 'object':
       if (typeof value !== 'object' || value === null) return false
 
-      return (
-        globalThis.Object.entries(schema.required).every(
-          ([key, subSchema]) => key in value && isValid((value as any)[key], subSchema, re)
-        ) &&
-        globalThis.Object.entries(schema.optional).every(
-          ([key, subSchema]) => !(key in value) || isValid((value as any)[key], subSchema, re)
-        )
-      )
+      return globalThis.Object.entries(schema.properties).every(([key, subSchema]) => {
+        if (subSchema.type === 'optional') {
+          return !(key in value) || isValid((value as any)[key], subSchema.base, re)
+        } else {
+          return key in value && isValid((value as any)[key], subSchema, re)
+        }
+      })
     case 'Record':
       if (typeof value !== 'object' || value === null) return false
 

@@ -119,7 +119,7 @@ describe('Infer', () => {
   })
   test('object function', () => {
     expectTypeOf(infer(z.object({ name: z.string }))).toEqualTypeOf<{ name: string }>()
-    expectTypeOf(infer(z.object({ name: z.string }, { age: z.number }))).toEqualTypeOf<{
+    expectTypeOf(infer(z.object({ name: z.string, age: z.optional(z.number) }))).toEqualTypeOf<{
       name: string
       age?: number
     }>()
