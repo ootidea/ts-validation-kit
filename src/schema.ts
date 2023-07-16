@@ -30,7 +30,7 @@ const stringPrototype = {
       ...stringPrototype,
       type: 'refine',
       base: this,
-      predicate: (value: string): value is string => value.length >= bound,
+      predicate: (value: string): value is string => bound <= value.length,
     } as const
   },
   maxLength: function <const T extends Schema, const N extends number>(this: T, bound: N) {
@@ -38,7 +38,7 @@ const stringPrototype = {
       ...stringPrototype,
       type: 'refine',
       base: this,
-      predicate: (value: string): value is string => value.length >= bound,
+      predicate: (value: string): value is string => value.length <= bound,
     } as const
   },
   get prototype(): StringPrototype {

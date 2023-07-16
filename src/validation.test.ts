@@ -175,7 +175,7 @@ describe('isValid', () => {
     test('maxLength method', () => {
       expect(z.isValid('ab', z.string.maxLength(2))).toBe(true)
       expect(z.isValid('abc', z.string.maxLength(2))).toBe(false)
-      expect(z.isValid('ab', z.string.refine(() => true).maxLength(1))).toBe(true)
+      expect(z.isValid('ab', z.string.refine(() => true).maxLength(2))).toBe(true)
     })
     test('minLength and maxLength', () => {
       expect(z.isValid('a', z.string.minLength(1).maxLength(2))).toBe(true)
