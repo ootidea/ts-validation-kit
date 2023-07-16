@@ -57,6 +57,40 @@ type StringPrototype = CommonPrototype & {
   readonly prototype: StringPrototype
 }
 
+const numberPrototype = {
+  ...commonPrototype,
+  min: function <const T extends Schema, const N extends number>(this: T, bound: N) {
+    return {
+      ...numberPrototype,
+      type: 'refine',
+      base: this,
+      predicate: (value: number): value is number => bound <= value,
+    } as const
+  },
+  max: function <const T extends Schema, const N extends number>(this: T, bound: N) {
+    return {
+      ...numberPrototype,
+      type: 'refine',
+      base: this,
+      predicate: (value: number): value is number => value <= bound,
+    } as const
+  },
+  get prototype(): NumberPrototype {
+    return numberPrototype
+  },
+} as const
+type NumberPrototype = CommonPrototype & {
+  min: <const T extends Schema, const N extends number>(
+    this: T,
+    bound: N
+  ) => NumberPrototype & { type: 'refine'; base: T; predicate: (value: number) => value is number }
+  max: <const T extends Schema, const N extends number>(
+    this: T,
+    bound: N
+  ) => NumberPrototype & { type: 'refine'; base: T; predicate: (value: number) => value is number }
+  readonly prototype: NumberPrototype
+}
+
 const arrayPrototype = {
   ...commonPrototype,
   minLength: function <const T extends Schema, const N extends number>(this: T, length: N) {
@@ -83,7 +117,7 @@ type ArrayPrototype = CommonPrototype & {
 
 export type Schema = DiscriminatedUnion<{
   string: StringPrototype
-  number: CommonPrototype
+  number: NumberPrototype
   boolean: CommonPrototype
   bigint: CommonPrototype
   symbol: CommonPrototype
@@ -112,7 +146,7 @@ export type Schema = DiscriminatedUnion<{
 export const ANONYMOUS = Symbol()
 
 export const string = { ...stringPrototype, type: 'string' } as const satisfies Schema
-export const number = { ...commonPrototype, type: 'number' } as const satisfies Schema
+export const number = { ...numberPrototype, type: 'number' } as const satisfies Schema
 export const boolean = { ...commonPrototype, type: 'boolean' } as const satisfies Schema
 export const bigint = { ...commonPrototype, type: 'bigint' } as const satisfies Schema
 export const symbol = { ...commonPrototype, type: 'symbol' } as const satisfies Schema

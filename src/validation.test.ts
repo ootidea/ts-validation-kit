@@ -183,6 +183,23 @@ describe('isValid', () => {
       expect(z.isValid('abc', z.string.minLength(1).maxLength(2))).toBe(false)
     })
   })
+  describe('number methods', () => {
+    test('min method', () => {
+      expect(z.isValid(0, z.number.min(0))).toBe(true)
+      expect(z.isValid(-1, z.number.min(0))).toBe(false)
+      expect(z.isValid(1, z.number.refine(() => true).min(0))).toBe(true)
+    })
+    test('max method', () => {
+      expect(z.isValid(10, z.number.max(10))).toBe(true)
+      expect(z.isValid(11, z.number.max(10))).toBe(false)
+      expect(z.isValid(0, z.number.refine(() => true).max(10))).toBe(true)
+    })
+    test('min and max', () => {
+      expect(z.isValid(5, z.number.min(0).max(10))).toBe(true)
+      expect(z.isValid(-1, z.number.min(0).max(10))).toBe(false)
+      expect(z.isValid(11, z.number.min(0).max(10))).toBe(false)
+    })
+  })
   test('class function', () => {
     expect(z.isValid(new Blob(), z.class(Blob))).toBe(true)
     expect(z.isValid(new Date(), z.class(URL))).toBe(false)
