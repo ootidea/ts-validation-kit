@@ -60,16 +60,16 @@ describe('Infer', () => {
           z
             .Array(z.string)
             .minLength(1)
-            .refine(() => true)
-        )
+            .refine(() => true),
+        ),
       ).toEqualTypeOf<MinLengthArray<1, string>>()
       expectTypeOf(
         infer(
           z
             .Array(z.string)
             .refine(() => true)
-            .minLength(1)
-        )
+            .minLength(1),
+        ),
       ).toEqualTypeOf<MinLengthArray<1, string>>()
     })
     test('maxLength', () => {
@@ -80,16 +80,16 @@ describe('Infer', () => {
           z
             .Array(z.string)
             .maxLength(2)
-            .refine(() => true)
-        )
+            .refine(() => true),
+        ),
       ).toEqualTypeOf<MaxLengthArray<2, string>>()
       expectTypeOf(
         infer(
           z
             .Array(z.string)
             .refine(() => true)
-            .maxLength(2)
-        )
+            .maxLength(2),
+        ),
       ).toEqualTypeOf<MaxLengthArray<2, string>>()
     })
     test('minLength and maxLength', () => {
@@ -105,8 +105,8 @@ describe('Infer', () => {
             .Array(z.any)
             .minLength(1)
             .refine(() => true)
-            .maxLength(3)
-        )
+            .maxLength(3),
+        ),
       ).toEqualTypeOf<[any] | [any, any] | [any, any, any]>()
       expectTypeOf(
         infer(
@@ -114,8 +114,8 @@ describe('Infer', () => {
             .Array(z.any)
             .maxLength(3)
             .refine(() => true)
-            .minLength(1)
-        )
+            .minLength(1),
+        ),
       ).toEqualTypeOf<[any] | [any, any] | [any, any, any]>()
     })
   })
@@ -148,7 +148,9 @@ describe('Infer', () => {
   test('or method', () => {
     expectTypeOf(infer(z.number.or(z.undefined))).toEqualTypeOf<number | undefined>()
     expectTypeOf(infer(z.literal('abc').or(z.literal(123)))).toEqualTypeOf<'abc' | 123>()
-    expectTypeOf(infer(z.number.or(z.undefined).or(z.null))).toEqualTypeOf<number | undefined | null>()
+    expectTypeOf(infer(z.number.or(z.undefined).or(z.null))).toEqualTypeOf<
+      number | undefined | null
+    >()
   })
   test('literalUnion function', () => {
     expectTypeOf(infer(z.literalUnion('abc', 123))).toEqualTypeOf<'abc' | 123>()
@@ -157,7 +159,9 @@ describe('Infer', () => {
   })
   test('intersection function', () => {
     expectTypeOf(infer(z.intersection(z.string, z.object({})))).toEqualTypeOf<string & {}>()
-    expectTypeOf(infer(z.intersection(z.object({ name: z.string }), z.object({ age: z.number })))).toEqualTypeOf<
+    expectTypeOf(
+      infer(z.intersection(z.object({ name: z.string }), z.object({ age: z.number }))),
+    ).toEqualTypeOf<
       {
         name: string
       } & {
@@ -171,7 +175,8 @@ describe('Infer', () => {
     const isEmpty = (value: string): value is '' => value === ''
     expectTypeOf(infer(z.refine(z.string, isEmpty))).toEqualTypeOf<''>()
 
-    const isUnder3 = (value: number): value is 0 | 1 | 2 => Number.isInteger(value) && 0 <= value && value <= 2
+    const isUnder3 = (value: number): value is 0 | 1 | 2 =>
+      Number.isInteger(value) && 0 <= value && value <= 2
     expectTypeOf(infer(z.refine(z.number, isUnder3))).toEqualTypeOf<0 | 1 | 2>()
   })
   test('refine method', () => {
@@ -180,7 +185,8 @@ describe('Infer', () => {
     const isEmpty = (value: string): value is '' => value === ''
     expectTypeOf(infer(z.string.refine(isEmpty))).toEqualTypeOf<''>()
 
-    const isUnder3 = (value: number): value is 0 | 1 | 2 => Number.isInteger(value) && 0 <= value && value <= 2
+    const isUnder3 = (value: number): value is 0 | 1 | 2 =>
+      Number.isInteger(value) && 0 <= value && value <= 2
     expectTypeOf(infer(z.number.refine(isUnder3))).toEqualTypeOf<0 | 1 | 2>()
   })
   test('class function', () => {
@@ -204,9 +210,9 @@ describe('Infer', () => {
         infer(
           z.union(
             z.object({ type: z.literal('Nil') }),
-            z.object({ type: z.literal('Cons'), value: z.number, next: z.recursion })
-          )
-        )
+            z.object({ type: z.literal('Cons'), value: z.number, next: z.recursion }),
+          ),
+        ),
       ).toEqualTypeOf<List<number>>()
     })
     test('with z.recursive', () => {
@@ -216,11 +222,11 @@ describe('Infer', () => {
             z.recursive(
               z.union(
                 z.object({ type: z.literal('Nil') }),
-                z.object({ type: z.literal('Cons'), value: z.number, next: z.recursion })
-              )
-            )
-          )
-        )
+                z.object({ type: z.literal('Cons'), value: z.number, next: z.recursion }),
+              ),
+            ),
+          ),
+        ),
       ).toEqualTypeOf<List<number>[]>()
     })
     test('keyed recursion', () => {
@@ -230,10 +236,10 @@ describe('Infer', () => {
             'List',
             z.union(
               z.object({ type: z.literal('Nil') }),
-              z.object({ type: z.literal('Cons'), value: z.number, next: z.recursion('List') })
-            )
-          )
-        )
+              z.object({ type: z.literal('Cons'), value: z.number, next: z.recursion('List') }),
+            ),
+          ),
+        ),
       ).toEqualTypeOf<List<number>>()
     })
   })

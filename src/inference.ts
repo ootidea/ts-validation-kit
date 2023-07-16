@@ -1,4 +1,10 @@
-import { FixedLengthArray, IntegerRangeThrough, MaxLengthArray, MinLengthArray, Simplify } from 'base-up'
+import {
+  FixedLengthArray,
+  IntegerRangeThrough,
+  MaxLengthArray,
+  MinLengthArray,
+  Simplify,
+} from 'base-up'
 import {
   _class,
   _null,
@@ -28,7 +34,10 @@ import {
 
 type RecursionMap = Record<keyof any, Schema>
 
-export type Infer<T extends Schema, Z extends RecursionMap = { [ANONYMOUS]: T }> = T extends typeof unknown
+export type Infer<
+  T extends Schema,
+  Z extends RecursionMap = { [ANONYMOUS]: T },
+> = T extends typeof unknown
   ? unknown
   : T extends typeof string
   ? string
@@ -66,11 +75,17 @@ export type Infer<T extends Schema, Z extends RecursionMap = { [ANONYMOUS]: T }>
   ? InferUnionType<A, Z>
   : T extends ReturnType<typeof intersection<infer A extends readonly Schema[]>>
   ? InferIntersectionType<A, Z>
-  : T extends { readonly type: 'refine'; readonly base: any; readonly predicate: (value: any) => value is infer R }
+  : T extends {
+      readonly type: 'refine'
+      readonly base: any
+      readonly predicate: (value: any) => value is infer R
+    }
   ? R
   : T extends ReturnType<typeof _class<infer C>>
   ? C
-  : T extends ReturnType<typeof recursive<infer U extends Schema, infer RecursionKey extends keyof any>>
+  : T extends ReturnType<
+      typeof recursive<infer U extends Schema, infer RecursionKey extends keyof any>
+    >
   ? Infer<U, Omit<Z, RecursionKey> & Record<RecursionKey, U>>
   : T extends ReturnType<typeof recursion<infer RecursionKey extends keyof any>>
   ? Infer<Z[RecursionKey], Z>
@@ -98,14 +113,20 @@ export type Infer<T extends Schema, Z extends RecursionMap = { [ANONYMOUS]: T }>
 
 type InferTupleType<T extends readonly any[], Z extends RecursionMap> = T extends readonly [
   infer H extends Schema,
-  ...infer L
+  ...infer L,
 ]
   ? [Infer<H, Z>, ...InferTupleType<L, Z>]
   : []
 
-type InferObjectType<T extends Record<keyof any, Schema | OptionalSchema>, Z extends RecursionMap> = Simplify<
+type InferObjectType<
+  T extends Record<keyof any, Schema | OptionalSchema>,
+  Z extends RecursionMap,
+> = Simplify<
   {
-    [K in keyof T as T[K] extends Schema ? K : never]: Infer<T[K] extends infer S extends Schema ? S : never, Z>
+    [K in keyof T as T[K] extends Schema ? K : never]: Infer<
+      T[K] extends infer S extends Schema ? S : never,
+      Z
+    >
   } & {
     [K in keyof T as T[K] extends Schema ? never : K]?: T[K] extends {
       readonly type: 'optional'
@@ -118,14 +139,14 @@ type InferObjectType<T extends Record<keyof any, Schema | OptionalSchema>, Z ext
 
 type InferUnionType<T extends readonly any[], Z extends RecursionMap> = T extends readonly [
   infer H extends Schema,
-  ...infer L
+  ...infer L,
 ]
   ? Infer<H, Z> | InferUnionType<L, Z>
   : never
 
 type InferIntersectionType<T extends readonly any[], Z extends RecursionMap> = T extends readonly [
   infer H extends Schema,
-  ...infer L
+  ...infer L,
 ]
   ? Infer<H, Z> & InferUnionType<L, Z>
   : unknown

@@ -6,7 +6,7 @@ import { ANONYMOUS, Schema } from './schema'
 export function isValid<const T extends Schema>(
   value: unknown,
   schema: T,
-  re: Record<keyof any, Schema> = { [ANONYMOUS]: schema }
+  re: Record<keyof any, Schema> = { [ANONYMOUS]: schema },
 ): value is Infer<T> {
   switch (schema.type) {
     case 'string':
@@ -77,9 +77,13 @@ export function isValid<const T extends Schema>(
       assert(recursionSchema, isNotUndefined)
       return isValid(value, recursionSchema, re)
     case 'minLengthArray':
-      return isValid(value, schema.base, re) && Array.isArray(value) && schema.length <= value.length
+      return (
+        isValid(value, schema.base, re) && Array.isArray(value) && schema.length <= value.length
+      )
     case 'maxLengthArray':
-      return isValid(value, schema.base, re) && Array.isArray(value) && value.length <= schema.length
+      return (
+        isValid(value, schema.base, re) && Array.isArray(value) && value.length <= schema.length
+      )
     default:
       assertNeverType(schema)
   }
