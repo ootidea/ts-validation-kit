@@ -44,6 +44,7 @@ describe('Infer', () => {
     expectTypeOf(infer(z.number.min(0))).toEqualTypeOf<number>()
     expectTypeOf(infer(z.number.max(100))).toEqualTypeOf<number>()
     expectTypeOf(infer(z.number.min(0).max(100))).toEqualTypeOf<number>()
+    expectTypeOf(infer(z.number.integer())).toEqualTypeOf<number>()
   })
   describe('Array', () => {
     test('Array function', () => {

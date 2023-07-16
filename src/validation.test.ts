@@ -194,10 +194,16 @@ describe('isValid', () => {
       expect(z.isValid(11, z.number.max(10))).toBe(false)
       expect(z.isValid(0, z.number.refine(() => true).max(10))).toBe(true)
     })
-    test('min and max', () => {
+    test('min and max method', () => {
       expect(z.isValid(5, z.number.min(0).max(10))).toBe(true)
       expect(z.isValid(-1, z.number.min(0).max(10))).toBe(false)
       expect(z.isValid(11, z.number.min(0).max(10))).toBe(false)
+    })
+    test('integer method', () => {
+      expect(z.isValid(0, z.number.integer())).toBe(true)
+      expect(z.isValid(1.5, z.number.integer())).toBe(false)
+      expect(z.isValid(Infinity, z.number.integer())).toBe(false)
+      expect(z.isValid(NaN, z.number.integer())).toBe(false)
     })
   })
   test('class function', () => {

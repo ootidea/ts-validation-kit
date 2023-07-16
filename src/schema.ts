@@ -75,6 +75,14 @@ const numberPrototype = {
       predicate: (value: number): value is number => value <= bound,
     } as const
   },
+  integer: function <const T extends Schema>(this: T) {
+    return {
+      ...numberPrototype,
+      type: 'refine',
+      base: this,
+      predicate: (value: number): value is number => Number.isInteger(value),
+    } as const
+  },
   get prototype(): NumberPrototype {
     return numberPrototype
   },
@@ -87,6 +95,9 @@ type NumberPrototype = CommonPrototype & {
   max: <const T extends Schema, const N extends number>(
     this: T,
     bound: N
+  ) => NumberPrototype & { type: 'refine'; base: T; predicate: (value: number) => value is number }
+  integer: <const T extends Schema>(
+    this: T
   ) => NumberPrototype & { type: 'refine'; base: T; predicate: (value: number) => value is number }
   readonly prototype: NumberPrototype
 }
