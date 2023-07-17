@@ -2,10 +2,10 @@ import { Tuple } from 'base-up'
 
 const number = {
   type: 'number',
-  // get integer() {
-  //   const result = refinedNumber(this, (value: number): value is number => Number.isInteger(value))
-  //   return withPrototype(() => result, result)
-  // },
+  get integer() {
+    const result = refinedNumber(this, (value: number): value is number => Number.isInteger(value))
+    return withPrototype(() => result, result)
+  },
   refine<T extends number>(predicate: (value: number) => value is T) {
     return refinedNumber(this, predicate)
   },
@@ -16,10 +16,10 @@ const refinedNumber = <T, U, V extends U>(base: T, predicate: (value: U) => valu
     type: 'refinedNumber',
     base,
     predicate,
-    // get integer() {
-    //   const result = refinedNumber(this, (value: V): value is V => Number.isInteger(value))
-    //   return withPrototype(() => result, result)
-    // },
+    get integer() {
+      const result = refinedNumber(this, (value: V): value is V => Number.isInteger(value))
+      return withPrototype(() => result, result)
+    },
     refine<W extends V>(predicate: (value: V) => value is W) {
       return refinedNumber(this, predicate)
     },
