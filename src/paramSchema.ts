@@ -1,4 +1,4 @@
-import { Tuple } from 'base-up'
+import { MinLengthArray, Tuple } from 'base-up'
 
 const number = {
   type: 'number',
@@ -37,7 +37,15 @@ export const Array = <T extends object>(element: T) =>
     },
   }) as const
 
-const refinedArray = <const T extends object, U extends Infer<T>>(
+const refinedArray = <
+  const T extends
+    | { type: 'Array'; element: any }
+    | {
+        type: 'refinedArray'
+        predicate: (value: any) => value is any
+      },
+  U extends Infer<T>,
+>(
   base: T,
   predicate: (value: Infer<T>) => value is U,
 ) =>
@@ -47,6 +55,15 @@ const refinedArray = <const T extends object, U extends Infer<T>>(
     predicate,
     refine<V extends U>(predicate: (value: U) => value is V) {
       return refinedArray(this, predicate)
+    },
+    minLength<N extends number>(length: N) {
+      return refinedArray(
+        this,
+        (
+          value: U,
+        ): value is MinLengthArray<N, U[number]> extends infer P ? (P extends U ? P : U) : never =>
+          value.length >= length,
+      )
     },
   }) as const
 
@@ -93,6 +110,6 @@ const p = infer(
 )
 const a = infer(
   Array(number)
-    .refine((value): value is [] | [number] => value.length < 2)
-    .refine((value): value is [] => value.length === 0),
+    .refine((value): value is number[] => value.length < 2)
+    .minLength(1),
 )
