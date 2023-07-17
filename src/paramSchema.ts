@@ -1,3 +1,5 @@
+import { Tuple } from 'base-up'
+
 const number = {
   type: 'number',
   // get integer() {
@@ -45,6 +47,10 @@ const refinedArray = <const T extends object, U, V extends U>(
     },
   }) as const
 
+export function union<T extends readonly any[]>(...parts: T) {
+  return { type: 'union', parts } as const
+}
+
 type Infer<T> = T extends { type: 'number' }
   ? number
   : T extends {
@@ -59,6 +65,11 @@ type Infer<T> = T extends { type: 'number' }
       predicate: (value: any) => value is infer P
     }
   ? P
+  : T extends { type: 'union'; parts: infer P extends Tuple }
+  ? InferUnionType<P>
+  : never
+type InferUnionType<T extends Tuple> = T extends readonly [infer H, ...infer L]
+  ? Infer<H> | InferUnionType<L>
   : never
 
 function infer<const T>(value: T): Infer<T> {
