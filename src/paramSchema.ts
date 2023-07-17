@@ -1,4 +1,4 @@
-import { MinLengthArray, Tuple } from 'base-up'
+import { MinLengthArray, Simplify, Tuple } from 'base-up'
 
 const number = {
   type: 'number',
@@ -71,6 +71,10 @@ export function literal<const T>(value: T) {
   return { type: 'literal', value } as const
 }
 
+export function object<const T extends object>(properties: T) {
+  return { type: 'object', properties } as const
+}
+
 export function union<T extends readonly any[]>(...parts: T) {
   return { type: 'union', parts } as const
 }
@@ -91,9 +95,14 @@ type Infer<T> = T extends { type: 'number' }
   ? P
   : T extends { type: 'literal'; value: infer V }
   ? V
+  : T extends { type: 'object'; properties: infer P }
+  ? InferObjectType<P>
   : T extends { type: 'union'; parts: infer P extends Tuple }
   ? InferUnionType<P>
   : never
+type InferObjectType<T> = Simplify<{
+  -readonly [K in keyof T]: Infer<T[K]>
+}>
 type InferUnionType<T extends Tuple> = T extends readonly [infer H, ...infer L]
   ? Infer<H> | InferUnionType<L>
   : never
