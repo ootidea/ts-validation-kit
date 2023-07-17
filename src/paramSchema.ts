@@ -11,16 +11,19 @@ const number = {
   },
 } as const
 
-const refinedNumber = <T, U, V extends U>(base: T, predicate: (value: U) => value is V) =>
+const refinedNumber = <T, U extends Infer<T>>(
+  base: T,
+  predicate: (value: Infer<T>) => value is U,
+) =>
   ({
     type: 'refinedNumber',
     base,
     predicate,
     get integer() {
-      const result = refinedNumber(this, (value: V): value is V => Number.isInteger(value))
+      const result = refinedNumber(this, (value: U): value is U => Number.isInteger(value))
       return withPrototype(() => result, result)
     },
-    refine<W extends V>(predicate: (value: V) => value is W) {
+    refine<V extends U>(predicate: (value: U) => value is V) {
       return refinedNumber(this, predicate)
     },
   }) as const
@@ -29,21 +32,21 @@ export const Array = <T extends object>(element: T) =>
   ({
     type: 'Array',
     element,
-    refine<U extends readonly Infer<T>[]>(predicate: (value: readonly Infer<T>[]) => value is U) {
+    refine<U extends Infer<T>[]>(predicate: (value: Infer<T>[]) => value is U) {
       return refinedArray(this, predicate)
     },
   }) as const
 
-const refinedArray = <const T extends object, U, V extends U>(
+const refinedArray = <const T extends object, U extends Infer<T>>(
   base: T,
-  predicate: (value: U) => value is V,
+  predicate: (value: Infer<T>) => value is U,
 ) =>
   ({
     type: 'refinedArray',
     base,
     predicate,
-    refine<W extends V>(predicate: (value: V) => value is W) {
-      return refinedArray(base, predicate)
+    refine<V extends U>(predicate: (value: U) => value is V) {
+      return refinedArray(this, predicate)
     },
   }) as const
 
