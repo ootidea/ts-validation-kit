@@ -67,6 +67,10 @@ const refinedArray = <
     },
   }) as const
 
+export function literal<const T>(value: T) {
+  return { type: 'literal', value } as const
+}
+
 export function union<T extends readonly any[]>(...parts: T) {
   return { type: 'union', parts } as const
 }
@@ -85,6 +89,8 @@ type Infer<T> = T extends { type: 'number' }
       predicate: (value: any) => value is infer P
     }
   ? P
+  : T extends { type: 'literal'; value: infer V }
+  ? V
   : T extends { type: 'union'; parts: infer P extends Tuple }
   ? InferUnionType<P>
   : never
