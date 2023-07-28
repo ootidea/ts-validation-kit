@@ -107,9 +107,6 @@ type InferUnionType<T extends Tuple> = T extends readonly [infer H, ...infer L]
   ? Infer<H> | InferUnionType<L>
   : never
 
-function infer<const T>(value: T): Infer<T> {
-  return value as any
-}
 export function withPrototype<const T, const P extends object>(
   target: T,
   prototype: P,
@@ -118,6 +115,9 @@ export function withPrototype<const T, const P extends object>(
   return target as any
 }
 
+function infer<const T>(value: T): Infer<T> {
+  return value as any
+}
 const p = infer(
   number
     .refine((value): value is 1 | 2 | 3 => value === 1)
