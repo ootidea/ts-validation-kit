@@ -1,6 +1,7 @@
-import { MinLengthArray, Simplify, Tuple } from 'base-up'
+import { MinLengthArray } from 'base-up'
+import { Infer } from './inference'
 
-const number = {
+export const number = {
   type: 'number',
   get integer() {
     const result = refinedNumber(this, (value: number): value is number => Number.isInteger(value))
@@ -79,34 +80,6 @@ export function union<T extends readonly any[]>(...parts: T) {
   return { type: 'union', parts } as const
 }
 
-type Infer<T> = T extends { type: 'number' }
-  ? number
-  : T extends {
-      type: 'refinedNumber'
-      predicate: (value: any) => value is infer P
-    }
-  ? P
-  : T extends { type: 'Array'; element: infer E }
-  ? Infer<E>[]
-  : T extends {
-      type: 'refinedArray'
-      predicate: (value: any) => value is infer P
-    }
-  ? P
-  : T extends { type: 'literal'; value: infer V }
-  ? V
-  : T extends { type: 'object'; properties: infer P }
-  ? InferObjectType<P>
-  : T extends { type: 'union'; parts: infer P extends Tuple }
-  ? InferUnionType<P>
-  : never
-type InferObjectType<T> = Simplify<{
-  -readonly [K in keyof T]: Infer<T[K]>
-}>
-type InferUnionType<T extends Tuple> = T extends readonly [infer H, ...infer L]
-  ? Infer<H> | InferUnionType<L>
-  : never
-
 export function withPrototype<const T, const P extends object>(
   target: T,
   prototype: P,
@@ -114,17 +87,3 @@ export function withPrototype<const T, const P extends object>(
   Object.setPrototypeOf(target, prototype)
   return target as any
 }
-
-function infer<const T>(value: T): Infer<T> {
-  return value as any
-}
-const p = infer(
-  number
-    .refine((value): value is 1 | 2 | 3 => value === 1)
-    .refine((value): value is 2 => value === 2),
-)
-const a = infer(
-  Array(number)
-    .refine((value): value is number[] => value.length < 2)
-    .minLength(1),
-)
