@@ -2,8 +2,8 @@ import {
   FixedLengthArray,
   IntegerRangeThrough,
   MaxLengthArray,
+  MergeIntersection,
   MinLengthArray,
-  Simplify,
 } from 'base-up'
 import {
   _class,
@@ -121,7 +121,7 @@ type InferTupleType<T extends readonly any[], Z extends RecursionMap> = T extend
 type InferObjectType<
   T extends Record<keyof any, Schema | OptionalSchema>,
   Z extends RecursionMap,
-> = Simplify<
+> = MergeIntersection<
   {
     [K in keyof T as T[K] extends Schema ? K : never]: Infer<
       T[K] extends infer S extends Schema ? S : never,
