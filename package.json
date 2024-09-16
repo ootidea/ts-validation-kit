@@ -25,13 +25,13 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.1",
-    "@tsconfig/strictest": "^2.0.1",
+    "@tsconfig/strictest": "^2.0.5",
     "base-up": "^1.0.0",
     "npm-run-all": "^4.1.5",
     "sort-package-json": "^2.10.1",
-    "typescript": "^5.1.6",
-    "vite": "^4.4.4",
-    "vitest": "^0.33.0"
+    "typescript": "^5.6.2",
+    "vite": "^5.4.5",
+    "vitest": "^2.1.1"
   },
   "packageManager": "pnpm@9.10.0"
 }
