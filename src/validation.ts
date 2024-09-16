@@ -1,6 +1,6 @@
 import { assert, assertNeverType, isNotUndefined } from 'base-up'
-import { Infer } from './inference'
-import { ANONYMOUS, Schema } from './schema'
+import type { Infer } from './inference'
+import { ANONYMOUS, type Schema } from './schema'
 
 /** @see z.isValid */
 export function isValid<const T extends Schema>(
@@ -77,13 +77,9 @@ export function isValid<const T extends Schema>(
       assert(recursionSchema, isNotUndefined)
       return isValid(value, recursionSchema, re)
     case 'minLengthArray':
-      return (
-        isValid(value, schema.base, re) && Array.isArray(value) && schema.length <= value.length
-      )
+      return isValid(value, schema.base, re) && Array.isArray(value) && schema.length <= value.length
     case 'maxLengthArray':
-      return (
-        isValid(value, schema.base, re) && Array.isArray(value) && value.length <= schema.length
-      )
+      return isValid(value, schema.base, re) && Array.isArray(value) && value.length <= schema.length
     default:
       assertNeverType(schema)
   }

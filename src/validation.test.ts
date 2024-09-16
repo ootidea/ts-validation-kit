@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest'
 import { z } from './index'
-import { Schema } from './schema'
+import type { Schema } from './schema'
 
 describe('isValid', () => {
   test('string', () => {
@@ -88,23 +88,17 @@ describe('isValid', () => {
 
     expect(z.isValid({ name: 'John' }, z.object({ age: z.optional(z.number) }))).toBe(true)
     expect(z.isValid({ name: 'John', age: 42 }, z.object({ age: z.optional(z.number) }))).toBe(true)
-    expect(z.isValid({ name: 'John', age: '42' }, z.object({ age: z.optional(z.number) }))).toBe(
-      false,
-    )
+    expect(z.isValid({ name: 'John', age: '42' }, z.object({ age: z.optional(z.number) }))).toBe(false)
   })
   test('Record function', () => {
     expect(z.isValid({ a: 1, b: 2 }, z.Record(z.string, z.number))).toBe(true)
     expect(z.isValid({ a: 1, b: 2 }, z.Record(z.number, z.number))).toBe(false)
 
-    expect(z.isValid({ name: 'Bob', age: 5 }, z.Record(z.any, z.union(z.string, z.number)))).toBe(
-      true,
-    )
+    expect(z.isValid({ name: 'Bob', age: 5 }, z.Record(z.any, z.union(z.string, z.number)))).toBe(true)
 
     expect(z.isValid({ a: true, 0: 'first' }, z.Record(z.literalUnion('a', 0), z.any))).toBe(true)
     expect(z.isValid({ 0: false, 1: true }, z.Record(z.number, z.boolean))).toBe(true)
-    expect(z.isValid({ ['-1']: false, ['Infinity']: true }, z.Record(z.number, z.boolean))).toBe(
-      true,
-    )
+    expect(z.isValid({ ['-1']: false, ['Infinity']: true }, z.Record(z.number, z.boolean))).toBe(true)
     expect(z.isValid({ a: true, 0: 'first' }, z.Record(z.string, z.any))).toBe(true)
     expect(z.isValid({ a: true, 0: 'first' }, z.Record(z.number, z.any))).toBe(false)
   })
@@ -119,16 +113,10 @@ describe('isValid', () => {
   })
   test('intersection function', () => {
     expect(
-      z.isValid(
-        { name: 'John', age: 42 },
-        z.intersection(z.object({ name: z.string }), z.object({ age: z.number })),
-      ),
+      z.isValid({ name: 'John', age: 42 }, z.intersection(z.object({ name: z.string }), z.object({ age: z.number }))),
     ).toBe(true)
     expect(
-      z.isValid(
-        { name: 'John', age: 42 },
-        z.intersection(z.object({ name: z.number }), z.object({ age: z.string })),
-      ),
+      z.isValid({ name: 'John', age: 42 }, z.intersection(z.object({ name: z.number }), z.object({ age: z.string }))),
     ).toBe(false)
   })
   test('refine function', () => {
@@ -149,8 +137,7 @@ describe('isValid', () => {
     expect(z.isValid('', z.refine(z.string, isEmpty))).toBe(true)
     expect(z.isValid('a', z.refine(z.string, isEmpty))).toBe(false)
 
-    const isUnder3 = (value: number): value is 0 | 1 | 2 =>
-      Number.isInteger(value) && 0 <= value && value <= 2
+    const isUnder3 = (value: number): value is 0 | 1 | 2 => Number.isInteger(value) && 0 <= value && value <= 2
     expect(z.isValid(1, z.refine(z.number, isUnder3))).toBe(true)
     expect(z.isValid('1', z.refine(z.number, isUnder3))).toBe(false)
   })
@@ -174,8 +161,7 @@ describe('isValid', () => {
       expect(z.isValid('', z.string.refine(isEmpty))).toBe(true)
       expect(z.isValid('a', z.string.refine(isEmpty))).toBe(false)
 
-      const isUnder3 = (value: number): value is 0 | 1 | 2 =>
-        Number.isInteger(value) && 0 <= value && value <= 2
+      const isUnder3 = (value: number): value is 0 | 1 | 2 => Number.isInteger(value) && 0 <= value && value <= 2
       expect(z.isValid(1, z.number.refine(isUnder3))).toBe(true)
       expect(z.isValid('1', z.number.refine(isUnder3))).toBe(false)
     })
@@ -216,8 +202,8 @@ describe('isValid', () => {
     test('integer method', () => {
       expect(z.isValid(0, z.number.integer())).toBe(true)
       expect(z.isValid(1.5, z.number.integer())).toBe(false)
-      expect(z.isValid(Infinity, z.number.integer())).toBe(false)
-      expect(z.isValid(NaN, z.number.integer())).toBe(false)
+      expect(z.isValid(Number.POSITIVE_INFINITY, z.number.integer())).toBe(false)
+      expect(z.isValid(Number.NaN, z.number.integer())).toBe(false)
     })
   })
   test('class function', () => {
@@ -234,12 +220,7 @@ describe('isValid', () => {
       ),
     )
     expect(z.isValid({ type: 'File', content: new Blob() }, fileOrFolderSchema)).toBe(true)
-    expect(
-      z.isValid(
-        { type: 'Folder', items: [{ type: 'File', content: new Blob() }] },
-        fileOrFolderSchema,
-      ),
-    ).toBe(true)
+    expect(z.isValid({ type: 'Folder', items: [{ type: 'File', content: new Blob() }] }, fileOrFolderSchema)).toBe(true)
     expect(z.isValid({ type: 'Dir' }, fileOrFolderSchema)).toBe(false)
 
     function listSchema<const T extends Schema>(schema: T) {
@@ -250,9 +231,7 @@ describe('isValid', () => {
         ),
       )
     }
-    expect(z.isValid({ type: 'Cons', value: 1, next: { type: 'Nil' } }, listSchema(z.number))).toBe(
-      true,
-    )
+    expect(z.isValid({ type: 'Cons', value: 1, next: { type: 'Nil' } }, listSchema(z.number))).toBe(true)
     expect(z.isValid([{ type: 'Nil' }, { type: 'Nil' }], z.Array(listSchema(z.unknown)))).toBe(true)
   })
 })

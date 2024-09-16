@@ -1,10 +1,12 @@
-import { Infer as _Infer } from './inference'
+import type { Infer as _Infer } from './inference'
 import {
+  Array,
+  Record,
+  type Schema,
   _class,
   _null,
   _void,
   any,
-  Array,
   bigint,
   boolean,
   intersection,
@@ -15,11 +17,9 @@ import {
   number,
   object,
   optional,
-  Record,
   recursion,
   recursive,
   refine,
-  Schema,
   string,
   symbol,
   tuple,

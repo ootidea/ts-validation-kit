@@ -1,4 +1,4 @@
-import { Infer as _Infer } from './inference'
+import type { Infer as _Infer } from './inference'
 import { Array, literal, number, object, union } from './schema'
 
 const z = {

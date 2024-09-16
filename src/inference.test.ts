@@ -1,8 +1,7 @@
-import { MaxLengthArray, MinLengthArray, NonEmptyArray } from 'base-up'
+import type { MaxLengthArray, MinLengthArray, NonEmptyArray } from 'base-up'
 import { describe, expectTypeOf, test } from 'vitest'
 import { z } from './index'
-import { Infer } from './inference'
-import { Schema } from './schema'
+import type { Schema } from './schema'
 
 describe('Infer', () => {
   /**
@@ -148,9 +147,7 @@ describe('Infer', () => {
   test('or method', () => {
     expectTypeOf(infer(z.number.or(z.undefined))).toEqualTypeOf<number | undefined>()
     expectTypeOf(infer(z.literal('abc').or(z.literal(123)))).toEqualTypeOf<'abc' | 123>()
-    expectTypeOf(infer(z.number.or(z.undefined).or(z.null))).toEqualTypeOf<
-      number | undefined | null
-    >()
+    expectTypeOf(infer(z.number.or(z.undefined).or(z.null))).toEqualTypeOf<number | undefined | null>()
   })
   test('literalUnion function', () => {
     expectTypeOf(infer(z.literalUnion('abc', 123))).toEqualTypeOf<'abc' | 123>()
@@ -159,9 +156,7 @@ describe('Infer', () => {
   })
   test('intersection function', () => {
     expectTypeOf(infer(z.intersection(z.string, z.object({})))).toEqualTypeOf<string & {}>()
-    expectTypeOf(
-      infer(z.intersection(z.object({ name: z.string }), z.object({ age: z.number }))),
-    ).toEqualTypeOf<
+    expectTypeOf(infer(z.intersection(z.object({ name: z.string }), z.object({ age: z.number })))).toEqualTypeOf<
       {
         name: string
       } & {
@@ -175,8 +170,7 @@ describe('Infer', () => {
     const isEmpty = (value: string): value is '' => value === ''
     expectTypeOf(infer(z.refine(z.string, isEmpty))).toEqualTypeOf<''>()
 
-    const isUnder3 = (value: number): value is 0 | 1 | 2 =>
-      Number.isInteger(value) && 0 <= value && value <= 2
+    const isUnder3 = (value: number): value is 0 | 1 | 2 => Number.isInteger(value) && 0 <= value && value <= 2
     expectTypeOf(infer(z.refine(z.number, isUnder3))).toEqualTypeOf<0 | 1 | 2>()
   })
   test('refine method', () => {
@@ -185,8 +179,7 @@ describe('Infer', () => {
     const isEmpty = (value: string): value is '' => value === ''
     expectTypeOf(infer(z.string.refine(isEmpty))).toEqualTypeOf<''>()
 
-    const isUnder3 = (value: number): value is 0 | 1 | 2 =>
-      Number.isInteger(value) && 0 <= value && value <= 2
+    const isUnder3 = (value: number): value is 0 | 1 | 2 => Number.isInteger(value) && 0 <= value && value <= 2
     expectTypeOf(infer(z.number.refine(isUnder3))).toEqualTypeOf<0 | 1 | 2>()
   })
   test('class function', () => {

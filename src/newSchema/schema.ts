@@ -1,5 +1,5 @@
-import { MinLengthArray } from 'base-up'
-import { Infer } from './inference'
+import type { MinLengthArray } from 'base-up'
+import type { Infer } from './inference'
 
 export const number = {
   type: 'number',
@@ -12,10 +12,7 @@ export const number = {
   },
 } as const
 
-const refinedNumber = <T, U extends Infer<T>>(
-  base: T,
-  predicate: (value: Infer<T>) => value is U,
-) =>
+const refinedNumber = <T, U extends Infer<T>>(base: T, predicate: (value: Infer<T>) => value is U) =>
   ({
     type: 'refinedNumber',
     base,
@@ -60,9 +57,7 @@ const refinedArray = <
     minLength<N extends number>(length: N) {
       return refinedArray(
         this,
-        (
-          value: U,
-        ): value is MinLengthArray<N, U[number]> extends infer P ? (P extends U ? P : U) : never =>
+        (value: U): value is MinLengthArray<N, U[number]> extends infer P ? (P extends U ? P : U) : never =>
           value.length >= length,
       )
     },
@@ -80,10 +75,7 @@ export function union<T extends readonly any[]>(...parts: T) {
   return { type: 'union', parts } as const
 }
 
-export function withPrototype<const T, const P extends object>(
-  target: T,
-  prototype: P,
-): T & Omit<P, keyof T> {
+export function withPrototype<const T, const P extends object>(target: T, prototype: P): T & Omit<P, keyof T> {
   Object.setPrototypeOf(target, prototype)
   return target as any
 }

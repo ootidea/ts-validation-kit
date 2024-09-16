@@ -1,5 +1,5 @@
-import { DiscriminatedUnion, Tuple } from 'base-up'
-import { Infer } from './inference'
+import type { DiscriminatedUnion, Tuple } from 'base-up'
+import type { Infer } from './inference'
 
 const commonPrototype = {
   or: function <const T extends Schema, const U extends Schema>(this: T, schema: U) {
@@ -191,10 +191,7 @@ export function object<T extends Record<keyof any, Schema | OptionalSchema>>(
   return { ...commonPrototype, type: 'object', properties } as const
 }
 
-export function Record<const Key extends Schema, const Value extends Schema>(
-  key: Key,
-  value: Value,
-) {
+export function Record<const Key extends Schema, const Value extends Schema>(key: Key, value: Value) {
   return { ...commonPrototype, type: 'Record', key, value } as const
 }
 
@@ -234,21 +231,18 @@ export function refine<const T extends Schema, const U extends (value: Infer<T>)
   return { ...base.prototype, type: 'refine', base, predicate } as const
 }
 
-export function refineMethod<
-  const T extends Schema,
-  const U extends (value: Infer<T>) => value is any,
->(this: T, predicate: U): T['prototype'] & { type: 'refine'; base: T; predicate: U }
-export function refineMethod<
-  const T extends Schema,
-  const U extends (value: Infer<T>) => value is any,
->(
+export function refineMethod<const T extends Schema, const U extends (value: Infer<T>) => value is any>(
+  this: T,
+  predicate: U,
+): T['prototype'] & { type: 'refine'; base: T; predicate: U }
+export function refineMethod<const T extends Schema, const U extends (value: Infer<T>) => value is any>(
   this: T,
   predicate: (value: Infer<T>) => boolean,
 ): T['prototype'] & { type: 'refine'; base: T; predicate: (value: Infer<T>) => value is Infer<T> }
-export function refineMethod<
-  const T extends Schema,
-  const U extends (value: Infer<T>) => value is any,
->(this: T, predicate: U) {
+export function refineMethod<const T extends Schema, const U extends (value: Infer<T>) => value is any>(
+  this: T,
+  predicate: U,
+) {
   return { ...this.prototype, type: 'refine', base: this, predicate } as const
 }
 
@@ -268,10 +262,7 @@ export function recursive<const T extends Schema, const K extends keyof any>(
   key: K,
   value: T,
 ): CommonPrototype & { type: 'recursive'; value: T; key: K }
-export function recursive<const T extends Schema, const K extends keyof any>(
-  first: T | K,
-  second?: T,
-) {
+export function recursive<const T extends Schema, const K extends keyof any>(first: T | K, second?: T) {
   if (second === void 0) {
     return { ...commonPrototype, type: 'recursive', value: first, key: ANONYMOUS } as const
   }

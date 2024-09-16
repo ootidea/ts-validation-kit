@@ -1,6 +1,5 @@
 import { describe, expectTypeOf, test } from 'vitest'
 import { z } from './index'
-import { Infer } from './inference'
 
 describe('Infer', () => {
   /**
@@ -35,8 +34,7 @@ describe('Infer', () => {
     expectTypeOf(infer(z.union())).toEqualTypeOf<never>()
   })
   test('refine method', () => {
-    const isUnder3 = (value: number): value is 0 | 1 | 2 =>
-      Number.isInteger(value) && 0 <= value && value <= 2
+    const isUnder3 = (value: number): value is 0 | 1 | 2 => Number.isInteger(value) && 0 <= value && value <= 2
     expectTypeOf(infer(z.number.refine(isUnder3))).toEqualTypeOf<0 | 1 | 2>()
   })
 })
