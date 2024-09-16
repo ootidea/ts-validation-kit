@@ -1,13 +1,10 @@
 {
   "extends": "@tsconfig/strictest/tsconfig.json",
   "compilerOptions": {
-    "target": "ES2021",
-    "module": "ESNext",
-    "moduleResolution": "node",
-    "esModuleInterop": true,
-    "types": ["vitest/globals"],
-    "noUnusedLocals": false,
-    "noUnusedParameters": false
+    "target": "esnext",
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "noErrorTruncation": true
   },
   "include": ["src"]
 }
