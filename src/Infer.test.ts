@@ -41,4 +41,14 @@ describe('Infer', () => {
   it('infers array types', () => {
     expectInferredType(z.Array(z.number)).toBe<number[]>()
   })
+  it('infers refined types', () => {
+    expectInferredType(
+      z.refine(
+        z.union(z.number, z.null, z.undefined),
+        (n) => n !== null,
+        (n) => n !== undefined,
+      ),
+    ).toBe<number>()
+    expectInferredType(z.refine(z.number, (n) => n > 0)).toBe<number>()
+  })
 })
