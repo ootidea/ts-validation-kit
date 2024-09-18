@@ -29,3 +29,53 @@ export const object: {
 
 export const optional = <T extends SchemaPartBase>(schema: T) => ({ type: 'optional', schema }) as const
 
+export function refine<T extends SchemaPartBase, R1 extends Infer<T>>(
+  base: T,
+  predicate1: ((value: Infer<T>) => boolean) | ((value: Infer<T>) => value is R1),
+): {
+  readonly type: 'refine'
+  readonly base: T
+  readonly predicates: [(value: Infer<T>) => value is R1]
+}
+export function refine<T extends SchemaPartBase, R1 extends Infer<T>, R2 extends Infer<T> & R1>(
+  base: T,
+  predicate1: ((value: Infer<T>) => boolean) | ((value: Infer<T>) => value is R1),
+  predicate2: ((value: Infer<T> & R1) => boolean) | ((value: Infer<T> & R1) => value is R2),
+): {
+  readonly type: 'refine'
+  readonly base: T
+  readonly predicates: [(value: Infer<T>) => value is R1, (value: Infer<T> & R1) => value is R2]
+}
+export function refine<
+  T extends SchemaPartBase,
+  R1 extends Infer<T>,
+  R2 extends Infer<T> & R1,
+  R3 extends Infer<T> & R1 & R2,
+>(
+  base: T,
+  predicate1: ((value: Infer<T>) => boolean) | ((value: Infer<T>) => value is R1),
+  predicate2: ((value: Infer<T> & R1) => boolean) | ((value: Infer<T> & R1) => value is R2),
+  predicate3: ((value: Infer<T> & R1 & R2) => boolean) | ((value: Infer<T> & R1 & R2) => value is R3),
+): {
+  readonly type: 'refine'
+  readonly base: T
+  readonly predicates: [
+    (value: Infer<T>) => value is R1,
+    (value: Infer<T> & R1) => value is R2,
+    (value: Infer<T> & R1 & R2) => value is R3,
+  ]
+}
+export function refine<
+  T extends SchemaPartBase,
+  R1 extends Infer<T>,
+  R2 extends Infer<T> & R1,
+  R3 extends Infer<T> & R1 & R2,
+>(
+  base: T,
+  predicate1: ((value: Infer<T>) => boolean) | ((value: Infer<T>) => value is R1),
+  predicate2?: ((value: Infer<T> & R1) => boolean) | ((value: Infer<T> & R1) => value is R2),
+  predicate3?: ((value: Infer<T> & R1 & R2) => boolean) | ((value: Infer<T> & R1 & R2) => value is R3),
+) {
+  const predicates = [predicate1, predicate2, predicate3].filter((predicate) => predicate !== undefined)
+  return { type: 'refine', base, predicates } as const
+}

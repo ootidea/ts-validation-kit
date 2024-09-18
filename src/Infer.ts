@@ -35,4 +35,14 @@ export type Infer<T extends SchemaPartBase> = T['type'] extends keyof StandardLo
           ? Infer<E>[]
           : T extends { type: 'optional'; schema: infer S extends SchemaPartBase }
             ? Infer<S>
-            : never
+            : T extends {
+                  type: 'refine'
+                  base: infer B extends SchemaPartBase
+                  predicates: infer Predicates
+                }
+              ? Infer<B> & ExtractTypePredicates<Predicates>
+              : never
+
+type ExtractTypePredicates<P> = P extends [(value: any) => value is infer R, ...infer T]
+  ? R & ExtractTypePredicates<T>
+  : unknown

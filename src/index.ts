@@ -16,5 +16,6 @@ export {
   literal,
   optional,
   union,
+  refine,
 } from './Schema'
 export type { Infer } from './Infer'
