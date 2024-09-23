@@ -2,7 +2,7 @@ import { describe, it } from 'vitest'
 import * as z from './index'
 import { expectInferredType } from './utilities'
 
-describe('Infer', () => {
+describe('Infer type', () => {
   it('infers literal types', () => {
     expectInferredType(z.literal(true)).toBe<true>()
     expectInferredType(z.literal(123)).toBe<123>()
