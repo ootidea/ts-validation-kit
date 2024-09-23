@@ -36,7 +36,7 @@ export type Infer<T extends SchemaBase> = T['type'] extends keyof StandardLowerc
           : T extends { type: 'optional'; schema: infer S extends SchemaBase }
             ? Infer<S>
             : T extends {
-                  type: 'refine'
+                  type: 'pipe'
                   base: infer B extends SchemaBase
                   predicates: infer Predicates
                 }
