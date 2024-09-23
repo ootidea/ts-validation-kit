@@ -17,7 +17,8 @@
     "rules": {
       "correctness": { "noUnusedImports": "error" },
       "suspicious": { "noExplicitAny": "off" },
-      "complexity": { "noBannedTypes": "off" }
+      "complexity": { "noBannedTypes": "off" },
+      "style": { "noNonNullAssertion": "off" }
     }
   }
 }

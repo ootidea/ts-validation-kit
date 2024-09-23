@@ -7,6 +7,13 @@ settings:
 importers:
 
   .:
+    dependencies:
+      advanced-type-utilities:
+        specifier: ^0.5.0
+        version: 0.5.0
+      base-up:
+        specifier: ^2.0.0
+        version: 2.0.0
     devDependencies:
       '@biomejs/biome':
         specifier: ^1.9.1
@@ -14,9 +21,6 @@ importers:
       '@tsconfig/strictest':
         specifier: ^2.0.5
         version: 2.0.5
-      advanced-type-utilities:
-        specifier: ^0.3.0
-        version: 0.3.0
       npm-run-all2:
         specifier: ^6.2.3
         version: 6.2.3
@@ -530,8 +534,8 @@ packages:
   '@vitest/utils@2.1.1':
     resolution: {integrity: sha512-Y6Q9TsI+qJ2CC0ZKj6VBb+T8UPz593N113nnUykqwANqhgf3QkZeHFlusgKLTqrnVHbj/XDKZcDHol+dxVT+rQ==}
 
-  advanced-type-utilities@0.3.0:
-    resolution: {integrity: sha512-Ri5OdQHJVFlodAa17zvuugYOd0OrtzVmjoshAMHdZ8SaRlrrupLLlHdO9itFemi4I47VzPf/yQUx2bHSC0q6eg==}
+  advanced-type-utilities@0.5.0:
+    resolution: {integrity: sha512-HaPVBqrFZhRo8Fll7rCKIp+bD+1F0W1A/rQe/EZ9IoXdOpCahxyFnHBTh3l4rNSUVPq9ZXknUCJJvCOjlnavQg==}
 
   ansi-regex@5.0.1:
     resolution: {integrity: sha512-quJQXlTSUGL2LH9SUXo8VwsY4soanhgo6LNSm84E1LBcE8s3O0wpdiRzyR9z/ZZJMlMWv37qOOb9pdJlMUEKFQ==}
@@ -566,6 +570,9 @@ packages:
 
   balanced-match@1.0.2:
     resolution: {integrity: sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==}
+
+  base-up@2.0.0:
+    resolution: {integrity: sha512-oFUEEDwi0Q4WZC3k2+F4MUBBX8Q1f8QuIeeg0jI0b3yTW10lUWQBK8DoGZcCx7aDOGM4Cq1uQlUdKkuCDA4h1Q==}
 
   binary-extensions@2.3.0:
     resolution: {integrity: sha512-Ceh+7ox5qe7LJuLHoY0feh3pHuUDHAcRUeyL2VYghZwfpkNIy/+8Ocg0a3UuSoYzavmylwuLWQOf3hl0jjMMIw==}
@@ -1494,7 +1501,7 @@ snapshots:
       loupe: 3.1.1
       tinyrainbow: 1.2.0
 
-  advanced-type-utilities@0.3.0: {}
+  advanced-type-utilities@0.5.0: {}
 
   ansi-regex@5.0.1: {}
 
@@ -1518,6 +1525,8 @@ snapshots:
   assertion-error@2.0.1: {}
 
   balanced-match@1.0.2: {}
+
+  base-up@2.0.0: {}
 
   binary-extensions@2.3.0: {}
 
