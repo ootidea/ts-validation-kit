@@ -51,4 +51,16 @@ describe('Infer type', () => {
     ).toBe<number>()
     expectInferredType(z.pipe(z.number, (n) => n > 0)).toBe<number>()
   })
+  it('infers record types', () => {
+    expectInferredType(z.Record(z.string, z.boolean)).toBe<Record<string, boolean>>()
+    expectInferredType(z.Record(z.number, z.boolean)).toBe<Record<number, boolean>>()
+    expectInferredType(z.Record(z.symbol, z.boolean)).toBe<Record<symbol, boolean>>()
+    expectInferredType(z.Record(z.union(z.string, z.number, z.symbol), z.boolean)).toBe<Record<keyof any, boolean>>()
+
+    expectInferredType(z.Record(z.literal('a'), z.null)).toBe<{ a: null }>()
+    expectInferredType(z.Record(z.union(z.literal('a'), z.literal(1)), z.null)).toBe<{ a: null; 1: null }>()
+
+    // @ts-expect-error The key type must extends string | number | symbol
+    z.Record(z.boolean, z.number)
+  })
 })

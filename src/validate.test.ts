@@ -36,4 +36,13 @@ describe('isValid function', () => {
     expect(z.isValid(z.object({ a: z.optional(z.number) }), {})).toBe(true)
     expect(z.isValid(z.object({ a: z.optional(z.number) }), { a: 'a' })).toBe(false)
   })
+  test('record types', () => {
+    expect(z.isValid(z.Record(z.string, z.number), { a: 1, b: 2 })).toBe(true)
+    expect(z.isValid(z.Record(z.string, z.number), { a: 1, b: 'a' })).toBe(false)
+    expect(z.isValid(z.Record(z.string, z.number), {})).toBe(true)
+    expect(z.isValid(z.Record(z.string, z.number), { 1: true })).toBe(false)
+
+    expect(z.isValid(z.Record(z.literal('a'), z.number), { a: 1 })).toBe(true)
+    expect(z.isValid(z.Record(z.literal('a'), z.number), { b: 2 })).toBe(false)
+  })
 })

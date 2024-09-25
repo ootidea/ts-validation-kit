@@ -16,6 +16,7 @@ export {
   literal,
   optional,
   union,
+  Record,
 } from './Schema'
 export type { Infer } from './Infer'
 export { isValid } from './validate'

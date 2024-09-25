@@ -1,4 +1,5 @@
 import { partition } from 'base-up'
+import type { Infer } from './Infer'
 
 export type SchemaBase = { type: string; isValid: (value: unknown) => boolean }
 
@@ -56,3 +57,18 @@ export const object: {
 
 export const optional = <T extends SchemaBase>(schema: T) =>
   ({ type: 'optional', schema, isValid: schema.isValid }) as const
+
+export const Record = <K extends SchemaBase, V extends SchemaBase>(
+  key: K,
+  value: V,
+  ..._error: Infer<K> extends keyof any ? [] : ['error']
+) =>
+  ({
+    type: 'Record',
+    key,
+    value,
+    isValid: (dynamic: unknown) =>
+      typeof dynamic === 'object' &&
+      dynamic !== null &&
+      Reflect.ownKeys(dynamic).every((k) => key.isValid(k) && value.isValid((dynamic as any)[k])),
+  }) as const
