@@ -16,7 +16,7 @@ export {
   literal,
   optional,
   union,
-  pipe,
 } from './Schema'
 export type { Infer } from './Infer'
 export { isValid } from './validate'
+export { pipe } from './PipeSchema'
