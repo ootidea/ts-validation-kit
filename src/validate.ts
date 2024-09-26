@@ -1,6 +1,3 @@
-import type { Infer } from './Infer'
-import type { SchemaBase } from './Schema'
+import type { Schema } from './Schema'
 
-export function isValid<T extends SchemaBase>(schema: T, value: unknown): value is Infer<T> {
-  return schema.isValid(value)
-}
+export const isValid = <T extends Schema>(schema: T, value: unknown): value is T => schema.predicate(value)

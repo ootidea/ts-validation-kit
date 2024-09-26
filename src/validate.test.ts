@@ -16,10 +16,10 @@ describe('isValid function', () => {
     expect(z.isValid(z.object, {})).toBe(true)
     expect(z.isValid(z.object, 1)).toBe(false)
   })
-  test('union types', () => {
-    expect(z.isValid(z.union(z.number, z.string), 1)).toBe(true)
-    expect(z.isValid(z.union(z.number, z.string), 'a')).toBe(true)
-    expect(z.isValid(z.union(z.number, z.string), true)).toBe(false)
+  test('or types', () => {
+    expect(z.isValid(z.or(z.number, z.string), 1)).toBe(true)
+    expect(z.isValid(z.or(z.number, z.string), 'a')).toBe(true)
+    expect(z.isValid(z.or(z.number, z.string), true)).toBe(false)
   })
   test('array types', () => {
     expect(z.isValid(z.Array(z.number), [1, 2, 3])).toBe(true)
