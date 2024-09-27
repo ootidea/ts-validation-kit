@@ -1,6 +1,6 @@
 import { describe, it } from 'vitest'
 import * as z from './index'
-import { expectInferredType } from './utilities'
+import { expectInferredType } from './test-utilities'
 
 describe('Infer type', () => {
   it('infers literal types', () => {
