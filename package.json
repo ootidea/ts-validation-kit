@@ -25,7 +25,7 @@
     "check:test": "vitest run --silent=false"
   },
   "dependencies": {
-    "advanced-type-utilities": "^0.5.0",
+    "advanced-type-utilities": "^0.6.0",
     "base-up": "^2.0.0"
   },
   "devDependencies": {

@@ -1,7 +1,7 @@
-import type { MergeIntersection } from 'advanced-type-utilities'
+import type { Equals, MergeIntersection } from 'advanced-type-utilities'
 import { partition } from 'base-up'
 
-export type Schema<T = unknown> = { predicate: (value: T) => boolean }
+export type Schema = { predicate: (value: any) => value is unknown }
 
 export const boolean = { predicate: (value: unknown): value is boolean => typeof value === 'boolean' } as const
 export const number = { predicate: (value: unknown): value is number => typeof value === 'number' } as const
@@ -27,12 +27,14 @@ export const Array_ = <T extends Schema>(element: T) =>
 
 export const or = <T extends readonly Schema[]>(...schemas: T) =>
   ({
-    predicate: (value: unknown): value is OrNarrowedType<T> => schemas.some((schema) => schema.predicate(value)),
-  }) as const
-type OrNarrowedType<T extends readonly Schema[]> = T extends readonly []
-  ? never
-  : T[number] extends infer S extends Schema
-    ? Infer<S>
+    predicate: (value: any) => schemas.some((schema) => schema.predicate(value)),
+  }) as { predicate: OrPredicate<T> }
+type OrPredicate<T extends readonly Schema[]> = Equals<T, []> extends true
+  ? (value: any) => value is never
+  : T[number]['predicate'] extends (v: infer V) => boolean
+    ? T[number]['predicate'] extends (v: any) => v is infer R
+      ? (value: V) => value is V & R
+      : never
     : never
 
 const objectFunction = <T extends Record<keyof any, Schema | Optional>>(properties: T) =>
@@ -79,8 +81,4 @@ export const Record = <K extends Schema, V extends Schema>(
 type Optional = { predicate?: never; schema: Schema }
 export const optional = <T extends Schema>(schema: T) => ({ schema }) as const
 
-export type Infer<T extends Schema<any>> = T['predicate'] extends (value: unknown) => value is infer R
-  ? R
-  : T['predicate'] extends (value: infer R) => boolean
-    ? R
-    : never
+export type Infer<T extends Schema> = T['predicate'] extends (value: unknown) => value is infer R ? R : never
