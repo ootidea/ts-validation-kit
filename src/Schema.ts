@@ -8,12 +8,12 @@ export const number = { type: 'number', isValid: (value: unknown) => typeof valu
 export const bigint = { type: 'bigint', isValid: (value: unknown) => typeof value === 'bigint' } as const
 export const string = { type: 'string', isValid: (value: unknown) => typeof value === 'string' } as const
 export const symbol = { type: 'symbol', isValid: (value: unknown) => typeof value === 'symbol' } as const
-export const unknown = { type: 'unknown', isValid: () => true } as const
-export const any = { type: 'any', isValid: () => true } as const
-export const never = { type: 'never', isValid: () => false } as const
+export const unknown = { type: 'unknown', isValid: (value: unknown): value is unknown => true } as const
+export const any = { type: 'any', isValid: (value: unknown): value is any => true } as const
+export const never = { type: 'never', isValid: (value: unknown): value is never => false } as const
 
 export const literal = <const T>(value: T) =>
-  ({ type: 'literal', value, isValid: (v: unknown) => v === value }) as const
+  ({ type: 'literal', value, isValid: (v: unknown): v is T => v === value }) as const
 export const true_ = literal(true)
 export const false_ = literal(false)
 export const null_ = literal(null)
@@ -46,13 +46,14 @@ const objectFunction = <T extends Record<keyof any, SchemaBase>>(properties: T) 
   }) as const
 export const object: {
   readonly type: 'object'
-  readonly isValid: (value: unknown) => boolean
+  readonly isValid: (value: unknown) => value is object
   <T extends Record<keyof any, SchemaBase>>(
     properties: T,
   ): { readonly type: 'properties'; readonly properties: T; readonly isValid: (value: unknown) => boolean }
 } = Object.assign(objectFunction, {
   type: 'object',
-  isValid: (value: unknown) => (typeof value === 'object' || typeof value === 'function') && value !== null,
+  isValid: (value: unknown): value is object =>
+    (typeof value === 'object' || typeof value === 'function') && value !== null,
 } as const)
 
 export const optional = <T extends SchemaBase>(schema: T) =>

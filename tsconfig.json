@@ -4,6 +4,7 @@
     "target": "esnext",
     "module": "esnext",
     "moduleResolution": "bundler",
+    "noUnusedParameters": false,
     "noErrorTruncation": true
   },
   "include": ["src"]
