@@ -1,14 +1,20 @@
 import type { MergeIntersection } from 'advanced-type-utilities'
-import type { SchemaBase } from './schema'
+import type { Optional, SchemaBase } from './schema'
 
 export type Infer<T extends SchemaBase> = T extends { type: 'number' }
   ? number
-  : T extends { type: 'properties'; properties: infer Properties extends Record<keyof any, SchemaBase> }
+  : T extends { type: 'properties'; properties: infer Properties extends Record<keyof any, SchemaBase | Optional> }
     ? MergeIntersection<
         {
-          [K in keyof Properties as Properties[K] extends { type: 'optional' } ? never : K]: Infer<Properties[K]>
+          // Infers required properties.
+          [K in keyof Properties as Properties[K] extends SchemaBase ? K : never]: Properties[K] extends SchemaBase
+            ? Infer<Properties[K]>
+            : never // Unreachable
         } & {
-          [K in keyof Properties as Properties[K] extends { type: 'optional' } ? K : never]?: Infer<Properties[K]>
+          // Infers optional properties.
+          [K in keyof Properties as Properties[K] extends Optional ? K : never]?: Properties[K] extends Optional
+            ? Infer<Properties[K]['schema']>
+            : never // Unreachable
         }
       >
     : never

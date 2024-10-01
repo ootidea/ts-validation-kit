@@ -12,3 +12,10 @@ it('validate object types', () => {
     Result.failure({ message: 'not a number', path: ['a'] }),
   )
 })
+it('validate optional properties', () => {
+  expect(z.validate(z.object({ a: z.optional(z.number) }), { a: 1 })).toStrictEqual(Result.success({ a: 1 }))
+  expect(z.validate(z.object({ a: z.optional(z.number) }), {})).toStrictEqual(Result.success({}))
+  expect(z.validate(z.object({ a: z.optional(z.number) }), { a: 'a' })).toStrictEqual(
+    Result.failure({ message: 'not a number', path: ['a'] }),
+  )
+})
