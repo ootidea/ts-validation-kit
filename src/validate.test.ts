@@ -19,3 +19,9 @@ it('validate optional properties', () => {
     Result.failure({ message: 'not a number', path: ['a'] }),
   )
 })
+it('validate array types', () => {
+  expect(z.validate(z.Array(z.number), [1])).toStrictEqual(Result.success([1]))
+  expect(z.validate(z.Array(z.number), ['a'])).toStrictEqual(Result.failure({ message: 'not a number', path: [0] }))
+  expect(z.validate(z.Array(z.number), [0, 'a'])).toStrictEqual(Result.failure({ message: 'not a number', path: [1] }))
+  expect(z.validate(z.Array(z.number), 'a')).toStrictEqual(Result.failure({ message: 'not an array', path: [] }))
+})

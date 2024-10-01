@@ -2,10 +2,10 @@ import { partition } from 'base-up'
 import { Result } from 'result-type-ts'
 
 export type SchemaBase = { type: string; validate: (value: any) => any }
-export type ValidateError = { message: string; path: string[] }
+export type ValidateError = { message: string; path: (string | number)[] }
 export type ValidateResult<T = unknown> = Result<T, ValidateError>
 
-function failure(message: string, path: string[] = []): Result.Failure<ValidateError> {
+function failure(message: string, path: (string | number)[] = []): Result.Failure<ValidateError> {
   return Result.failure({ message, path })
 }
 
@@ -53,3 +53,18 @@ export const object = Object.assign(objectFunction, {
   validate: (value: unknown) =>
     typeof value === 'object' && value !== null ? Result.success(value) : failure('not an object'),
 } as const)
+
+export const Array_ = <T extends SchemaBase>(element: T) =>
+  ({
+    type: 'Array',
+    element,
+    validate: (value: unknown) => {
+      if (!Array.isArray(value)) return failure('not an array')
+
+      for (let i = 0; i < value.length; i++) {
+        const result: ValidateResult = element.validate(value[i])
+        if (result.isFailure) return failure(result.error.message, [i, ...result.error.path])
+      }
+      return Result.success(value)
+    },
+  }) as const

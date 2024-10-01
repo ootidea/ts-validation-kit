@@ -17,4 +17,6 @@ export type Infer<T extends SchemaBase> = T extends { type: 'number' }
             : never // Unreachable
         }
       >
-    : never
+    : T extends { type: 'Array'; element: infer Element extends SchemaBase }
+      ? Infer<Element>[]
+      : never
