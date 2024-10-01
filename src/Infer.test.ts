@@ -41,6 +41,17 @@ describe('Infer type', () => {
   it('infers array types', () => {
     expectInferredType(z.Array(z.number)).toBe<number[]>()
   })
+  it('infers recursive types', () => {
+    const TreeSchema = z.object({
+      value: z.unknown,
+      children: z.Array(z.recursive(() => TreeSchema)),
+    })
+    type Tree = {
+      value: unknown
+      children: Tree[]
+    }
+    expectInferredType(TreeSchema).toBe<Tree>()
+  })
   it('infers piped types', () => {
     expectInferredType(
       z.pipe(

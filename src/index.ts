@@ -17,6 +17,7 @@ export {
   optional,
   union,
   Record,
+  recursive,
 } from './Schema'
 export type { Infer } from './Infer'
 export { isValid } from './validate'

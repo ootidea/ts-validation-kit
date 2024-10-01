@@ -45,4 +45,12 @@ describe('isValid function', () => {
     expect(z.isValid(z.Record(z.literal('a'), z.number), { a: 1 })).toBe(true)
     expect(z.isValid(z.Record(z.literal('a'), z.number), { b: 2 })).toBe(false)
   })
+  test('recursive types', () => {
+    const TreeSchema = z.object({
+      value: z.unknown,
+      children: z.Array(z.recursive(() => TreeSchema)),
+    })
+    const validTree = { value: 1, children: [{ value: 2, children: [] }] }
+    expect(z.isValid(TreeSchema, validTree)).toBe(true)
+  })
 })

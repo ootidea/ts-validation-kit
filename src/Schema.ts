@@ -72,3 +72,11 @@ export const Record = <K extends SchemaBase, V extends SchemaBase>(
       dynamic !== null &&
       Reflect.ownKeys(dynamic).every((k) => key.isValid(k) && value.isValid((dynamic as any)[k])),
   }) as const
+
+export const recursive = <const T extends () => any>(lazy: T) => {
+  return {
+    type: 'recursive',
+    lazy,
+    isValid: (value: unknown) => (lazy as () => SchemaBase)().isValid(value),
+  } as const
+}
