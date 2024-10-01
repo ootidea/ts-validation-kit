@@ -1,8 +1,20 @@
 import type { MergeIntersection } from 'advanced-type-utilities'
 import type { Optional, SchemaBase } from './schema'
 
-export type Infer<T extends SchemaBase> = T extends { type: 'number' }
-  ? number
+type StandardLowercaseTypeMap = {
+  boolean: boolean
+  number: number
+  bigint: bigint
+  string: string
+  symbol: symbol
+  object: object
+  unknown: unknown
+  any: any
+  never: never
+}
+
+export type Infer<T extends SchemaBase> = T['type'] extends keyof StandardLowercaseTypeMap
+  ? StandardLowercaseTypeMap[T['type']]
   : T extends { type: 'properties'; properties: infer Properties extends Record<keyof any, SchemaBase | Optional> }
     ? MergeIntersection<
         {
@@ -19,4 +31,8 @@ export type Infer<T extends SchemaBase> = T extends { type: 'number' }
       >
     : T extends { type: 'Array'; element: infer Element extends SchemaBase }
       ? Infer<Element>[]
-      : never
+      : T extends { type: 'recursive'; lazy: infer L }
+        ? L extends (() => infer S extends SchemaBase)
+          ? Infer<S>
+          : never
+        : never

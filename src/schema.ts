@@ -9,9 +9,38 @@ function failure(message: string, path: (string | number)[] = []): Result.Failur
   return Result.failure({ message, path })
 }
 
+export const boolean = {
+  type: 'boolean',
+  validate: (value: unknown) => (typeof value === 'boolean' ? Result.success(value) : failure('not a boolean')),
+} as const
 export const number = {
   type: 'number',
   validate: (value: unknown) => (typeof value === 'number' ? Result.success(value) : failure('not a number')),
+} as const
+export const bigint = {
+  type: 'bigint',
+  validate: (value: unknown) => (typeof value === 'bigint' ? Result.success(value) : failure('not a bigint')),
+} as const
+export const string = {
+  type: 'string',
+  validate: (value: unknown) => (typeof value === 'string' ? Result.success(value) : failure('not a string')),
+} as const
+export const symbol = {
+  type: 'symbol',
+  validate: (value: unknown) => (typeof value === 'symbol' ? Result.success(value) : failure('not a symbol')),
+} as const
+
+export const unknown = {
+  type: 'unknown',
+  validate: (value: unknown) => Result.success(value),
+} as const
+export const any = {
+  type: 'any',
+  validate: (value: unknown) => Result.success(value),
+} as const
+export const never = {
+  type: 'never',
+  validate: (value: unknown) => failure('never type does not accept any value'),
 } as const
 
 export type Optional = { type: 'optional'; schema: SchemaBase; validate?: never }
@@ -68,3 +97,11 @@ export const Array_ = <T extends SchemaBase>(element: T) =>
       return Result.success(value)
     },
   }) as const
+
+export const recursive = <const T extends () => any>(lazy: T) => {
+  return {
+    type: 'recursive',
+    lazy,
+    validate: (value: unknown) => (lazy as () => SchemaBase)().validate(value),
+  } as const
+}
