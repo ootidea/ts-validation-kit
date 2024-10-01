@@ -51,6 +51,14 @@ describe('Infer type', () => {
       children: Tree[]
     }
     expectInferredType(TreeSchema).toBe<Tree>()
+
+    // Mutually recursive types
+    const ArticleSchema = z.object({ contents: z.string, tags: z.Array(z.recursive(() => TagSchema)) })
+    const TagSchema = z.object({ name: z.string, articles: z.Array(ArticleSchema) })
+    type Article = { contents: string; tags: Tag[] }
+    type Tag = { name: string; articles: Article[] }
+    expectInferredType(ArticleSchema).toBe<Article>()
+    expectInferredType(TagSchema).toBe<Tag>()
   })
   it('infers piped types', () => {
     expectInferredType(
