@@ -2,10 +2,10 @@ import { partition } from 'base-up'
 import { Result } from 'result-type-ts'
 
 export type SchemaBase = { type: string; validate: (value: any) => any }
-export type ValidateError = { message: string; path: (string | number)[] }
+export type ValidateError = { message: string; path: (keyof any)[] }
 export type ValidateResult<T = unknown> = Result<T, ValidateError>
 
-function failure(message: string, path: (string | number)[] = []): Result.Failure<ValidateError> {
+function failure(message: string, path: (keyof any)[] = []): Result.Failure<ValidateError> {
   return Result.failure({ message, path })
 }
 
@@ -60,11 +60,11 @@ const objectFunction = <T extends Record<keyof any, SchemaBase | Optional>>(prop
       )
       // Validate required properties.
       for (const key of requiredPropertyKeys) {
-        if (!(key in value)) return failure('missing required property', [String(key)])
+        if (!(key in value)) return failure('missing required property', [key])
 
         const propertySchema = properties[key as any]! as SchemaBase
         const result: ValidateResult = propertySchema.validate((value as any)[key])
-        if (result.isFailure) return failure(result.error.message, [...result.error.path, String(key)])
+        if (result.isFailure) return failure(result.error.message, [...result.error.path, key])
       }
       // Validate optional properties.
       for (const key of optionalPropertyKeys) {
@@ -72,7 +72,7 @@ const objectFunction = <T extends Record<keyof any, SchemaBase | Optional>>(prop
 
         const propertySchema = properties[key as any]! as Optional
         const result: ValidateResult = propertySchema.schema.validate((value as any)[key])
-        if (result.isFailure) return result.mapError(({ message, path }) => ({ message, path: [...path, String(key)] }))
+        if (result.isFailure) return result.mapError(({ message, path }) => ({ message, path: [...path, key] }))
       }
       return Result.success(value)
     },
@@ -88,8 +88,10 @@ export const Array_ = <T extends SchemaBase>(element: T) =>
     type: 'Array',
     element,
     validate: (value: unknown) => {
+      // When it's not even an object.
       if (!Array.isArray(value)) return failure('not an array')
 
+      // Validate each element.
       for (let i = 0; i < value.length; i++) {
         const result: ValidateResult = element.validate(value[i])
         if (result.isFailure) return failure(result.error.message, [i, ...result.error.path])
