@@ -1,5 +1,5 @@
 import type { MergeIntersection } from 'advanced-type-utilities'
-import type { Optional, SchemaBase } from './schema'
+import type { Optional, SchemaBase, ValidateResult } from './schema'
 
 type StandardLowercaseTypeMap = {
   boolean: boolean
@@ -35,4 +35,8 @@ export type Infer<T extends SchemaBase> = T['type'] extends keyof StandardLowerc
         ? L extends (() => infer S extends SchemaBase)
           ? Infer<S>
           : never
-        : never
+        : T extends { validate: (value: any) => ValidateResult<infer R> }
+          ? R
+          : never
+
+export type InferResult<T extends SchemaBase> = ValidateResult<Infer<T>>

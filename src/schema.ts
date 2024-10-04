@@ -1,7 +1,7 @@
 import { partition } from 'base-up'
 import { Result } from 'result-type-ts'
 
-export type SchemaBase = { type: string; validate: (value: any) => any }
+export type SchemaBase<T = any> = { type: string; validate: (value: T) => any }
 export type ValidateError = { message: string; path: (keyof any)[] }
 export type ValidateResult<T = unknown> = Result<T, ValidateError>
 
@@ -43,10 +43,10 @@ export const never = {
   validate: (value: unknown) => failure('never type does not accept any value'),
 } as const
 
-export type Optional = { type: 'optional'; schema: SchemaBase; validate?: never }
-export const optional = <T extends SchemaBase>(schema: T) => ({ type: 'optional', schema }) as const
+export type Optional = { type: 'optional'; schema: SchemaBase<unknown>; validate?: never }
+export const optional = <T extends SchemaBase<unknown>>(schema: T) => ({ type: 'optional', schema }) as const
 
-const objectFunction = <T extends Record<keyof any, SchemaBase | Optional>>(properties: T) =>
+const objectFunction = <T extends Record<keyof any, SchemaBase<unknown> | Optional>>(properties: T) =>
   ({
     type: 'properties',
     properties,
@@ -83,7 +83,7 @@ export const object = Object.assign(objectFunction, {
     typeof value === 'object' && value !== null ? Result.success(value) : failure('not an object'),
 } as const)
 
-export const Array_ = <T extends SchemaBase>(element: T) =>
+export const Array_ = <T extends SchemaBase<unknown>>(element: T) =>
   ({
     type: 'Array',
     element,
