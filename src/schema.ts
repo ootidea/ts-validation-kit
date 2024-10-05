@@ -54,6 +54,8 @@ const objectFunction = <T extends Record<keyof any, SchemaBase<unknown> | Option
       // When it's not even an object.
       if (typeof value !== 'object' || value === null) return failure('not an object')
 
+      let changedValue = value
+
       const [optionalPropertyKeys, requiredPropertyKeys] = partition(
         Reflect.ownKeys(properties),
         (key) => properties[key as any]!.type === 'optional',
@@ -65,6 +67,8 @@ const objectFunction = <T extends Record<keyof any, SchemaBase<unknown> | Option
         const propertySchema = properties[key as any]! as SchemaBase
         const result: ValidateResult = propertySchema.validate((value as any)[key])
         if (result.isFailure) return failure(result.error.message, [...result.error.path, key])
+
+        if (result.value !== (value as any)[key]) changedValue = { ...changedValue, [key]: result.value }
       }
       // Validate optional properties.
       for (const key of optionalPropertyKeys) {
@@ -73,8 +77,10 @@ const objectFunction = <T extends Record<keyof any, SchemaBase<unknown> | Option
         const propertySchema = properties[key as any]! as Optional
         const result: ValidateResult = propertySchema.schema.validate((value as any)[key])
         if (result.isFailure) return result.mapError(({ message, path }) => ({ message, path: [...path, key] }))
+
+        if (result.value !== (value as any)[key]) changedValue = { ...changedValue, [key]: result.value }
       }
-      return Result.success(value)
+      return Result.success(changedValue)
     },
   }) as const
 export const object = Object.assign(objectFunction, {
@@ -91,12 +97,16 @@ export const Array_ = <T extends SchemaBase<unknown>>(element: T) =>
       // When it's not even an object.
       if (!Array.isArray(value)) return failure('not an array')
 
+      let changedValue = value
+
       // Validate each element.
       for (let i = 0; i < value.length; i++) {
         const result: ValidateResult = element.validate(value[i])
         if (result.isFailure) return failure(result.error.message, [i, ...result.error.path])
+
+        if (result.value !== value[i]) changedValue = changedValue.toSpliced(i, 1, result.value)
       }
-      return Result.success(value)
+      return Result.success(changedValue)
     },
   }) as const
 
@@ -107,3 +117,17 @@ export const recursive = <const T extends () => any>(lazy: T) => {
     validate: (value: unknown) => (lazy as () => SchemaBase)().validate(value),
   } as const
 }
+
+export const convert = <T, U>(converter: (value: T) => U) =>
+  ({
+    type: 'convert',
+    converter,
+    validate: (value: T) => {
+      try {
+        return Result.success(converter(value)) as ValidateResult<U> & { converted?: never }
+      } catch (e) {
+        const message = e instanceof Error ? e.message : String(e)
+        return failure(message) as Result.Failure<ValidateError> & { converted?: never }
+      }
+    },
+  }) as const

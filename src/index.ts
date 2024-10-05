@@ -11,6 +11,7 @@ export {
   object,
   Array_ as Array,
   recursive,
+  convert,
 } from './schema'
 export { type Infer } from './Infer'
 export { validate } from './external'

@@ -26,4 +26,9 @@ describe('Infer', () => {
     }
     expectInferredType(TreeSchema).toBe<Tree>()
   })
+  it('infers converter return type', () => {
+    expectInferredType(z.convert(Number)).toBe<number>()
+    expectInferredType(z.convert((value) => `${value}`)).toBe<string>()
+    expectInferredType(z.convert((value: number) => `${value}` as const)).toBe<`${number}`>()
+  })
 })
