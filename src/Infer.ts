@@ -1,4 +1,5 @@
 import type { MergeIntersection } from 'advanced-type-utilities'
+import type { DerivePipedType } from './pipe'
 import type { Optional, SchemaBase, ValidateResult } from './schema'
 
 type StandardLowercaseTypeMap = {
@@ -35,8 +36,25 @@ export type Infer<T extends SchemaBase> = T['type'] extends keyof StandardLowerc
         ? L extends (() => infer S extends SchemaBase)
           ? Infer<S>
           : never
-        : T extends { validate: (value: any) => ValidateResult<infer R> }
-          ? R
-          : never
+        : T extends {
+              type: 'pipe'
+              schemas: readonly [
+                infer B extends SchemaBase,
+                ...infer L extends readonly { validate: (value: any) => any }[],
+              ]
+            }
+          ? DerivePipedType<InferArgument<B>, { [K in keyof L]: ReturnType<L[K]['validate']> }>
+          : T extends { validate: (value: any) => ValidateResult<infer R> }
+            ? R
+            : never
 
 export type InferResult<T extends SchemaBase> = ValidateResult<Infer<T>>
+
+export type InferArgument<T extends SchemaBase> = T extends {
+  type: 'pipe'
+  schemas: [infer B extends SchemaBase, ...any]
+}
+  ? Infer<B>
+  : T extends { validate: (value: infer U) => any }
+    ? U
+    : unknown

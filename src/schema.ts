@@ -124,10 +124,10 @@ export const convert = <T, U>(converter: (value: T) => U) =>
     converter,
     validate: (value: T) => {
       try {
-        return Result.success(converter(value)) as ValidateResult<U> & { converted?: never }
+        return Result.success(converter(value)) as ValidateResult<U> & { converted?: true }
       } catch (e) {
         const message = e instanceof Error ? e.message : String(e)
-        return failure(message) as Result.Failure<ValidateError> & { converted?: never }
+        return failure(message) as Result.Failure<ValidateError> & { converted?: true }
       }
     },
   }) as const

@@ -14,5 +14,6 @@ export {
   convert,
   predicate,
 } from './schema'
+export { pipe } from './pipe'
 export { type Infer } from './Infer'
 export { validate } from './external'

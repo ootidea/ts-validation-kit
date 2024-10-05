@@ -35,4 +35,19 @@ describe('Infer', () => {
     expectInferredType(z.convert((value) => `${value}`)).toBe<string>()
     expectInferredType(z.convert((value: number) => `${value}` as const)).toBe<`${number}`>()
   })
+  it('infers piped types', () => {
+    expectInferredType(
+      z.pipe(
+        z.bigint,
+        z.convert((value) => Number(value)),
+      ),
+    ).toBe<number>()
+    expectInferredType(
+      z.pipe(
+        z.string,
+        z.predicate((value) => value === '' || value === 'a'),
+        z.predicate((value) => value.length < 5),
+      ),
+    ).toBe<'' | 'a'>()
+  })
 })
