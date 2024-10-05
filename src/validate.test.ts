@@ -47,6 +47,20 @@ it('validate recursive types', () => {
   const tree = { value: 1, children: [{ value: 2, children: [] }] }
   expect(z.validate(TreeSchema, tree)).toStrictEqual(Result.success(tree))
 })
+it('validate with predicate', () => {
+  expect(
+    z.validate(
+      z.predicate((value): value is 0 => value === 0),
+      0,
+    ),
+  ).toStrictEqual(Result.success(0))
+  expect(
+    z.validate(
+      z.predicate((value) => value === 0),
+      1,
+    ),
+  ).toStrictEqual(Result.failure({ message: 'predicate not met: (value) => value === 0', path: [] }))
+})
 it('converts values', () => {
   expect(z.validate(z.convert(Number), '1')).toStrictEqual(Result.success(1))
   expect(
