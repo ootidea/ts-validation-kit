@@ -5,12 +5,12 @@ import type { SchemaBase, ValidateResult } from './schema'
 export function pipe<B extends SchemaBase, R1 extends ValidateResult>(
   s1: B,
   s2: { validate: (value: DerivePipedType<InferArgument<B>, [InferResult<B>]>) => R1 },
-): { type: 'pipe'; schemas: [B, typeof s2]; validate: (value: any) => any }
+): { type: 'pipe'; schemas: [B, typeof s2]; validate: (value: any) => ValidateResult<any> }
 export function pipe<B extends SchemaBase, R1 extends ValidateResult, R2 extends ValidateResult>(
   s1: B,
   s2: { validate: (value: DerivePipedType<InferArgument<B>, [InferResult<B>]>) => R1 },
   s3: { validate: (value: DerivePipedType<InferArgument<B>, [InferResult<B>, R1]>) => R2 },
-): { type: 'pipe'; schemas: [B, typeof s2, typeof s3]; validate: (value: any) => any }
+): { type: 'pipe'; schemas: [B, typeof s2, typeof s3]; validate: (value: any) => ValidateResult<any> }
 export function pipe<
   B extends SchemaBase,
   R1 extends ValidateResult,
@@ -21,7 +21,7 @@ export function pipe<
   s2: { validate: (value: DerivePipedType<InferArgument<B>, [InferResult<B>]>) => R1 },
   s3: { validate: (value: DerivePipedType<InferArgument<B>, [InferResult<B>, R1]>) => R2 },
   s4: { validate: (value: DerivePipedType<InferArgument<B>, [InferResult<B>, R1, R2]>) => R3 },
-): { type: 'pipe'; schemas: [B, typeof s2, typeof s3, typeof s4]; validate: (value: any) => any }
+): { type: 'pipe'; schemas: [B, typeof s2, typeof s3, typeof s4]; validate: (value: any) => ValidateResult<any> }
 export function pipe<
   B extends SchemaBase,
   R1 extends ValidateResult,
@@ -34,7 +34,7 @@ export function pipe<
   s3: { validate: (value: DerivePipedType<InferArgument<B>, [InferResult<B>, R1]>) => R2 },
   s4: { validate: (value: DerivePipedType<InferArgument<B>, [InferResult<B>, R1, R2]>) => R3 },
   s5: { validate: (value: DerivePipedType<InferArgument<B>, [InferResult<B>, R1, R2, R3]>) => R4 },
-): { type: 'pipe'; schemas: [B, typeof s2, typeof s3, typeof s4]; validate: (value: any) => any }
+): { type: 'pipe'; schemas: [B, typeof s2, typeof s3, typeof s4]; validate: (value: any) => ValidateResult<any> }
 export function pipe(
   s1: { validate: (value: any) => any },
   s2: { validate: (value: any) => any },
@@ -67,8 +67,8 @@ export type DerivePipedType<Acc, T extends readonly ValidateResult[]> = T extend
   ...infer L extends readonly ValidateResult[],
 ]
   ? H extends { value?: infer R }
-    ? 'converted' extends keyof H
-      ? DerivePipedType<R, L> // Replace the return type with the converted type.
-      : DerivePipedType<Acc & R, L> // Narrow the return type.
+    ? H extends { converted?: never }
+      ? DerivePipedType<Acc & R, L> // Narrow the return type.
+      : DerivePipedType<R, L> // Replace the return type with the converted type.
     : never // Unreachable
   : Acc
