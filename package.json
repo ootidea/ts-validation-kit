@@ -1,14 +1,14 @@
 {
-  "name": "ts-data-schema",
+  "name": "ts-validation-kit",
   "version": "0.0.0",
   "description": "",
-  "homepage": "https://github.com/ootidea/ts-data-schema#readme",
+  "homepage": "https://github.com/ootidea/ts-validation-kit#readme",
   "bugs": {
-    "url": "https://github.com/ootidea/ts-data-schema/issues"
+    "url": "https://github.com/ootidea/ts-validation-kit/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ootidea/ts-data-schema.git"
+    "url": "git+https://github.com/ootidea/ts-validation-kit.git"
   },
   "license": "CC0-1.0",
   "author": "ootidea",
