@@ -4,12 +4,12 @@ import type { ConverterResult, NonConverterResult, SchemaBase, ValidateResult } 
 
 export function pipe<B extends SchemaBase, R1 extends ValidateResult>(
   s1: B,
-  s2: { validate: (value: DerivePipedType<InferArgument<B>, [InferResult<B>]>) => R1 },
+  s2: { validate: (input: DerivePipedType<InferArgument<B>, [InferResult<B>]>) => R1 },
 ): { type: 'pipe'; schemas: [B, typeof s2]; validate: PipeValidate<B, [R1]> }
 export function pipe<B extends SchemaBase, R1 extends ValidateResult, R2 extends ValidateResult>(
   s1: B,
-  s2: { validate: (value: DerivePipedType<InferArgument<B>, [InferResult<B>]>) => R1 },
-  s3: { validate: (value: DerivePipedType<InferArgument<B>, [InferResult<B>, R1]>) => R2 },
+  s2: { validate: (input: DerivePipedType<InferArgument<B>, [InferResult<B>]>) => R1 },
+  s3: { validate: (input: DerivePipedType<InferArgument<B>, [InferResult<B>, R1]>) => R2 },
 ): { type: 'pipe'; schemas: [B, typeof s2, typeof s3]; validate: PipeValidate<B, [R1, R2]> }
 export function pipe<
   B extends SchemaBase,
@@ -18,9 +18,9 @@ export function pipe<
   R3 extends ValidateResult,
 >(
   s1: B,
-  s2: { validate: (value: DerivePipedType<InferArgument<B>, [InferResult<B>]>) => R1 },
-  s3: { validate: (value: DerivePipedType<InferArgument<B>, [InferResult<B>, R1]>) => R2 },
-  s4: { validate: (value: DerivePipedType<InferArgument<B>, [InferResult<B>, R1, R2]>) => R3 },
+  s2: { validate: (input: DerivePipedType<InferArgument<B>, [InferResult<B>]>) => R1 },
+  s3: { validate: (input: DerivePipedType<InferArgument<B>, [InferResult<B>, R1]>) => R2 },
+  s4: { validate: (input: DerivePipedType<InferArgument<B>, [InferResult<B>, R1, R2]>) => R3 },
 ): { type: 'pipe'; schemas: [B, typeof s2, typeof s3, typeof s4]; validate: PipeValidate<B, [R1, R2, R3]> }
 export function pipe<
   B extends SchemaBase,
@@ -30,24 +30,24 @@ export function pipe<
   R4 extends ValidateResult,
 >(
   s1: B,
-  s2: { validate: (value: DerivePipedType<InferArgument<B>, [InferResult<B>]>) => R1 },
-  s3: { validate: (value: DerivePipedType<InferArgument<B>, [InferResult<B>, R1]>) => R2 },
-  s4: { validate: (value: DerivePipedType<InferArgument<B>, [InferResult<B>, R1, R2]>) => R3 },
-  s5: { validate: (value: DerivePipedType<InferArgument<B>, [InferResult<B>, R1, R2, R3]>) => R4 },
+  s2: { validate: (input: DerivePipedType<InferArgument<B>, [InferResult<B>]>) => R1 },
+  s3: { validate: (input: DerivePipedType<InferArgument<B>, [InferResult<B>, R1]>) => R2 },
+  s4: { validate: (input: DerivePipedType<InferArgument<B>, [InferResult<B>, R1, R2]>) => R3 },
+  s5: { validate: (input: DerivePipedType<InferArgument<B>, [InferResult<B>, R1, R2, R3]>) => R4 },
 ): { type: 'pipe'; schemas: [B, typeof s2, typeof s3, typeof s4]; validate: PipeValidate<B, [R1, R2, R3, R4]> }
 export function pipe(
-  s1: { validate: (value: any) => any },
-  s2: { validate: (value: any) => any },
-  s3?: { validate: (value: any) => any },
-  s4?: { validate: (value: any) => any },
-  s5?: { validate: (value: any) => any },
+  s1: { validate: (input: any) => any },
+  s2: { validate: (input: any) => any },
+  s3?: { validate: (input: any) => any },
+  s4?: { validate: (input: any) => any },
+  s5?: { validate: (input: any) => any },
 ) {
   const schemas = [s1, s2, s3, s4, s5].filter((s) => s !== undefined)
   return {
     type: 'pipe',
     schemas,
-    validate: (value: unknown) => {
-      let current = value
+    validate: (input: unknown) => {
+      let current = input
       for (const schema of schemas) {
         const subresult = schema.validate(current)
         if (subresult.isFailure()) return subresult
@@ -78,5 +78,5 @@ type PipeValidate<B extends SchemaBase, S extends readonly ValidateResult[]> = [
   ReturnType<B['validate']>,
   ...S,
 ] extends readonly NonConverterResult[]
-  ? (value: any) => NonConverterResult
-  : (value: any) => ConverterResult
+  ? (input: any) => NonConverterResult
+  : (input: any) => ConverterResult

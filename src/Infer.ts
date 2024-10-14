@@ -40,11 +40,11 @@ export type Infer<T extends SchemaBase> = T['type'] extends keyof StandardLowerc
               type: 'pipe'
               schemas: readonly [
                 infer B extends SchemaBase,
-                ...infer L extends readonly { validate: (value: any) => any }[],
+                ...infer L extends readonly { validate: (input: any) => any }[],
               ]
             }
           ? DerivePipedType<InferArgument<B>, { [K in keyof L]: ReturnType<L[K]['validate']> }>
-          : T extends { validate: (value: any) => ValidateResult<infer R> }
+          : T extends { validate: (input: any) => ValidateResult<infer R> }
             ? R
             : never
 
@@ -55,6 +55,6 @@ export type InferArgument<T extends SchemaBase> = T extends {
   schemas: [infer B extends SchemaBase, ...any]
 }
   ? Infer<B>
-  : T extends { validate: (value: infer U) => any }
+  : T extends { validate: (input: infer U) => any }
     ? U
     : unknown
