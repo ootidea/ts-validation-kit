@@ -7,6 +7,7 @@ export {
   unknown,
   any,
   never,
+  literal,
   optional,
   object,
   Array_ as Array,

@@ -58,6 +58,14 @@ export const never = {
   validate: (input: unknown): NonConverterResult<never> => failure('never type does not accept any value'),
 } as const
 
+export const literal = <const T>(value: T) =>
+  ({
+    type: 'literal',
+    value,
+    validate: (input: unknown): NonConverterResult<T> =>
+      input === value ? Result.success(value) : failure('not equals'),
+  }) as const
+
 export type Optional = { type: 'optional'; schema: SchemaBase<unknown>; validate?: never }
 export type ConverterOptional = { type: 'optional'; schema: ConverterSchema<unknown>; validate?: never }
 export type NonConverterOptional = { type: 'optional'; schema: NonConverterSchema<unknown>; validate?: never }

@@ -15,9 +15,28 @@ it('validate primitive types', () => {
   expect(z.validate(z.string, 'a')).toStrictEqual(Result.success('a'))
   expect(z.validate(z.string, null)).toStrictEqual(Result.failure({ message: 'not a string', path: [] }))
 
-  const symbolExample = Symbol('a')
-  expect(z.validate(z.symbol, symbolExample)).toStrictEqual(Result.success(symbolExample))
+  const uniqueSymbol = Symbol('a')
+  expect(z.validate(z.symbol, uniqueSymbol)).toStrictEqual(Result.success(uniqueSymbol))
   expect(z.validate(z.symbol, 'a')).toStrictEqual(Result.failure({ message: 'not a symbol', path: [] }))
+})
+it('validate literal types', () => {
+  expect(z.validate(z.literal(true), true)).toStrictEqual(Result.success(true))
+  expect(z.validate(z.literal(true), false)).toStrictEqual(Result.failure({ message: 'not equals', path: [] }))
+
+  expect(z.validate(z.literal(0), 0)).toStrictEqual(Result.success(0))
+  expect(z.validate(z.literal(0), 1)).toStrictEqual(Result.failure({ message: 'not equals', path: [] }))
+
+  expect(z.validate(z.literal(1n), 1n)).toStrictEqual(Result.success(1n))
+  expect(z.validate(z.literal(1n), 2n)).toStrictEqual(Result.failure({ message: 'not equals', path: [] }))
+
+  expect(z.validate(z.literal('a'), 'a')).toStrictEqual(Result.success('a'))
+  expect(z.validate(z.literal('a'), 'b')).toStrictEqual(Result.failure({ message: 'not equals', path: [] }))
+
+  const uniqueSymbol = Symbol('a')
+  expect(z.validate(z.literal(uniqueSymbol), uniqueSymbol)).toStrictEqual(Result.success(uniqueSymbol))
+  expect(z.validate(z.literal(uniqueSymbol), Symbol('a'))).toStrictEqual(
+    Result.failure({ message: 'not equals', path: [] }),
+  )
 })
 it('validate properties', () => {
   expect(z.validate(z.object({ a: z.number }), { a: 1 })).toStrictEqual(Result.success({ a: 1 }))
