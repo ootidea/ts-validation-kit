@@ -66,6 +66,9 @@ export const literal = <const T>(value: T) =>
       input === value ? Result.success(value) : failure('not equals'),
   }) as const
 
+export const null_ = literal(null)
+export const undefined_ = literal(undefined)
+
 export type Optional = { type: 'optional'; schema: SchemaBase<unknown>; validate?: never }
 export type ConverterOptional = { type: 'optional'; schema: ConverterSchema<unknown>; validate?: never }
 export type NonConverterOptional = { type: 'optional'; schema: NonConverterSchema<unknown>; validate?: never }

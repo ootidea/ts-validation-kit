@@ -38,6 +38,13 @@ it('validate literal types', () => {
     Result.failure({ message: 'not equals', path: [] }),
   )
 })
+it('validate null and undefined types', () => {
+  expect(z.validate(z.null, null)).toStrictEqual(Result.success(null))
+  expect(z.validate(z.null, undefined)).toStrictEqual(Result.failure({ message: 'not equals', path: [] }))
+
+  expect(z.validate(z.undefined, undefined)).toStrictEqual(Result.success(undefined))
+  expect(z.validate(z.undefined, null)).toStrictEqual(Result.failure({ message: 'not equals', path: [] }))
+})
 it('validate properties', () => {
   expect(z.validate(z.object({ a: z.number }), { a: 1 })).toStrictEqual(Result.success({ a: 1 }))
   expect(z.validate(z.object({ a: z.number }), { a: null })).toStrictEqual(

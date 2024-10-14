@@ -8,6 +8,8 @@ export {
   any,
   never,
   literal,
+  null_ as null,
+  undefined_ as undefined,
   optional,
   object,
   Array_ as Array,
