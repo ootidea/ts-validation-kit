@@ -62,8 +62,14 @@ export const literal = <const T>(value: T) =>
   ({
     type: 'literal',
     value,
-    validate: (input: unknown): NonConverterResult<T> =>
-      input === value ? Result.success(value) : failure('not equals'),
+    validate: (input: unknown): NonConverterResult<T> => {
+      if (input === value) return Result.success(value)
+
+      if (typeof value === 'bigint') return failure(`not equal to ${value}n`)
+      if (typeof value === 'symbol') return failure(`not equal to ${String(value)}`)
+
+      return failure(`not equal to ${JSON.stringify(value)}`)
+    },
   }) as const
 
 export const null_ = literal(null)

@@ -21,29 +21,29 @@ it('validate primitive types', () => {
 })
 it('validate literal types', () => {
   expect(z.validate(z.literal(true), true)).toStrictEqual(Result.success(true))
-  expect(z.validate(z.literal(true), false)).toStrictEqual(Result.failure({ message: 'not equals', path: [] }))
+  expect(z.validate(z.literal(true), false)).toStrictEqual(Result.failure({ message: 'not equal to true', path: [] }))
 
   expect(z.validate(z.literal(0), 0)).toStrictEqual(Result.success(0))
-  expect(z.validate(z.literal(0), 1)).toStrictEqual(Result.failure({ message: 'not equals', path: [] }))
+  expect(z.validate(z.literal(0), 1)).toStrictEqual(Result.failure({ message: 'not equal to 0', path: [] }))
 
   expect(z.validate(z.literal(1n), 1n)).toStrictEqual(Result.success(1n))
-  expect(z.validate(z.literal(1n), 2n)).toStrictEqual(Result.failure({ message: 'not equals', path: [] }))
+  expect(z.validate(z.literal(1n), 2n)).toStrictEqual(Result.failure({ message: 'not equal to 1n', path: [] }))
 
   expect(z.validate(z.literal('a'), 'a')).toStrictEqual(Result.success('a'))
-  expect(z.validate(z.literal('a'), 'b')).toStrictEqual(Result.failure({ message: 'not equals', path: [] }))
+  expect(z.validate(z.literal('a'), 'b')).toStrictEqual(Result.failure({ message: 'not equal to "a"', path: [] }))
 
   const uniqueSymbol = Symbol('a')
   expect(z.validate(z.literal(uniqueSymbol), uniqueSymbol)).toStrictEqual(Result.success(uniqueSymbol))
   expect(z.validate(z.literal(uniqueSymbol), Symbol('a'))).toStrictEqual(
-    Result.failure({ message: 'not equals', path: [] }),
+    Result.failure({ message: 'not equal to Symbol(a)', path: [] }),
   )
 })
 it('validate null and undefined types', () => {
   expect(z.validate(z.null, null)).toStrictEqual(Result.success(null))
-  expect(z.validate(z.null, undefined)).toStrictEqual(Result.failure({ message: 'not equals', path: [] }))
+  expect(z.validate(z.null, undefined)).toStrictEqual(Result.failure({ message: 'not equal to null', path: [] }))
 
   expect(z.validate(z.undefined, undefined)).toStrictEqual(Result.success(undefined))
-  expect(z.validate(z.undefined, null)).toStrictEqual(Result.failure({ message: 'not equals', path: [] }))
+  expect(z.validate(z.undefined, null)).toStrictEqual(Result.failure({ message: 'not equal to undefined', path: [] }))
 })
 it('validate properties', () => {
   expect(z.validate(z.object({ a: z.number }), { a: 1 })).toStrictEqual(Result.success({ a: 1 }))
