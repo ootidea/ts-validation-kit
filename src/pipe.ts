@@ -1,5 +1,5 @@
 import { Result } from 'result-type-ts'
-import type { InferInput, InferResult } from './Infer'
+import type { Infer, InferInput } from './Infer'
 import type { ConverterResult, NonConverterResult, SchemaBase, ValidateResult } from './schema'
 
 export function pipe<B extends SchemaBase, R1 extends ValidateResult>(
@@ -80,3 +80,5 @@ type PipeValidate<B extends SchemaBase, S extends readonly ValidateResult[]> = [
 ] extends readonly NonConverterResult[]
   ? (input: any) => NonConverterResult
   : (input: any) => ConverterResult
+
+type InferResult<T extends SchemaBase> = ValidateResult<Infer<T>>

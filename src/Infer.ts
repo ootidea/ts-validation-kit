@@ -50,9 +50,6 @@ export type Infer<T extends SchemaBase> = T['type'] extends keyof StandardLowerc
               ? R
               : never
 
-// TODO: move file to src/pipe.ts
-export type InferResult<T extends SchemaBase> = ValidateResult<Infer<T>>
-
 export type InferInput<T extends SchemaBase> = T extends {
   type: 'pipe'
   schemas: [infer B extends SchemaBase, ...any]
