@@ -33,6 +33,17 @@ describe('Infer', () => {
     expectInferredType(z.Array(z.number)).toBe<number[]>()
     expectInferredType(z.Array(z.Array(z.number))).toBe<number[][]>()
   })
+  it('infers or types', () => {
+    expectInferredType(z.or(z.number, z.string)).toBe<number | string>()
+    expectInferredType(z.or(z.boolean, z.null, z.undefined)).toBe<boolean | null | undefined>()
+    expectInferredType(
+      z.or(
+        z.predicate((value) => value === 0),
+        z.predicate((value) => value === 1),
+      ),
+    ).toBe<0 | 1>()
+    expectInferredType(z.or(z.Array(z.never), z.object({}))).toBe<never[] | {}>()
+  })
   it('infers recursive types', () => {
     const TreeSchema = z.object({
       value: z.unknown,

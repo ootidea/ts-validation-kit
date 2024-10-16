@@ -13,6 +13,7 @@ export {
   optional,
   object,
   Array_ as Array,
+  or,
   recursive,
   convert,
   predicate,

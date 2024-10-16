@@ -65,6 +65,16 @@ it('validate array types', () => {
   expect(z.validate(z.Array(z.number), [0, 'a'])).toStrictEqual(Result.failure({ message: 'not a number', path: [1] }))
   expect(z.validate(z.Array(z.number), 'a')).toStrictEqual(Result.failure({ message: 'not an array', path: [] }))
 })
+it('validate with or schema', () => {
+  expect(z.validate(z.or(z.number, z.string), 1)).toStrictEqual(Result.success(1))
+  expect(z.validate(z.or(z.number, z.string), 'a')).toStrictEqual(Result.success('a'))
+  expect(z.validate(z.or(z.number, z.string), true)).toStrictEqual(
+    Result.failure({
+      message: 'must resolve any one of the following issues: (1) not a number (2) not a string',
+      path: [],
+    }),
+  )
+})
 it('validate recursive types', () => {
   const TreeSchema = z.object({
     value: z.unknown,

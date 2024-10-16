@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       advanced-type-utilities:
-        specifier: ^0.5.0
-        version: 0.5.0
+        specifier: ^0.7.0
+        version: 0.7.0
       base-up:
         specifier: ^2.0.0
         version: 2.0.0
@@ -534,8 +534,8 @@ packages:
   '@vitest/utils@2.1.2':
     resolution: {integrity: sha512-zMO2KdYy6mx56btx9JvAqAZ6EyS3g49krMPPrgOp1yxGZiA93HumGk+bZ5jIZtOg5/VBYl5eBmGRQHqq4FG6uQ==}
 
-  advanced-type-utilities@0.5.0:
-    resolution: {integrity: sha512-HaPVBqrFZhRo8Fll7rCKIp+bD+1F0W1A/rQe/EZ9IoXdOpCahxyFnHBTh3l4rNSUVPq9ZXknUCJJvCOjlnavQg==}
+  advanced-type-utilities@0.7.0:
+    resolution: {integrity: sha512-qngakmwNf7ejNw/+nLw07hreHD/Gq3XQOj6U8ITO3V1ldk9VNar+QI4HjNAZUkql1sL3suhxYTGbAtYgwUuVRw==}
 
   ansi-regex@5.0.1:
     resolution: {integrity: sha512-quJQXlTSUGL2LH9SUXo8VwsY4soanhgo6LNSm84E1LBcE8s3O0wpdiRzyR9z/ZZJMlMWv37qOOb9pdJlMUEKFQ==}
@@ -1497,7 +1497,7 @@ snapshots:
       loupe: 3.1.2
       tinyrainbow: 1.2.0
 
-  advanced-type-utilities@0.5.0: {}
+  advanced-type-utilities@0.7.0: {}
 
   ansi-regex@5.0.1: {}
 
