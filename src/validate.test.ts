@@ -74,6 +74,9 @@ it('validate with or schema', () => {
       path: [],
     }),
   )
+  expect(z.validate(z.or(z.convert(JSON.parse), z.convert(String)), undefined)).toStrictEqual(
+    Result.success('undefined'),
+  )
 })
 it('validate recursive types', () => {
   const TreeSchema = z.object({
