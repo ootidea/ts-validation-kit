@@ -1,18 +1,18 @@
 import { Result } from 'result-type-ts'
 import type { Infer, InferInput } from './Infer'
-import type { ConverterResult, NonConverterResult, SchemaBase, ValidateResult } from './schema'
+import type { BaseSchema, ConverterResult, NonConverterResult, ValidateResult } from './schema'
 
-export function pipe<B extends SchemaBase, R1 extends ValidateResult>(
+export function pipe<B extends BaseSchema, R1 extends ValidateResult>(
   s1: B,
   s2: { validate: (input: DerivePipedType<InferInput<B>, [InferResult<B>]>) => R1 },
 ): { type: 'pipe'; schemas: [B, typeof s2]; validate: PipeValidate<B, [R1]> }
-export function pipe<B extends SchemaBase, R1 extends ValidateResult, R2 extends ValidateResult>(
+export function pipe<B extends BaseSchema, R1 extends ValidateResult, R2 extends ValidateResult>(
   s1: B,
   s2: { validate: (input: DerivePipedType<InferInput<B>, [InferResult<B>]>) => R1 },
   s3: { validate: (input: DerivePipedType<InferInput<B>, [InferResult<B>, R1]>) => R2 },
 ): { type: 'pipe'; schemas: [B, typeof s2, typeof s3]; validate: PipeValidate<B, [R1, R2]> }
 export function pipe<
-  B extends SchemaBase,
+  B extends BaseSchema,
   R1 extends ValidateResult,
   R2 extends ValidateResult,
   R3 extends ValidateResult,
@@ -23,7 +23,7 @@ export function pipe<
   s4: { validate: (input: DerivePipedType<InferInput<B>, [InferResult<B>, R1, R2]>) => R3 },
 ): { type: 'pipe'; schemas: [B, typeof s2, typeof s3, typeof s4]; validate: PipeValidate<B, [R1, R2, R3]> }
 export function pipe<
-  B extends SchemaBase,
+  B extends BaseSchema,
   R1 extends ValidateResult,
   R2 extends ValidateResult,
   R3 extends ValidateResult,
@@ -74,11 +74,11 @@ export type DerivePipedType<Acc, T extends readonly ValidateResult[]> = T extend
   : Acc
 
 /** If the argument includes a converter schema, this also becomes a converter. */
-type PipeValidate<B extends SchemaBase, S extends readonly ValidateResult[]> = [
+type PipeValidate<B extends BaseSchema, S extends readonly ValidateResult[]> = [
   ReturnType<B['validate']>,
   ...S,
 ] extends readonly NonConverterResult[]
   ? (input: any) => NonConverterResult
   : (input: any) => ConverterResult
 
-type InferResult<T extends SchemaBase> = ValidateResult<Infer<T>>
+type InferResult<T extends BaseSchema> = ValidateResult<Infer<T>>

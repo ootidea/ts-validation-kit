@@ -1,6 +1,6 @@
 import type { Result } from 'result-type-ts'
 import type * as z from './index'
-import type { SchemaBase, ValidateError } from './schema'
+import type { BaseSchema, ValidateError } from './schema'
 
-export const validate = <T extends SchemaBase>(schema: T, value: unknown): Result<z.Infer<T>, ValidateError> =>
+export const validate = <T extends BaseSchema>(schema: T, value: unknown): Result<z.Infer<T>, ValidateError> =>
   schema.validate(value) as any

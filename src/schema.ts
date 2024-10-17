@@ -1,7 +1,7 @@
 import { partition } from 'base-up'
 import { Result } from 'result-type-ts'
 
-export type SchemaBase<T = any> = { type: string; validate: (input: T) => any }
+export type BaseSchema<T = any> = { type: string; validate: (input: T) => any }
 export type ConverterSchema<T = any> = {
   type: string
   validate: (input: T) => ValidateResult<any> & { converted?: true }
@@ -75,12 +75,12 @@ export const literal = <const T>(value: T) =>
 export const null_ = literal(null)
 export const undefined_ = literal(undefined)
 
-export type Optional = { type: 'optional'; schema: SchemaBase<unknown>; validate?: never }
+export type Optional = { type: 'optional'; schema: BaseSchema<unknown>; validate?: never }
 export type ConverterOptional = { type: 'optional'; schema: ConverterSchema<unknown>; validate?: never }
 export type NonConverterOptional = { type: 'optional'; schema: NonConverterSchema<unknown>; validate?: never }
-export const optional = <T extends SchemaBase<unknown>>(schema: T) => ({ type: 'optional', schema }) as const
+export const optional = <T extends BaseSchema<unknown>>(schema: T) => ({ type: 'optional', schema }) as const
 
-const objectFunction = <T extends Record<keyof any, SchemaBase<unknown> | Optional>>(properties: T) =>
+const objectFunction = <T extends Record<keyof any, BaseSchema<unknown> | Optional>>(properties: T) =>
   ({
     type: 'properties',
     properties,
@@ -102,7 +102,7 @@ const objectFunction = <T extends Record<keyof any, SchemaBase<unknown> | Option
       for (const key of requiredPropertyKeys) {
         if (!(key in input)) return failure('missing required property', [key])
 
-        const propertySchema = properties[key as any]! as SchemaBase
+        const propertySchema = properties[key as any]! as BaseSchema
         const result: ValidateResult = propertySchema.validate((input as any)[key])
         if (result.isFailure) return failure(result.error.message, [...result.error.path, key])
 
@@ -127,7 +127,7 @@ export const object = Object.assign(objectFunction, {
     typeof input === 'object' && input !== null ? Result.success(input) : failure('not an object'),
 } as const)
 
-export const Array_ = <T extends SchemaBase<unknown>>(element: T) =>
+export const Array_ = <T extends BaseSchema<unknown>>(element: T) =>
   ({
     type: 'Array',
     element,
@@ -148,7 +148,7 @@ export const Array_ = <T extends SchemaBase<unknown>>(element: T) =>
     },
   }) as const
 
-export const or = <const T extends readonly SchemaBase[]>(...schemas: T) =>
+export const or = <const T extends readonly BaseSchema[]>(...schemas: T) =>
   ({
     type: 'or',
     schemas,
@@ -166,7 +166,7 @@ export const or = <const T extends readonly SchemaBase[]>(...schemas: T) =>
       ) as any
     },
   }) as const
-type OrOutput<T extends readonly SchemaBase[]> = T[number]['validate'] extends (input: any) => ValidateResult<infer R>
+type OrOutput<T extends readonly BaseSchema[]> = T[number]['validate'] extends (input: any) => ValidateResult<infer R>
   ? ValidateResult<R>
   : never
 
@@ -175,7 +175,7 @@ export const recursive = <const T extends () => any>(lazy: T) =>
     type: 'recursive',
     lazy,
     validate: (input: unknown): T extends () => NonConverterSchema ? NonConverterResult : ConverterResult =>
-      (lazy as () => SchemaBase)().validate(input),
+      (lazy as () => BaseSchema)().validate(input),
   }) as const
 
 export const convert = <T, U>(converter: (value: T) => U) =>

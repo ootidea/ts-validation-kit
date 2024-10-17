@@ -1,6 +1,6 @@
 import type { MergeIntersection, TupleToIntersection } from 'advanced-type-utilities'
 import type { DerivePipedType } from './pipe'
-import type { Optional, SchemaBase, ValidateResult } from './schema'
+import type { BaseSchema, Optional, ValidateResult } from './schema'
 
 type StandardLowercaseTypeMap = {
   boolean: boolean
@@ -14,13 +14,13 @@ type StandardLowercaseTypeMap = {
   never: never
 }
 
-export type Infer<T extends SchemaBase> = T['type'] extends keyof StandardLowercaseTypeMap
+export type Infer<T extends BaseSchema> = T['type'] extends keyof StandardLowercaseTypeMap
   ? StandardLowercaseTypeMap[T['type']]
-  : T extends { type: 'properties'; properties: infer Properties extends Record<keyof any, SchemaBase | Optional> }
+  : T extends { type: 'properties'; properties: infer Properties extends Record<keyof any, BaseSchema | Optional> }
     ? MergeIntersection<
         {
           // Infers required properties.
-          [K in keyof Properties as Properties[K] extends SchemaBase ? K : never]: Properties[K] extends SchemaBase
+          [K in keyof Properties as Properties[K] extends BaseSchema ? K : never]: Properties[K] extends BaseSchema
             ? Infer<Properties[K]>
             : never // Unreachable
         } & {
@@ -30,18 +30,18 @@ export type Infer<T extends SchemaBase> = T['type'] extends keyof StandardLowerc
             : never // Unreachable
         }
       >
-    : T extends { type: 'Array'; element: infer Element extends SchemaBase }
+    : T extends { type: 'Array'; element: infer Element extends BaseSchema }
       ? Infer<Element>[]
-      : T extends { type: 'or'; schemas: infer S extends readonly SchemaBase[] }
+      : T extends { type: 'or'; schemas: infer S extends readonly BaseSchema[] }
         ? { [K in keyof S]: Infer<S[K]> }[number]
         : T extends { type: 'recursive'; lazy: infer L }
-          ? L extends (() => infer S extends SchemaBase)
+          ? L extends (() => infer S extends BaseSchema)
             ? Infer<S>
             : never
           : T extends {
                 type: 'pipe'
                 schemas: readonly [
-                  infer B extends SchemaBase,
+                  infer B extends BaseSchema,
                   ...infer L extends readonly { validate: (input: any) => any }[],
                 ]
               }
@@ -50,12 +50,12 @@ export type Infer<T extends SchemaBase> = T['type'] extends keyof StandardLowerc
               ? R
               : never
 
-export type InferInput<T extends SchemaBase> = T extends {
+export type InferInput<T extends BaseSchema> = T extends {
   type: 'pipe'
-  schemas: [infer B extends SchemaBase, ...any]
+  schemas: [infer B extends BaseSchema, ...any]
 }
   ? Infer<B>
-  : T extends { type: 'or'; schemas: infer S extends readonly SchemaBase[] }
+  : T extends { type: 'or'; schemas: infer S extends readonly BaseSchema[] }
     ? TupleToIntersection<{ [K in keyof S]: InferInput<S[K]> }>
     : T extends { validate: (input: infer U) => any }
       ? U
