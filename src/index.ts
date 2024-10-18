@@ -10,9 +10,8 @@ export {
 } from './schema/base-type'
 export { literal } from './schema/literal'
 export { null_ as null, undefined_ as undefined } from './schema/literal-alias'
+export { optional, object } from './schema/object'
 export {
-  optional,
-  object,
   Array_ as Array,
   or,
   recursive,

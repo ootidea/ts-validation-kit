@@ -1,6 +1,7 @@
 import type { MergeIntersection, TupleToIntersection } from 'advanced-type-utilities'
 import type { DerivePipedType } from './pipe'
-import type { BaseSchema, Optional, ValidateResult } from './schema'
+import type { BaseSchema, ValidateResult } from './schema'
+import type { Optional } from './schema/object'
 
 type StandardLowercaseTypeMap = {
   boolean: boolean
