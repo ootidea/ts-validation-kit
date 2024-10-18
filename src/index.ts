@@ -7,10 +7,10 @@ export {
   unknown,
   any,
   never,
-} from './schema/base-type'
-export { literal } from './schema/literal'
-export { null_ as null, undefined_ as undefined } from './schema/literal-alias'
-export { optional, object } from './schema/object'
+} from './schemas/base-type'
+export { literal } from './schemas/literal'
+export { null_ as null, undefined_ as undefined } from './schemas/literal-alias'
+export { optional, object } from './schemas/object'
 export {
   Array_ as Array,
   or,
