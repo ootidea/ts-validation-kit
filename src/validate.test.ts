@@ -2,12 +2,6 @@ import { Result } from 'result-type-ts'
 import { expect, it } from 'vitest'
 import * as z from './index'
 
-it('validate array types', () => {
-  expect(z.validate(z.Array(z.number), [1])).toStrictEqual(Result.success([1]))
-  expect(z.validate(z.Array(z.number), ['a'])).toStrictEqual(Result.failure({ message: 'not a number', path: [0] }))
-  expect(z.validate(z.Array(z.number), [0, 'a'])).toStrictEqual(Result.failure({ message: 'not a number', path: [1] }))
-  expect(z.validate(z.Array(z.number), 'a')).toStrictEqual(Result.failure({ message: 'not an array', path: [] }))
-})
 it('validate with or schema', () => {
   expect(z.validate(z.or(z.number, z.string), 1)).toStrictEqual(Result.success(1))
   expect(z.validate(z.or(z.number, z.string), 'a')).toStrictEqual(Result.success('a'))

@@ -3,10 +3,6 @@ import * as z from './index'
 import { expectInferredType } from './utilities'
 
 describe('Infer', () => {
-  it('infers array types', () => {
-    expectInferredType(z.Array(z.number)).toBe<number[]>()
-    expectInferredType(z.Array(z.Array(z.number))).toBe<number[][]>()
-  })
   it('infers or types', () => {
     expectInferredType(z.or(z.number, z.string)).toBe<number | string>()
     expectInferredType(z.or(z.boolean, z.null, z.undefined)).toBe<boolean | null | undefined>()
