@@ -7,6 +7,8 @@ export {
   unknown,
   any,
   never,
+} from './schema/base-type'
+export {
   literal,
   null_ as null,
   undefined_ as undefined,

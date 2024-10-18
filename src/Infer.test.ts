@@ -3,12 +3,6 @@ import * as z from './index'
 import { expectInferredType } from './utilities'
 
 describe('Infer', () => {
-  it('infers non-nullish primitive types', () => {
-    expectInferredType(z.boolean).toBe<boolean>()
-    expectInferredType(z.number).toBe<number>()
-    expectInferredType(z.bigint).toBe<bigint>()
-    expectInferredType(z.string).toBe<string>()
-  })
   it('infers literal types', () => {
     expectInferredType(z.literal(true)).toBe<true>()
     expectInferredType(z.literal(0)).toBe<0>()

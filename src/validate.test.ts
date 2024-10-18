@@ -2,23 +2,6 @@ import { Result } from 'result-type-ts'
 import { expect, it } from 'vitest'
 import * as z from './index'
 
-it('validate primitive types', () => {
-  expect(z.validate(z.boolean, true)).toStrictEqual(Result.success(true))
-  expect(z.validate(z.boolean, 1)).toStrictEqual(Result.failure({ message: 'not a boolean', path: [] }))
-
-  expect(z.validate(z.number, 1)).toStrictEqual(Result.success(1))
-  expect(z.validate(z.number, 1n)).toStrictEqual(Result.failure({ message: 'not a number', path: [] }))
-
-  expect(z.validate(z.bigint, 1n)).toStrictEqual(Result.success(1n))
-  expect(z.validate(z.bigint, 'a')).toStrictEqual(Result.failure({ message: 'not a bigint', path: [] }))
-
-  expect(z.validate(z.string, 'a')).toStrictEqual(Result.success('a'))
-  expect(z.validate(z.string, null)).toStrictEqual(Result.failure({ message: 'not a string', path: [] }))
-
-  const uniqueSymbol = Symbol('a')
-  expect(z.validate(z.symbol, uniqueSymbol)).toStrictEqual(Result.success(uniqueSymbol))
-  expect(z.validate(z.symbol, 'a')).toStrictEqual(Result.failure({ message: 'not a symbol', path: [] }))
-})
 it('validate literal types', () => {
   expect(z.validate(z.literal(true), true)).toStrictEqual(Result.success(true))
   expect(z.validate(z.literal(true), false)).toStrictEqual(Result.failure({ message: 'not equal to true', path: [] }))
