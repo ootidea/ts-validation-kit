@@ -18,14 +18,6 @@ export function failure(message: string, path: (keyof any)[] = []): Result.Failu
   return Result.failure({ message, path })
 }
 
-export const recursive = <const T extends () => any>(lazy: T) =>
-  ({
-    type: 'recursive',
-    lazy,
-    validate: (input: unknown): T extends () => NonConverterSchema ? NonConverterResult : ConverterResult =>
-      (lazy as () => BaseSchema)().validate(input),
-  }) as const
-
 export const convert = <T, U>(converter: (value: T) => U) =>
   ({
     type: 'convert',

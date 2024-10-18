@@ -3,17 +3,6 @@ import * as z from './index'
 import { expectInferredType } from './utilities'
 
 describe('Infer', () => {
-  it('infers recursive types', () => {
-    const TreeSchema = z.object({
-      value: z.unknown,
-      children: z.Array(z.recursive(() => TreeSchema)),
-    })
-    type Tree = {
-      value: unknown
-      children: Tree[]
-    }
-    expectInferredType(TreeSchema).toBe<Tree>()
-  })
   it('infers predicate narrowing types', () => {
     expectInferredType(z.predicate((value): value is 0 => value === 0)).toBe<0>()
     expectInferredType(z.predicate((value: string) => Boolean(value))).toBe<string>()

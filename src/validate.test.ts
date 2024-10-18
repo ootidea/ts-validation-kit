@@ -2,14 +2,6 @@ import { Result } from 'result-type-ts'
 import { expect, it } from 'vitest'
 import * as z from './index'
 
-it('validate recursive types', () => {
-  const TreeSchema = z.object({
-    value: z.unknown,
-    children: z.Array(z.recursive(() => TreeSchema)),
-  })
-  const tree = { value: 1, children: [{ value: 2, children: [] }] }
-  expect(z.validate(TreeSchema, tree)).toStrictEqual(Result.success(tree))
-})
 it('validate with predicate', () => {
   expect(
     z.validate(
