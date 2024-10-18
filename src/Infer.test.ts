@@ -3,18 +3,6 @@ import * as z from './index'
 import { expectInferredType } from './utilities'
 
 describe('Infer', () => {
-  it('infers literal types', () => {
-    expectInferredType(z.literal(true)).toBe<true>()
-    expectInferredType(z.literal(0)).toBe<0>()
-    expectInferredType(z.literal(1n)).toBe<1n>()
-    expectInferredType(z.literal('a')).toBe<'a'>()
-    const uniqueSymbol: unique symbol = Symbol('a')
-    expectInferredType(z.literal(uniqueSymbol)).toBe<typeof uniqueSymbol>()
-  })
-  it('infers null and undefined types', () => {
-    expectInferredType(z.null).toBe<null>()
-    expectInferredType(z.undefined).toBe<undefined>()
-  })
   it('infers object types', () => {
     expectInferredType(z.object({ a: z.number, b: z.string })).toBe<{ a: number; b: string }>()
     expectInferredType(z.object({})).toBe<{}>()

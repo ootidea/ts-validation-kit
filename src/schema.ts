@@ -19,23 +19,6 @@ export function failure(message: string, path: (keyof any)[] = []): Result.Failu
   return Result.failure({ message, path })
 }
 
-export const literal = <const T>(value: T) =>
-  ({
-    type: 'literal',
-    value,
-    validate: (input: unknown): NonConverterResult<T> => {
-      if (input === value) return Result.success(value)
-
-      if (typeof value === 'bigint') return failure(`not equal to ${value}n`)
-      if (typeof value === 'symbol') return failure(`not equal to ${String(value)}`)
-
-      return failure(`not equal to ${JSON.stringify(value)}`)
-    },
-  }) as const
-
-export const null_ = literal(null)
-export const undefined_ = literal(undefined)
-
 export type Optional = { type: 'optional'; schema: BaseSchema<unknown>; validate?: never }
 export type ConverterOptional = { type: 'optional'; schema: ConverterSchema<unknown>; validate?: never }
 export type NonConverterOptional = { type: 'optional'; schema: NonConverterSchema<unknown>; validate?: never }
