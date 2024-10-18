@@ -10,10 +10,10 @@ export {
 } from './schemas/base-type'
 export { literal } from './schemas/literal'
 export { null_ as null, undefined_ as undefined } from './schemas/literal-alias'
-export { optional, object } from './schemas/object'
 export { Array_ as Array } from './schemas/Array'
+export { optional, object } from './schemas/object'
+export { or } from './schemas/or'
 export {
-  or,
   recursive,
   convert,
   predicate,

@@ -2,19 +2,6 @@ import { Result } from 'result-type-ts'
 import { expect, it } from 'vitest'
 import * as z from './index'
 
-it('validate with or schema', () => {
-  expect(z.validate(z.or(z.number, z.string), 1)).toStrictEqual(Result.success(1))
-  expect(z.validate(z.or(z.number, z.string), 'a')).toStrictEqual(Result.success('a'))
-  expect(z.validate(z.or(z.number, z.string), true)).toStrictEqual(
-    Result.failure({
-      message: 'must resolve any one of the following issues: (1) not a number (2) not a string',
-      path: [],
-    }),
-  )
-  expect(z.validate(z.or(z.convert(JSON.parse), z.convert(String)), undefined)).toStrictEqual(
-    Result.success('undefined'),
-  )
-})
 it('validate recursive types', () => {
   const TreeSchema = z.object({
     value: z.unknown,
