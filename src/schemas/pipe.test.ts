@@ -17,4 +17,11 @@ test('pipe schema', () => {
       z.predicate((value) => value.length < 5),
     ),
   ).toBe<string>()
+  expectInferredInputType(z.pipe(z.number, z.predicate(Boolean))).toBe<unknown>()
+  expectInferredInputType(
+    z.pipe(
+      z.predicate((value: number) => value > 0),
+      z.convert(String),
+    ),
+  ).toBe<number>()
 })

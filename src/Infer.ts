@@ -55,7 +55,7 @@ export type InferInput<T extends BaseSchema> = T extends {
   type: 'pipe'
   schemas: [infer B extends BaseSchema, ...any]
 }
-  ? Infer<B>
+  ? InferInput<B>
   : T extends { type: 'or'; schemas: infer S extends readonly BaseSchema[] }
     ? TupleToIntersection<{ [K in keyof S]: InferInput<S[K]> }>
     : T extends { validate: (input: infer U) => any }
