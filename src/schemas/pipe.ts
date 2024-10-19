@@ -1,6 +1,6 @@
 import { Result } from 'result-type-ts'
-import type { Infer, InferInput } from './Infer'
-import type { BaseSchema, ConverterResult, NonConverterResult, ValidateResult } from './schema'
+import type { Infer, InferInput } from '../Infer'
+import type { BaseSchema, ConverterResult, NonConverterResult, ValidateResult } from '../schema'
 
 export function pipe<B extends BaseSchema, R1 extends ValidateResult>(
   s1: B,
