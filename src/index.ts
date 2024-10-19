@@ -14,10 +14,8 @@ export { Array_ as Array } from './schemas/Array'
 export { optional, object } from './schemas/object'
 export { or } from './schemas/or'
 export { recursive } from './schemas/recursive'
-export {
-  convert,
-  predicate,
-} from './schema'
+export { convert } from './schemas/convert'
+export { predicate } from './schema'
 export { pipe } from './pipe'
 export { type Infer } from './Infer'
 export { validate } from './external'

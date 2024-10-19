@@ -18,20 +18,6 @@ export function failure(message: string, path: (keyof any)[] = []): Result.Failu
   return Result.failure({ message, path })
 }
 
-export const convert = <T, U>(converter: (value: T) => U) =>
-  ({
-    type: 'convert',
-    converter,
-    validate: (input: T): ConverterResult<U> => {
-      try {
-        return Result.success(converter(input))
-      } catch (e) {
-        const message = e instanceof Error ? e.message : String(e)
-        return failure(message)
-      }
-    },
-  }) as const
-
 export const predicate = <T, U extends T = T>(f: ((value: T) => value is U) | ((value: T) => boolean)) =>
   ({
     type: 'predicate',

@@ -7,11 +7,6 @@ describe('Infer', () => {
     expectInferredType(z.predicate((value): value is 0 => value === 0)).toBe<0>()
     expectInferredType(z.predicate((value: string) => Boolean(value))).toBe<string>()
   })
-  it('infers converter return type', () => {
-    expectInferredType(z.convert(Number)).toBe<number>()
-    expectInferredType(z.convert((value) => `${value}`)).toBe<string>()
-    expectInferredType(z.convert((value: number) => `${value}` as const)).toBe<`${number}`>()
-  })
   it('infers piped types', () => {
     expectInferredType(
       z.pipe(
