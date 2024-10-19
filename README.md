@@ -1,4 +1,5 @@
-# ts-validation-kit
+<h1 align="center">ts-validation-kit</h1>
 
-This project is an attempt to create my own improved version of Zod.  
-It is not yet at the stage of writing the document.  
+A modern TypeScript validation library inspired by [Zod](https://github.com/colinhacks/zod) and [Valibot](https://github.com/fabian-hiller/valibot).
+
+Work in progress.
