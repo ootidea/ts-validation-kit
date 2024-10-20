@@ -10,8 +10,8 @@ test('Record schema', () => {
   expectInferredType(z.Record(z.or(z.string, z.number, z.symbol), z.any)).toBe<Record<keyof any, any>>()
   expectInferredInputType(z.Record(z.string, z.any)).toBe<unknown>()
   expect(z.validate(z.Record(z.string, z.any), { a: 1 })).toStrictEqual(Result.success({ a: 1 }))
-  expect(z.validate(z.Record(z.string, z.string), { a: null })).toStrictEqual(
-    Result.failure({ message: 'Record value: not a string', path: ['a'] }),
+  expect(z.validate(z.Record(z.number, z.string), { 0: null })).toStrictEqual(
+    Result.failure({ message: 'Record value: not a string', path: ['0'] }),
   )
   expect(z.validate(z.Record(z.symbol, z.null), { a: null })).toStrictEqual(
     Result.failure({ message: 'Record key: not a symbol', path: ['a'] }),
