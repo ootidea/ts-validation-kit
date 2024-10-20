@@ -9,6 +9,7 @@ export {
   never,
 } from './schemas/base-type'
 export { literal } from './schemas/literal'
+export { literalUnion } from './schemas/literalUnion'
 export { null_ as null, undefined_ as undefined } from './schemas/literal-alias'
 export { Array_ as Array } from './schemas/Array'
 export { optional, object } from './schemas/object'
