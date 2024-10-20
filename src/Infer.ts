@@ -31,25 +31,29 @@ export type Infer<T extends BaseSchema> = T['type'] extends keyof StandardLowerc
             : never // Unreachable
         }
       >
-    : T extends { type: 'Array'; element: infer Element extends BaseSchema }
-      ? Infer<Element>[]
-      : T extends { type: 'or'; schemas: infer S extends readonly BaseSchema[] }
-        ? { [K in keyof S]: Infer<S[K]> }[number]
-        : T extends { type: 'recursive'; lazy: infer L }
-          ? L extends (() => infer S extends BaseSchema)
-            ? Infer<S>
-            : never
-          : T extends {
-                type: 'pipe'
-                schemas: readonly [
-                  infer B extends BaseSchema,
-                  ...infer L extends readonly { validate: (input: any) => any }[],
-                ]
-              }
-            ? DerivePipedType<InferInput<B>, { [K in keyof L]: ReturnType<L[K]['validate']> }>
-            : T extends { validate: (input: any) => ValidateResult<infer R> }
-              ? R
+    : T extends { type: 'Record'; key: infer K extends BaseSchema; value: infer V extends BaseSchema }
+      ? Infer<K> extends keyof any
+        ? Record<Infer<K>, Infer<V>>
+        : never
+      : T extends { type: 'Array'; element: infer Element extends BaseSchema }
+        ? Infer<Element>[]
+        : T extends { type: 'or'; schemas: infer S extends readonly BaseSchema[] }
+          ? { [K in keyof S]: Infer<S[K]> }[number]
+          : T extends { type: 'recursive'; lazy: infer L }
+            ? L extends (() => infer S extends BaseSchema)
+              ? Infer<S>
               : never
+            : T extends {
+                  type: 'pipe'
+                  schemas: readonly [
+                    infer B extends BaseSchema,
+                    ...infer L extends readonly { validate: (input: any) => any }[],
+                  ]
+                }
+              ? DerivePipedType<InferInput<B>, { [K in keyof L]: ReturnType<L[K]['validate']> }>
+              : T extends { validate: (input: any) => ValidateResult<infer R> }
+                ? R
+                : never
 
 export type InferInput<T extends BaseSchema> = T extends {
   type: 'pipe'
