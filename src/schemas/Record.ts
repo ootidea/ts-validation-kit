@@ -2,7 +2,7 @@ import { Result } from 'result-type-ts'
 import type * as z from '../index'
 import { type BaseSchema, type NonConverterResult, failure } from '../schema'
 
-export const Record = <K extends BaseSchema, V extends BaseSchema>(
+export const Record = <K extends BaseSchema<unknown>, V extends BaseSchema<unknown>>(
   keySchema: K,
   valueSchema: V,
   ..._error: z.Infer<K> extends keyof any ? [] : ['error']
