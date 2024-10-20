@@ -28,3 +28,20 @@ test('Record schema with literal keys', () => {
     Result.failure({ message: 'Record key: not equal to "a"', path: ['b'] }),
   )
 })
+test('recursive Record schema', () => {
+  const pathSchema = z.object({
+    size: z.number,
+    subpath: z.Record(
+      z.string,
+      z.recursive(() => pathSchema),
+    ),
+  })
+  type Path = {
+    size: number
+    subpath: Record<string, Path>
+  }
+  expectInferredType(pathSchema).toBe<Path>()
+  expect(z.validate(pathSchema, { size: 1, subpath: { a: { size: 2, subpath: {} } } })).toStrictEqual(
+    Result.success({ size: 1, subpath: { a: { size: 2, subpath: {} } } }),
+  )
+})
