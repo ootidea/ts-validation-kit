@@ -33,7 +33,7 @@ export type Infer<T extends BaseSchema> = T['type'] extends keyof StandardLowerc
       >
     : T extends { type: 'Record'; key: infer K extends BaseSchema; value: infer V extends BaseSchema }
       ? Infer<K> extends keyof any
-        ? Record<Infer<K>, Infer<V>>
+        ? { [key in Infer<K>]: Infer<V> }
         : never
       : T extends { type: 'Array'; element: infer Element extends BaseSchema }
         ? Infer<Element>[]

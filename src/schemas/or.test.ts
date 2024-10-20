@@ -25,3 +25,21 @@ test('or schema', () => {
     Result.success('undefined'),
   )
 })
+test('recursive or schema', () => {
+  const jsonValue = z.or(
+    z.string,
+    z.number,
+    z.boolean,
+    z.null,
+    z.Record(
+      z.string,
+      z.recursive(() => jsonValue),
+    ),
+    z.Array(z.recursive(() => jsonValue)),
+  )
+  type JsonValue = string | number | boolean | null | { [key: string]: JsonValue } | JsonValue[]
+  expectInferredType(jsonValue).toBe<JsonValue>()
+  expect(z.validate(jsonValue, { a: 1, b: '2', c: { _: null }, d: [false] })).toStrictEqual(
+    Result.success({ a: 1, b: '2', c: { _: null }, d: [false] }),
+  )
+})
