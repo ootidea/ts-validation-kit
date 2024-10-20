@@ -2,6 +2,12 @@ import type { Equals } from 'advanced-type-utilities'
 import type { Infer, InferInput } from './Infer'
 import type { BaseSchema } from './schema'
 
+export function literalToString(value: unknown): string {
+  if (typeof value === 'bigint') return `${value}n`
+  if (typeof value === 'symbol') return String(value)
+  return JSON.stringify(value)
+}
+
 /**
  * @example
  * expectInferredType(z.number).toBe<string>() // Fails with type error
