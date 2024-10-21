@@ -50,7 +50,7 @@ export type Infer<T extends BaseSchema> = T['type'] extends keyof StandardLowerc
                     ...infer L extends readonly { validate: (input: any) => any }[],
                   ]
                 }
-              ? DerivePipedType<InferInput<B>, { [K in keyof L]: ReturnType<L[K]['validate']> }>
+              ? DerivePipedType<Infer<B>, { [K in keyof L]: ReturnType<L[K]['validate']> }>
               : T extends { validate: (input: any) => ValidateResult<infer R> }
                 ? R
                 : never

@@ -67,7 +67,7 @@ export type DerivePipedType<Acc, T extends readonly ValidateResult[]> = T extend
   ...infer L extends readonly ValidateResult[],
 ]
   ? H extends { value?: infer R }
-    ? H extends { converted?: never }
+    ? H extends { converted?: false }
       ? DerivePipedType<Acc & R, L> // Narrow the return type.
       : DerivePipedType<R, L> // Replace the return type with the converted type.
     : never // Unreachable
