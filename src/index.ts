@@ -19,5 +19,7 @@ export { recursive } from './schemas/recursive'
 export { convert } from './schemas/convert'
 export { predicate } from './schemas/predicate'
 export { pipe } from './schemas/pipe'
+export { minLength } from './schemas/minLength'
+
 export { type Infer } from './Infer'
 export { validate } from './external'
