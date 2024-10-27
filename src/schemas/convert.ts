@@ -3,8 +3,7 @@ import { type ConverterResult, failure } from '../schema'
 
 export const convert = <T, U>(converter: (value: T) => U) =>
   ({
-    type: 'convert',
-    converter,
+    metadata: { type: 'convert', converter },
     validate: (input: T): ConverterResult<U> => {
       try {
         return Result.success(converter(input))

@@ -4,8 +4,7 @@ import { literalToString } from '../utilities'
 
 export const literal = <const T>(value: T) =>
   ({
-    type: 'literal',
-    value,
+    metadata: { type: 'literal', value },
     validate: (input: unknown): NonConverterResult<T> => {
       if (input === value) return Result.success(value)
 

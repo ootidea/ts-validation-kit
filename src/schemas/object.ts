@@ -10,15 +10,18 @@ import {
   failure,
 } from '../schema'
 
-export type Optional = { type: 'optional'; schema: BaseSchema<unknown>; validate?: never }
-export type ConverterOptional = { type: 'optional'; schema: ConverterSchema<unknown>; validate?: never }
-export type NonConverterOptional = { type: 'optional'; schema: NonConverterSchema<unknown>; validate?: never }
-export const optional = <T extends BaseSchema<unknown>>(schema: T) => ({ type: 'optional', schema }) as const
+export type Optional = { metadata: { type: 'optional'; schema: BaseSchema<unknown> }; validate?: never }
+export type ConverterOptional = { metadata: { type: 'optional'; schema: ConverterSchema<unknown> }; validate?: never }
+export type NonConverterOptional = {
+  metadata: { type: 'optional'; schema: NonConverterSchema<unknown> }
+  validate?: never
+}
+export const optional = <T extends BaseSchema<unknown>>(schema: T) =>
+  ({ metadata: { type: 'optional', schema } }) as const
 
 const objectFunction = <T extends Record<keyof any, BaseSchema<unknown> | Optional>>(properties: T) =>
   ({
-    type: 'properties',
-    properties,
+    metadata: { type: 'properties', properties } as const,
     validate: (
       input: unknown,
     ): T extends Record<keyof any, NonConverterSchema<unknown> | NonConverterOptional>
@@ -31,7 +34,7 @@ const objectFunction = <T extends Record<keyof any, BaseSchema<unknown> | Option
 
       const [optionalPropertyKeys, requiredPropertyKeys] = partition(
         Reflect.ownKeys(properties),
-        (key) => properties[key as any]!.type === 'optional',
+        (key) => properties[key as any]!.metadata.type === 'optional',
       )
       // Validate required properties.
       for (const key of requiredPropertyKeys) {
@@ -48,7 +51,7 @@ const objectFunction = <T extends Record<keyof any, BaseSchema<unknown> | Option
         if (!(key in input)) continue
 
         const propertySchema = properties[key as any]! as Optional
-        const result: ValidateResult = propertySchema.schema.validate((input as any)[key])
+        const result: ValidateResult = propertySchema.metadata.schema.validate((input as any)[key])
         if (result.isFailure) return result.mapError(({ message, path }) => ({ message, path: [...path, key] }))
 
         if (result.value !== (input as any)[key]) changedValue = { ...changedValue, [key]: result.value }
@@ -58,7 +61,7 @@ const objectFunction = <T extends Record<keyof any, BaseSchema<unknown> | Option
   }) as const
 
 export const object = Object.assign(objectFunction, {
-  type: 'object',
+  metadata: { type: 'object' },
   validate: (input: unknown): NonConverterResult<object> =>
     typeof input === 'object' && input !== null ? Result.success(input) : failure('not an object'),
 } as const)

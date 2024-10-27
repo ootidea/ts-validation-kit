@@ -2,8 +2,7 @@ import type { BaseSchema, ConverterResult, NonConverterResult, NonConverterSchem
 
 export const recursive = <const T extends () => any>(lazy: T) =>
   ({
-    type: 'recursive',
-    lazy,
+    metadata: { type: 'recursive', lazy } as const,
     validate: (input: unknown): T extends () => NonConverterSchema ? NonConverterResult : ConverterResult =>
       (lazy as () => BaseSchema)().validate(input),
   }) as const

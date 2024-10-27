@@ -2,8 +2,7 @@ import { type BaseSchema, type ValidateResult, failure } from '../schema'
 
 export const or = <const T extends readonly BaseSchema[]>(...schemas: T) =>
   ({
-    type: 'or',
-    schemas,
+    metadata: { type: 'or', schemas } as const,
     validate: (input: unknown): OrOutput<T> => {
       const errorMessages: string[] = []
       for (const schema of schemas) {

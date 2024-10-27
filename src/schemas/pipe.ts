@@ -5,12 +5,12 @@ import type { BaseSchema, ConverterResult, NonConverterResult, ValidateResult } 
 export function pipe<B extends BaseSchema, R1 extends ValidateResult>(
   s1: B,
   s2: { validate: (input: DerivePipedType<InferInput<B>, [InferResult<B>]>) => R1 },
-): { type: 'pipe'; schemas: [B, typeof s2]; validate: PipeValidate<B, [R1]> }
+): { metadata: { type: 'pipe'; schemas: [B, typeof s2] }; validate: PipeValidate<B, [R1]> }
 export function pipe<B extends BaseSchema, R1 extends ValidateResult, R2 extends ValidateResult>(
   s1: B,
   s2: { validate: (input: DerivePipedType<InferInput<B>, [InferResult<B>]>) => R1 },
   s3: { validate: (input: DerivePipedType<InferInput<B>, [InferResult<B>, R1]>) => R2 },
-): { type: 'pipe'; schemas: [B, typeof s2, typeof s3]; validate: PipeValidate<B, [R1, R2]> }
+): { metadata: { type: 'pipe'; schemas: [B, typeof s2, typeof s3] }; validate: PipeValidate<B, [R1, R2]> }
 export function pipe<
   B extends BaseSchema,
   R1 extends ValidateResult,
@@ -21,7 +21,10 @@ export function pipe<
   s2: { validate: (input: DerivePipedType<InferInput<B>, [InferResult<B>]>) => R1 },
   s3: { validate: (input: DerivePipedType<InferInput<B>, [InferResult<B>, R1]>) => R2 },
   s4: { validate: (input: DerivePipedType<InferInput<B>, [InferResult<B>, R1, R2]>) => R3 },
-): { type: 'pipe'; schemas: [B, typeof s2, typeof s3, typeof s4]; validate: PipeValidate<B, [R1, R2, R3]> }
+): {
+  metadata: { type: 'pipe'; schemas: [B, typeof s2, typeof s3, typeof s4] }
+  validate: PipeValidate<B, [R1, R2, R3]>
+}
 export function pipe<
   B extends BaseSchema,
   R1 extends ValidateResult,
@@ -34,7 +37,10 @@ export function pipe<
   s3: { validate: (input: DerivePipedType<InferInput<B>, [InferResult<B>, R1]>) => R2 },
   s4: { validate: (input: DerivePipedType<InferInput<B>, [InferResult<B>, R1, R2]>) => R3 },
   s5: { validate: (input: DerivePipedType<InferInput<B>, [InferResult<B>, R1, R2, R3]>) => R4 },
-): { type: 'pipe'; schemas: [B, typeof s2, typeof s3, typeof s4]; validate: PipeValidate<B, [R1, R2, R3, R4]> }
+): {
+  metadata: { type: 'pipe'; schemas: [B, typeof s2, typeof s3, typeof s4] }
+  validate: PipeValidate<B, [R1, R2, R3, R4]>
+}
 export function pipe(
   s1: { validate: (input: any) => any },
   s2: { validate: (input: any) => any },
@@ -44,8 +50,7 @@ export function pipe(
 ) {
   const schemas = [s1, s2, s3, s4, s5].filter((s) => s !== undefined)
   return {
-    type: 'pipe',
-    schemas,
+    metadata: { type: 'pipe', schemas },
     validate: (input: unknown) => {
       let current = input
       for (const schema of schemas) {

@@ -10,8 +10,7 @@ import {
 
 export const Array_ = <T extends BaseSchema<unknown>>(element: T) =>
   ({
-    type: 'Array',
-    element,
+    metadata: { type: 'Array', element },
     validate: (input: unknown): T extends NonConverterSchema<unknown> ? NonConverterResult : ConverterResult => {
       // When it's not even an object.
       if (!Array.isArray(input)) return failure('not an array')

@@ -1,12 +1,12 @@
 import { Result } from 'result-type-ts'
 
-export type BaseSchema<T = any> = { type: string; validate: (input: T) => any }
+export type BaseSchema<T = any> = { metadata: { type: string }; validate: (input: T) => any }
 export type ConverterSchema<T = any> = {
-  type: string
+  metadata: { type: string }
   validate: (input: T) => ValidateResult<any> & { converted?: true }
 }
 export type NonConverterSchema<T = any> = {
-  type: string
+  metadata: { type: string }
   validate: (input: T) => ValidateResult<any> & { converted?: false }
 }
 export type ValidateError = { message: string; path: (keyof any)[] }

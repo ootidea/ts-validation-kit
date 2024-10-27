@@ -8,9 +8,7 @@ export const Record = <K extends BaseSchema<unknown>, V extends BaseSchema<unkno
   ..._error: z.Infer<K> extends keyof any ? [] : ['error']
 ) =>
   ({
-    type: 'Record',
-    key: keySchema,
-    value: valueSchema,
+    metadata: { type: 'Record', key: keySchema, value: valueSchema },
     validate: (input: unknown): NonConverterResult => {
       if (typeof input !== 'object' || input === null) return failure('not an object')
 

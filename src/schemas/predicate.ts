@@ -3,8 +3,7 @@ import { type NonConverterResult, failure } from '../schema'
 
 export const predicate = <T, U extends T = T>(f: ((value: T) => value is U) | ((value: T) => boolean)) =>
   ({
-    type: 'predicate',
-    predicate: f,
+    metadata: { type: 'predicate', predicate: f },
     validate: (input: T): NonConverterResult<U> => {
       if (f(input)) return Result.success(input as U)
 

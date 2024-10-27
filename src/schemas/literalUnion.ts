@@ -4,8 +4,7 @@ import { literalToString } from '../utilities'
 
 export const literalUnion = <const T extends unknown[]>(...values: T) =>
   ({
-    type: 'literalUnion',
-    values,
+    metadata: { type: 'literalUnion', values },
     validate: (input: unknown): NonConverterResult<T[number]> => {
       if (values.some((value) => value === input)) return Result.success(input)
 

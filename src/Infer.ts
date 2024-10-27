@@ -15,9 +15,11 @@ type StandardLowercaseTypeMap = {
   never: never
 }
 
-export type Infer<T extends BaseSchema> = T['type'] extends keyof StandardLowercaseTypeMap
-  ? StandardLowercaseTypeMap[T['type']]
-  : T extends { type: 'properties'; properties: infer Properties extends Record<keyof any, BaseSchema | Optional> }
+export type Infer<T extends BaseSchema> = T['metadata']['type'] extends keyof StandardLowercaseTypeMap
+  ? StandardLowercaseTypeMap[T['metadata']['type']]
+  : T extends {
+        metadata: { type: 'properties'; properties: infer Properties extends Record<keyof any, BaseSchema | Optional> }
+      }
     ? MergeIntersection<
         {
           // Infers required properties.
@@ -27,28 +29,30 @@ export type Infer<T extends BaseSchema> = T['type'] extends keyof StandardLowerc
         } & {
           // Infers optional properties.
           [K in keyof Properties as Properties[K] extends Optional ? K : never]?: Properties[K] extends Optional
-            ? Infer<Properties[K]['schema']>
+            ? Infer<Properties[K]['metadata']['schema']>
             : never // Unreachable
         }
       >
-    : T extends { type: 'Record'; key: infer K extends BaseSchema; value: infer V extends BaseSchema }
+    : T extends { metadata: { type: 'Record'; key: infer K extends BaseSchema; value: infer V extends BaseSchema } }
       ? Infer<K> extends keyof any
         ? { [key in Infer<K>]: Infer<V> }
         : never
-      : T extends { type: 'Array'; element: infer Element extends BaseSchema }
+      : T extends { metadata: { type: 'Array'; element: infer Element extends BaseSchema } }
         ? Infer<Element>[]
-        : T extends { type: 'or'; schemas: infer S extends readonly BaseSchema[] }
+        : T extends { metadata: { type: 'or'; schemas: infer S extends readonly BaseSchema[] } }
           ? { [K in keyof S]: Infer<S[K]> }[number]
-          : T extends { type: 'recursive'; lazy: infer L }
+          : T extends { metadata: { type: 'recursive'; lazy: infer L } }
             ? L extends (() => infer S extends BaseSchema)
               ? Infer<S>
               : never
             : T extends {
-                  type: 'pipe'
-                  schemas: readonly [
-                    infer B extends BaseSchema,
-                    ...infer L extends readonly { validate: (input: any) => any }[],
-                  ]
+                  metadata: {
+                    type: 'pipe'
+                    schemas: readonly [
+                      infer B extends BaseSchema,
+                      ...infer L extends readonly { validate: (input: any) => any }[],
+                    ]
+                  }
                 }
               ? DerivePipedType<Infer<B>, { [K in keyof L]: ReturnType<L[K]['validate']> }>
               : T extends { validate: (input: any) => ValidateResult<infer R> }
@@ -56,11 +60,13 @@ export type Infer<T extends BaseSchema> = T['type'] extends keyof StandardLowerc
                 : never
 
 export type InferInput<T extends BaseSchema> = T extends {
-  type: 'pipe'
-  schemas: [infer B extends BaseSchema, ...any]
+  metadata: {
+    type: 'pipe'
+    schemas: [infer B extends BaseSchema, ...any]
+  }
 }
   ? InferInput<B>
-  : T extends { type: 'or'; schemas: infer S extends readonly BaseSchema[] }
+  : T extends { metadata: { type: 'or'; schemas: infer S extends readonly BaseSchema[] } }
     ? TupleToIntersection<{ [K in keyof S]: InferInput<S[K]> }>
     : T extends { validate: (input: infer U) => any }
       ? U
