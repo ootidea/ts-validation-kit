@@ -7,7 +7,7 @@ export const predicate = <T, U extends T = T>(f: ((value: T) => value is U) | ((
     validate: (input: T): NonConverterResult<U> => {
       if (f(input)) return Result.success(input as U)
 
-      if (f.name) return failure(`predicate ${f.name} not met: ${f}`)
+      if (f.name) return failure(`predicate ${f.name} not met`)
       return failure(`predicate not met: ${f}`)
     },
   }) as const

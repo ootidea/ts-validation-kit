@@ -2,41 +2,48 @@ import { Result } from 'result-type-ts'
 import type { Infer, InferInput } from '../Infer'
 import type { BaseSchema, ConverterResult, NonConverterResult, ValidateResult } from '../schema'
 
-export function pipe<B extends BaseSchema, R1 extends ValidateResult>(
+export function pipe<B extends BaseSchema, M1, R1 extends ValidateResult>(
   s1: B,
-  s2: { validate: (input: DerivePipedType<InferInput<B>, [InferResult<B>]>) => R1 },
+  s2: { metadata: M1; validate: (input: DerivePipedType<InferInput<B>, [InferResult<B>]>) => R1 },
 ): { metadata: { type: 'pipe'; schemas: [B, typeof s2] }; validate: PipeValidate<B, [R1]> }
-export function pipe<B extends BaseSchema, R1 extends ValidateResult, R2 extends ValidateResult>(
+export function pipe<B extends BaseSchema, M1, R1 extends ValidateResult, M2, R2 extends ValidateResult>(
   s1: B,
-  s2: { validate: (input: DerivePipedType<InferInput<B>, [InferResult<B>]>) => R1 },
-  s3: { validate: (input: DerivePipedType<InferInput<B>, [InferResult<B>, R1]>) => R2 },
+  s2: { metadata: M1; validate: (input: DerivePipedType<InferInput<B>, [InferResult<B>]>) => R1 },
+  s3: { metadata: M2; validate: (input: DerivePipedType<InferInput<B>, [InferResult<B>, R1]>) => R2 },
 ): { metadata: { type: 'pipe'; schemas: [B, typeof s2, typeof s3] }; validate: PipeValidate<B, [R1, R2]> }
 export function pipe<
   B extends BaseSchema,
+  M1,
   R1 extends ValidateResult,
+  M2,
   R2 extends ValidateResult,
+  M3,
   R3 extends ValidateResult,
 >(
   s1: B,
-  s2: { validate: (input: DerivePipedType<InferInput<B>, [InferResult<B>]>) => R1 },
-  s3: { validate: (input: DerivePipedType<InferInput<B>, [InferResult<B>, R1]>) => R2 },
-  s4: { validate: (input: DerivePipedType<InferInput<B>, [InferResult<B>, R1, R2]>) => R3 },
+  s2: { metadata: M1; validate: (input: DerivePipedType<InferInput<B>, [InferResult<B>]>) => R1 },
+  s3: { metadata: M2; validate: (input: DerivePipedType<InferInput<B>, [InferResult<B>, R1]>) => R2 },
+  s4: { metadata: M3; validate: (input: DerivePipedType<InferInput<B>, [InferResult<B>, R1, R2]>) => R3 },
 ): {
   metadata: { type: 'pipe'; schemas: [B, typeof s2, typeof s3, typeof s4] }
   validate: PipeValidate<B, [R1, R2, R3]>
 }
 export function pipe<
   B extends BaseSchema,
+  M1,
   R1 extends ValidateResult,
+  M2,
   R2 extends ValidateResult,
+  M3,
   R3 extends ValidateResult,
+  M4,
   R4 extends ValidateResult,
 >(
   s1: B,
-  s2: { validate: (input: DerivePipedType<InferInput<B>, [InferResult<B>]>) => R1 },
-  s3: { validate: (input: DerivePipedType<InferInput<B>, [InferResult<B>, R1]>) => R2 },
-  s4: { validate: (input: DerivePipedType<InferInput<B>, [InferResult<B>, R1, R2]>) => R3 },
-  s5: { validate: (input: DerivePipedType<InferInput<B>, [InferResult<B>, R1, R2, R3]>) => R4 },
+  s2: { metadata: M1; validate: (input: DerivePipedType<InferInput<B>, [InferResult<B>]>) => R1 },
+  s3: { metadata: M2; validate: (input: DerivePipedType<InferInput<B>, [InferResult<B>, R1]>) => R2 },
+  s4: { metadata: M3; validate: (input: DerivePipedType<InferInput<B>, [InferResult<B>, R1, R2]>) => R3 },
+  s5: { metadata: M4; validate: (input: DerivePipedType<InferInput<B>, [InferResult<B>, R1, R2, R3]>) => R4 },
 ): {
   metadata: { type: 'pipe'; schemas: [B, typeof s2, typeof s3, typeof s4] }
   validate: PipeValidate<B, [R1, R2, R3, R4]>
