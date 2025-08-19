@@ -13,13 +13,13 @@ export function literalToString(value: unknown): string {
  * expectInferredType(z.number).toBe<string>() // Fails with type error
  * expectInferredType(z.number).toBe<number>() // Succeeds due to no type errors
  */
-export const expectInferredType = <T extends BaseSchema>(schema: T) => {
+export const expectInferredType = <T extends BaseSchema>(_schema: T) => {
   return {
     toBe: <U>(..._: Equals<Infer<T>, U> extends true ? [] : [error: 'Type does not match', Infer<T>]) => {},
   }
 }
 
-export const expectInferredInputType = <T extends BaseSchema>(schema: T) => {
+export const expectInferredInputType = <T extends BaseSchema>(_schema: T) => {
   return {
     toBe: <U>(..._: Equals<InferInput<T>, U> extends true ? [] : [error: 'Type does not match', InferInput<T>]) => {},
   }

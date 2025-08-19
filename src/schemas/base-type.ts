@@ -43,5 +43,5 @@ export const any = {
 
 export const never = {
   metadata: { type: 'never' },
-  validate: (input: unknown): NonConverterResult<never> => failure('never type does not accept any value'),
+  validate: (_input: unknown): NonConverterResult<never> => failure('never type does not accept any value'),
 } as const
