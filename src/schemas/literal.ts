@@ -1,5 +1,5 @@
 import { Result } from 'result-type-ts'
-import { type NonConverterResult, failure } from '../schema'
+import { failure, type NonConverterResult } from '../schema'
 import { literalToString } from '../utilities'
 
 export const literal = <const T>(value: T) =>

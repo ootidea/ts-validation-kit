@@ -1,4 +1,4 @@
-import { type BaseSchema, type ValidateResult, failure } from '../schema'
+import { type BaseSchema, failure, type ValidateResult } from '../schema'
 
 export const or = <const T extends readonly BaseSchema[]>(...schemas: T) =>
   ({

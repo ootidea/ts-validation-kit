@@ -1,6 +1,6 @@
 import { Result } from 'result-type-ts'
 import type * as z from '../index'
-import { type BaseSchema, type NonConverterResult, failure } from '../schema'
+import { type BaseSchema, failure, type NonConverterResult } from '../schema'
 
 export const Record = <K extends BaseSchema<unknown>, V extends BaseSchema<unknown>>(
   keySchema: K,

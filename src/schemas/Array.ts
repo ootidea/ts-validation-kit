@@ -2,10 +2,10 @@ import { Result } from 'result-type-ts'
 import {
   type BaseSchema,
   type ConverterResult,
+  failure,
   type NonConverterResult,
   type NonConverterSchema,
   type ValidateResult,
-  failure,
 } from '../schema'
 
 export const Array_ = <T extends BaseSchema<unknown>>(element: T) =>

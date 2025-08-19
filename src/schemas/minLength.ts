@@ -1,5 +1,5 @@
 import { Result } from 'result-type-ts'
-import { type NonConverterResult, failure } from '../schema'
+import { failure, type NonConverterResult } from '../schema'
 
 export const minLength = <const N extends number>(length: N) => {
   return {

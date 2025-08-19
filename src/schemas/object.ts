@@ -4,10 +4,10 @@ import {
   type BaseSchema,
   type ConverterResult,
   type ConverterSchema,
+  failure,
   type NonConverterResult,
   type NonConverterSchema,
   type ValidateResult,
-  failure,
 } from '../schema'
 
 export type Optional = { metadata: { type: 'optional'; schema: BaseSchema<unknown> }; validate?: never }

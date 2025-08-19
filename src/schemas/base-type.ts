@@ -1,5 +1,5 @@
 import { Result } from 'result-type-ts'
-import { type NonConverterResult, failure } from '../schema'
+import { failure, type NonConverterResult } from '../schema'
 
 export const boolean = {
   metadata: { type: 'boolean' },
